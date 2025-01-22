@@ -258,6 +258,7 @@ toggleButton.MouseButton1Click:Connect(function()
     if opened then
         window:Hide()
     else
+    if not opened then
         window:Show()
     end
 end)
