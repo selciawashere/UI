@@ -253,12 +253,12 @@ toggleButton.InputChanged:Connect(function(input)
         updateDrag(input)
     end
 end)
-
+local opened = true
 toggleButton.MouseButton1Click:Connect(function()
     if opened then
         window:Hide()
     else
-    if top.Visible = true then
+    
         window:Show()
     end
 end)
