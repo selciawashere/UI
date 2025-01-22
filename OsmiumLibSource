@@ -208,59 +208,47 @@ local destructionHooks = {}
                 Duration = 1
             })
         end)
-    local player = game.Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player:WaitForChild("PlayerGui")
-
-local hideButton = Instance.new("ImageButton")
-hideButton.Parent = screenGui
-hideButton.BackgroundTransparency = 1
-hideButton.Position = UDim2.new(0, 0, 0, 0)
-hideButton.Size = UDim2.new(0, 75, 0, 75)
+    local hideButton = Instance.new("ImageButton")
 hideButton.Image = "rbxassetid://79844696964613"
+hideButton.Size = UDim2.new(0, 50, 0, 50)
+hideButton.Position = UDim2.new(0.5, -25, 0.5, -25)
+hideButton.Parent = game.Players.LocalPlayer.PlayerGui
 
-local uicorner = Instance.new("UICorner")
-uicorner.CornerRadius = UDim.new(0.2, 0)
-uicorner.Parent = hideButton
+local dragging = false
+local dragStart, startPos
 
-local windowVisible = true
-local UserInputService = game:GetService("UserInputService")
-local window = {}
-local top = screenGui:WaitForChild("Top")
-
-function window:Hide()
-    windowVisible = false
-    top.Visible = false
-end
-
-function window:Show()
-    windowVisible = true
-    top.Visible = true
-end
-
-local handler = UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.LeftAlt then
-        if windowVisible then
-            window:Hide()
-        else
-            window:Show()
-        end
+hideButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = hideButton.Position
     end
 end)
 
+hideButton.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        hideButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+hideButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+
+
+
 hideButton.MouseButton1Click:Connect(function()
-    if windowVisible then
+	if windowVisible then
         window:Hide()
     else
         window:Show()
     end
+
 end)
-
-window.OnDestroy = function()
-    handler:Disconnect()
-end
-
-
 
 
         
