@@ -258,10 +258,11 @@ toggleButton.MouseButton1Click:Connect(function()
     if opened then
         window:Hide()
     else
-    if not opened then
+    if top.Visible = true then
         window:Show()
     end
 end)
+
 
         pcall(function ()
             local IsDragging = false
