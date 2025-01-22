@@ -208,13 +208,16 @@ local destructionHooks = {}
                 Duration = 1
             })
         end)
-local hideButton = CreateInstance("ImageButton", top, {
-    BackgroundTransparency = 1,
-    Name = "-",
-    Position = UDim2.new(0.829, 0, 0, 0),
-    Size = UDim2.new(0, 22, 0, 22),
-    Image = "rbxassetid://79844696964613"
-})
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local hideButton = Instance.new("ImageButton")
+hideButton.Parent = screenGui
+hideButton.BackgroundTransparency = 1
+hideButton.Position = UDim2.new(0.829, 0, 0, 0)
+hideButton.Size = UDim2.new(0, 22, 0, 22)
+hideButton.Image = "rbxassetid://79844696964613"
 
 local uicorner = Instance.new("UICorner")
 uicorner.CornerRadius = UDim.new(0.2, 0)
@@ -227,7 +230,16 @@ local startPos
 
 local function update(input)
     local delta = input.Position - dragStart
-    hideButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local newPosition = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+
+    newPosition = UDim2.new(
+        math.clamp(newPosition.X.Scale, 0, 1), 
+        math.clamp(newPosition.X.Offset, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.X - hideButton.Size.X.Offset),
+        math.clamp(newPosition.Y.Scale, 0, 1),
+        math.clamp(newPosition.Y.Offset, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.Y - hideButton.Size.Y.Offset)
+    )
+
+    hideButton.Position = newPosition
 end
 
 hideButton.InputBegan:Connect(function(input)
@@ -258,11 +270,6 @@ end)
 
 hideButton.MouseButton1Click:Connect(function()
     window:Hide()
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Minimized",
-        Text = "KeyBind : LeftAlt",
-        Duration = 1
-    })
 end)
 
         
