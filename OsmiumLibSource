@@ -216,7 +216,7 @@ local hideButton = Instance.new("ImageButton")
 hideButton.Parent = screenGui
 hideButton.BackgroundTransparency = 1
 hideButton.Position = UDim2.new(0.829, 0, 0, 0)
-hideButton.Size = UDim2.new(0, 50, 0, 50)  -- Medium size for the button
+hideButton.Size = UDim2.new(0, 100, 0, 100)  -- Medium size button
 hideButton.Image = "rbxassetid://79844696964613"
 
 local uicorner = Instance.new("UICorner")
@@ -228,16 +228,24 @@ local dragging
 local dragInput
 local dragStart
 local startPos
+local UserInputService = game:GetService("UserInputService")
+local window = {}  -- Assuming this is your window object
+local top = screenGui:WaitForChild("Top")  -- Your window content
 
 local function update(input)
     local delta = input.Position - dragStart
     local newPosition = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 
+    -- Get the viewport size of the camera
+    local screenWidth = game:GetService("Workspace").CurrentCamera.ViewportSize.X
+    local screenHeight = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
+
+    -- Clamp the position of the button to prevent it from going off-screen
     newPosition = UDim2.new(
         math.clamp(newPosition.X.Scale, 0, 1), 
-        math.clamp(newPosition.X.Offset, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.X - hideButton.Size.X.Offset),
+        math.clamp(newPosition.X.Offset, 0, screenWidth - hideButton.Size.X.Offset),
         math.clamp(newPosition.Y.Scale, 0, 1),
-        math.clamp(newPosition.Y.Offset, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.Y - hideButton.Size.Y.Offset)
+        math.clamp(newPosition.Y.Offset, 0, screenHeight - hideButton.Size.Y.Offset)
     )
 
     hideButton.Position = newPosition
@@ -269,16 +277,42 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
+-- Define the Hide and Show functions
+function window:Hide()
+    windowVisible = false
+    top.Visible = false
+end
+
+function window:Show()
+    windowVisible = true
+    top.Visible = true
+end
+
+-- Toggle functionality using the LeftAlt key
+local handler = UserInputService.InputBegan:Connect(function (input)
+    if input.KeyCode == Enum.KeyCode.LeftAlt then
+        if windowVisible then
+            window:Hide()
+        else
+            window:Show()
+        end
+    end
+end)
+
+-- The button click also hides and shows the window
 hideButton.MouseButton1Click:Connect(function()
     if windowVisible then
         window:Hide()
-        hideButton.Image = "rbxassetid://79844696964613"  -- You can change to a different image when hidden
     else
         window:Show()
-        hideButton.Image = "rbxassetid://79844696964613"  -- Restore the original image when unhidden
     end
-    windowVisible = not windowVisible
 end)
+
+-- Cleanup the handler when the window is destroyed
+window.OnDestroy = function()
+    handler:Disconnect()
+end
+
 
         
 
