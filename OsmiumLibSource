@@ -215,8 +215,8 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 local hideButton = Instance.new("ImageButton")
 hideButton.Parent = screenGui
 hideButton.BackgroundTransparency = 1
-hideButton.Position = UDim2.new(0.829, 0, 0, 0)
-hideButton.Size = UDim2.new(0, 100, 0, 100)  -- Medium size button
+hideButton.Position = UDim2.new(0, 0, 0, 0)
+hideButton.Size = UDim2.new(0, 75, 0, 75)
 hideButton.Image = "rbxassetid://79844696964613"
 
 local uicorner = Instance.new("UICorner")
@@ -224,60 +224,10 @@ uicorner.CornerRadius = UDim.new(0.2, 0)
 uicorner.Parent = hideButton
 
 local windowVisible = true
-local dragging
-local dragInput
-local dragStart
-local startPos
 local UserInputService = game:GetService("UserInputService")
-local window = {}  -- Assuming this is your window object
-local top = screenGui:WaitForChild("Top")  -- Your window content
+local window = {}
+local top = screenGui:WaitForChild("Top")
 
-local function update(input)
-    local delta = input.Position - dragStart
-    local newPosition = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-
-    -- Get the viewport size of the camera
-    local screenWidth = game:GetService("Workspace").CurrentCamera.ViewportSize.X
-    local screenHeight = game:GetService("Workspace").CurrentCamera.ViewportSize.Y
-
-    -- Clamp the position of the button to prevent it from going off-screen
-    newPosition = UDim2.new(
-        math.clamp(newPosition.X.Scale, 0, 1), 
-        math.clamp(newPosition.X.Offset, 0, screenWidth - hideButton.Size.X.Offset),
-        math.clamp(newPosition.Y.Scale, 0, 1),
-        math.clamp(newPosition.Y.Offset, 0, screenHeight - hideButton.Size.Y.Offset)
-    )
-
-    hideButton.Position = newPosition
-end
-
-hideButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = hideButton.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-hideButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input == dragInput then
-        update(input)
-    end
-end)
-
--- Define the Hide and Show functions
 function window:Hide()
     windowVisible = false
     top.Visible = false
@@ -288,8 +238,7 @@ function window:Show()
     top.Visible = true
 end
 
--- Toggle functionality using the LeftAlt key
-local handler = UserInputService.InputBegan:Connect(function (input)
+local handler = UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.LeftAlt then
         if windowVisible then
             window:Hide()
@@ -299,7 +248,6 @@ local handler = UserInputService.InputBegan:Connect(function (input)
     end
 end)
 
--- The button click also hides and shows the window
 hideButton.MouseButton1Click:Connect(function()
     if windowVisible then
         window:Hide()
@@ -308,10 +256,11 @@ hideButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Cleanup the handler when the window is destroyed
 window.OnDestroy = function()
     handler:Disconnect()
 end
+
+
 
 
         
