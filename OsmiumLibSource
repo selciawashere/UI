@@ -215,12 +215,12 @@ local hideButton = Instance.new("ImageButton")
 hideButton.Image = "rbxassetid://79844696964613"
 hideButton.Size = UDim2.new(0, 50, 0, 50)
 hideButton.Position = UDim2.new(0.5, -25, 0.5, -25)
-hideButton.Parent = game.Players.LocalPlayer.PlayerGui
+
+hideButton.ZIndex = 10
 
 local dragging = false
 local dragStart, startPos
 
--- Drag functionality
 hideButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -242,9 +242,8 @@ hideButton.InputEnded:Connect(function(input)
     end
 end)
 
--- Window visibility toggle
 local windowVisible = true
-local window = script.Parent -- Adjust this to the UI element you want to hide/show
+local window = script.Parent
 
 hideButton.MouseButton1Click:Connect(function()
     if windowVisible then
@@ -254,6 +253,7 @@ hideButton.MouseButton1Click:Connect(function()
     end
     windowVisible = not windowVisible
 end)
+
 
 
 
