@@ -208,7 +208,7 @@ local destructionHooks = {}
                 Duration = 1
             })
         end)
-local player = game.Players.LocalPlayer
+    local player = game.Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
@@ -216,13 +216,14 @@ local hideButton = Instance.new("ImageButton")
 hideButton.Parent = screenGui
 hideButton.BackgroundTransparency = 1
 hideButton.Position = UDim2.new(0.829, 0, 0, 0)
-hideButton.Size = UDim2.new(0, 22, 0, 22)
+hideButton.Size = UDim2.new(0, 50, 0, 50)  -- Medium size for the button
 hideButton.Image = "rbxassetid://79844696964613"
 
 local uicorner = Instance.new("UICorner")
 uicorner.CornerRadius = UDim.new(0.2, 0)
 uicorner.Parent = hideButton
 
+local windowVisible = true
 local dragging
 local dragInput
 local dragStart
@@ -269,7 +270,14 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 hideButton.MouseButton1Click:Connect(function()
-    window:Hide()
+    if windowVisible then
+        window:Hide()
+        hideButton.Image = "rbxassetid://79844696964613"  -- You can change to a different image when hidden
+    else
+        window:Show()
+        hideButton.Image = "rbxassetid://79844696964613"  -- Restore the original image when unhidden
+    end
+    windowVisible = not windowVisible
 end)
 
         
