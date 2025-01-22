@@ -213,45 +213,31 @@ local destructionHooks = {}
 
 local hideButton = Instance.new("ImageButton")
 hideButton.Image = "rbxassetid://79844696964613"
-hideButton.Size = UDim2.new(0, 50, 0, 50)
-hideButton.Position = UDim2.new(0.5, -25, 0.5, -25)
+hideButton.BackgroundTransparency = 1
+hideButton.Name = "-"
+hideButton.Position = UDim2.new(0.829, 0, 0, 0)
+hideButton.Size = UDim2.new(0, 22, 0, 22)
+hideButton.Parent = top
 
-hideButton.ZIndex = 10
+local windowVisible = true  -- Track window visibility state
 
-local dragging = false
-local dragStart, startPos
-
-hideButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = hideButton.Position
-    end
-end)
-
-hideButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        hideButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-hideButton.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
-local windowVisible = true
-local window = script.Parent
-
-hideButton.MouseButton1Click:Connect(function()
+local function toggleWindow()
     if windowVisible then
         window:Hide()
     else
         window:Show()
     end
     windowVisible = not windowVisible
+end
+
+hideButton.MouseButton1Click:Connect(function()
+    toggleWindow()
+
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = windowVisible and "Minimized" or "Restored",
+        Text = "KeyBind : LeftAlt",
+        Duration = 1
+    })
 end)
 
 
