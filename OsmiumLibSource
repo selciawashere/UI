@@ -253,15 +253,14 @@ toggleButton.InputChanged:Connect(function(input)
         updateDrag(input)
     end
 end)
-local opened = true
 toggleButton.MouseButton1Click:Connect(function()
     if opened then
         window:Hide()
     else
-    
         window:Show()
     end
 end)
+
 
 
         pcall(function ()
@@ -316,7 +315,7 @@ end)
         })
 
         pcall(function ()
-            local opened = true
+            
 
             function window:Hide()
                 opened = false
