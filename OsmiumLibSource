@@ -212,14 +212,13 @@ local destructionHooks = {}
 
 
 local hideButton = Instance.new("ImageButton")
-hideButton.Image = "rbxassetid://79844696964613"  -- Set the image you want
+hideButton.Image = "rbxassetid://79844696964613"  -- Set your custom image
 hideButton.BackgroundTransparency = 1
-hideButton.Name = "-"
-hideButton.Position = UDim2.new(0.829, 0, 0, 0)
-hideButton.Size = UDim2.new(0, 50, 0, 50)  -- Make the icon bigger
-hideButton.Parent = top  -- Add it to your desired parent
+hideButton.Size = UDim2.new(0, 50, 0, 50)  -- Adjust size of the icon
+hideButton.Position = UDim2.new(0.8, 0, 0.8, 0)  -- Position of the button on the screen
+hideButton.Parent = game.CoreGui  -- Use CoreGui for independent button (doesn't belong to PlayerGui)
 
-local windowVisible = true  -- Track window visibility state
+local windowVisible = true
 
 local function toggleWindow()
     if windowVisible then
@@ -240,7 +239,7 @@ hideButton.MouseButton1Click:Connect(function()
     })
 end)
 
--- Make the button draggable
+-- Draggable functionality for the button
 local dragging = false
 local dragStart, startPos
 
@@ -264,6 +263,7 @@ hideButton.InputEnded:Connect(function(input)
         dragging = false
     end
 end)
+
 
 
 
