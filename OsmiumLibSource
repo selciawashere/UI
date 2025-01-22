@@ -17,55 +17,6 @@ Script : Trix#2794 / Julman#1234
 --]]
 
 ---@diagnostic disable: redefined-local, undefined-global, unused-local, param-type-mismatch, redundant-value, lowercase-global, undefined-field
-local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "ImageButtonGui"
-
-local imageButton = Instance.new("ImageButton", screenGui)
-imageButton.Name = "ToggleButton"
-imageButton.Size = UDim2.new(0, 75, 0, 75)
-imageButton.Position = UDim2.new(0.1, 0, 0.1, 0)
-imageButton.BackgroundTransparency = 0
-imageButton.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
-imageButton.Image = "rbxassetid://79844696964613"
-
-local uiCorner = Instance.new("UICorner", imageButton)
-uiCorner.CornerRadius = UDim.new(0, 10)
-
-local dragging = false
-local dragStart, startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    imageButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-imageButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = imageButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-imageButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        update(input)
-    end
-end)
-
-imageButton.MouseButton1Click:Connect(function()
-    if opened then
-        window:Hides()
-    else
-        window:Shows()
-    end
-end)
-
 
 pcall(function ()
     local snd = 6026984224
@@ -258,8 +209,58 @@ local destructionHooks = {}
             })
         end)
 
+        local toggleButton = CreateInstance("ImageButton", screen, {
+    Name = "ToggleButton",
+    Size = UDim2.new(0, 75, 0, 75),
+    Position = UDim2.new(0, 50, 0, 50), -- Set the initial position of the button
+    BackgroundTransparency = 0,
+    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+    Image = "rbxassetid://79844696964613",
+})
 
+CreateInstance("UICorner", toggleButton, {
+    CornerRadius = UDim.new(0, 10),
+})
 
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    if opened then
+        window:Hide()
+    else
+        window:Show()
+    end
+end)
 
         pcall(function ()
             local IsDragging = false
@@ -314,17 +315,6 @@ local destructionHooks = {}
 
         pcall(function ()
             local opened = true
-
-function windows:Hides()
-                opened = false
-                top.Visible = false
-            end
-
-            function windows:Shows()
-                opened = true
-                top.Visible = true
-            end
-
 
             function window:Hide()
                 opened = false
