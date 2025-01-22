@@ -66,14 +66,14 @@ imageButton.InputChanged:Connect(function(input)
 end)
 
 -- Link with GUI's Hide and Show
-local isVisible = true -- Tracks the visibility state
+local top.visible = true -- Tracks the visibility state
 imageButton.MouseButton1Click:Connect(function()
-    if isVisible then
+    if top.visible then
         window:Hide() -- Ensure 'window' is already defined in your main GUI script
-        isVisible = false
+        top.visible = false
     else
         window:Show()
-        isVisible = true
+        top.visible = true
     end
 end)
 
