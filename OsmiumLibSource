@@ -60,9 +60,9 @@ end)
 
 imageButton.MouseButton1Click:Connect(function()
     if opened then
-        window:Hide()
+        window:Hides()
     else
-        window:Show()
+        window:Shows()
     end
 end)
 
@@ -314,6 +314,17 @@ local destructionHooks = {}
 
         pcall(function ()
             local opened = true
+
+function windows:Hides()
+                opened = false
+                top.Visible = false
+            end
+
+            function windows:Shows()
+                opened = true
+                top.Visible = true
+            end
+
 
             function window:Hide()
                 opened = false
