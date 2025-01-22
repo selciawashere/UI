@@ -208,7 +208,24 @@ local destructionHooks = {}
                 Duration = 1
             })
         end)
+        local hideButton = CreateInstance("ImageButton", top, {
+    BackgroundTransparency = 1,
+    Name = "-",
+    Position = UDim2.new(0.829, 0, 0, 0),
+    Size = UDim2.new(0, 22, 0, 22),
+    Image = "rbxassetid://79844696964613"
+})
 
+hideButton.MouseButton1Click:Connect(function()
+    window:Hide()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Minimized",
+        Text = "KeyBind : LeftAlt",
+        Duration = 1
+    })
+end)
+
+        
         pcall(function ()
             local IsDragging = false
             local dragInput
