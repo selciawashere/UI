@@ -208,13 +208,53 @@ local destructionHooks = {}
                 Duration = 1
             })
         end)
-        local hideButton = CreateInstance("ImageButton", top, {
+local hideButton = CreateInstance("ImageButton", top, {
     BackgroundTransparency = 1,
     Name = "-",
     Position = UDim2.new(0.829, 0, 0, 0),
     Size = UDim2.new(0, 22, 0, 22),
     Image = "rbxassetid://79844696964613"
 })
+
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(0.2, 0)
+uicorner.Parent = hideButton
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    hideButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+hideButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = hideButton.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+hideButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
 
 hideButton.MouseButton1Click:Connect(function()
     window:Hide()
@@ -224,6 +264,8 @@ hideButton.MouseButton1Click:Connect(function()
         Duration = 1
     })
 end)
+
+        
 
         
         pcall(function ()
