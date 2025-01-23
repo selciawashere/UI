@@ -225,6 +225,47 @@ do
         local TweenInfo = TweenInfo.new(Duration, ...)
         TweenService:Create(Instance, TweenInfo, Properties):Play()
     end
+    -- Close Button
+Utility:Create('TextButton', {
+    Name = 'CloseButton',
+    Parent = Main,
+    BackgroundColor3 = Theme.PrimaryElementColor,
+    Text = 'X',
+    TextColor3 = Theme.PrimaryTextColor,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    Size = UDim2.new(0, 30, 0, 30),
+    Position = UDim2.new(1, -35, 0, 5),
+    AnchorPoint = Vector2.new(1, 0),
+    BorderSizePixel = 0,
+}, {
+    Utility:Create('UICorner', {
+        CornerRadius = UDim.new(0, 5)
+    })
+}).MouseButton1Click:Connect(function()
+    Main:Destroy()
+end)
+
+-- Minimize Button
+Utility:Create('TextButton', {
+    Name = 'MinimizeButton',
+    Parent = Main,
+    BackgroundColor3 = Theme.PrimaryElementColor,
+    Text = '-',
+    TextColor3 = Theme.PrimaryTextColor,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    Size = UDim2.new(0, 30, 0, 30),
+    Position = UDim2.new(1, -70, 0, 5),
+    AnchorPoint = Vector2.new(1, 0),
+    BorderSizePixel = 0,
+}, {
+    Utility:Create('UICorner', {
+        CornerRadius = UDim.new(0, 5)
+    })
+}).MouseButton1Click:Connect(function()
+    Main.Visible = not Main.Visible
+end)
 
     function Utility:DestroyUI()
         ChangeTheme = true
