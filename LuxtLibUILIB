@@ -18,6 +18,10 @@ function Luxt1.CreateWindow(libName, logoId)
     local MainCorner_4 = Instance.new("UICorner")
     local framesAll = Instance.new("Frame")
     local pageFolder = Instance.new("Folder")
+    
+
+
+
 
     local key1 = Instance.new("TextButton")
     local UICorner = Instance.new("UICorner")
@@ -56,58 +60,7 @@ function Luxt1.CreateWindow(libName, logoId)
             end
         end
     end)
-    local toggleButton = CreateInstance("ImageButton", screen, {
-    Name = "ToggleButton",
-    Size = UDim2.new(0, 75, 0, 75),
-    Position = UDim2.new(0, 50, 0, 50),
-    BackgroundTransparency = 0,
-    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
-    Image = "rbxassetid://79844696964613",
-})
-
-CreateInstance("UICorner", toggleButton, {
-    CornerRadius = UDim.new(0, 10),
-})
-
-local dragging = false
-local dragStart, startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    toggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
-    end
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    if LuxtLib.Enabled then
-        LuxtLib.Enabled = false
-    else
-        LuxtLib.Enabled = true
-    end
-end)
+    
 
     UICorner.CornerRadius = UDim.new(0, 5)
     UICorner.Parent = key1
