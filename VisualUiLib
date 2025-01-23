@@ -226,46 +226,6 @@ do
         TweenService:Create(Instance, TweenInfo, Properties):Play()
     end
     -- Close Button
-Utility:Create('TextButton', {
-    Name = 'CloseButton',
-    Parent = Main,
-    BackgroundColor3 = Theme.PrimaryElementColor,
-    Text = 'X',
-    TextColor3 = Theme.PrimaryTextColor,
-    Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    Size = UDim2.new(0, 30, 0, 30),
-    Position = UDim2.new(1, -35, 0, 5),
-    AnchorPoint = Vector2.new(1, 0),
-    BorderSizePixel = 0,
-}, {
-    Utility:Create('UICorner', {
-        CornerRadius = UDim.new(0, 5)
-    })
-}).MouseButton1Click:Connect(function()
-    Main:Destroy()
-end)
-
--- Minimize Button
-Utility:Create('TextButton', {
-    Name = 'MinimizeButton',
-    Parent = Main,
-    BackgroundColor3 = Theme.PrimaryElementColor,
-    Text = '-',
-    TextColor3 = Theme.PrimaryTextColor,
-    Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    Size = UDim2.new(0, 30, 0, 30),
-    Position = UDim2.new(1, -70, 0, 5),
-    AnchorPoint = Vector2.new(1, 0),
-    BorderSizePixel = 0,
-}, {
-    Utility:Create('UICorner', {
-        CornerRadius = UDim.new(0, 5)
-    })
-}).MouseButton1Click:Connect(function()
-    Main.Visible = not Main.Visible
-end)
 
     function Utility:DestroyUI()
         ChangeTheme = true
@@ -305,6 +265,55 @@ end)
         local R, G, B = Table[1], Table[2], Table[3]
         return Color3.fromRGB(R, G, B)
     end
+local toggleButton = CreateInstance("ImageButton", screen, {
+    Name = "ToggleButton",
+    Size = UDim2.new(0, 75, 0, 75),
+    Position = UDim2.new(0, 50, 0, 50), -- Set the initial position of the button
+    BackgroundTransparency = 0,
+    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+    Image = "rbxassetid://79844696964613",
+})
+
+CreateInstance("UICorner", toggleButton, {
+    CornerRadius = UDim.new(0, 10),
+})
+
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    -- Call the Utility:ToggleUI function when the button is clicked
+    Utility:ToggleUI()
+end)
 
     function Utility:ToggleUI()
         if CoreGui:FindFirstChild(UIName) ~= nil then
