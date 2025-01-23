@@ -225,6 +225,7 @@ do
         local TweenInfo = TweenInfo.new(Duration, ...)
         TweenService:Create(Instance, TweenInfo, Properties):Play()
     end
+    -- Close Button
 
     function Utility:DestroyUI()
         ChangeTheme = true
@@ -270,6 +271,24 @@ do
             CoreGui:FindFirstChild(UIName).Enabled = not CoreGui:FindFirstChild(UIName).Enabled
         end
     end
+
+
+local UserInputService = game:GetService("UserInputService")
+
+local function toggleGuiVisibility()
+    local gui = CoreGui:FindFirstChild(UIName)
+    if gui then
+        gui.Enabled = not gui.Enabled
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    -- Check if Left Alt is pressed and no other game interaction is blocking the input
+    if not gameProcessedEvent and input.KeyCode == Enum.KeyCode.LeftAlt then
+        toggleGuiVisibility()
+    end
+end)
+
 
     function Utility:EnableDragging(Frame)
         local Dragging, DraggingInput, DragStart, StartPosition
@@ -1878,47 +1897,61 @@ function Library:CreateWindow(HubName, GameName, IntroText, IntroIcon, ImprovePe
             local Elements = {}
             
             function Elements:CreateLabel(LabelText)
-                local LabelText = LabelText or 'Label'
-                local LabelFunctions = {}
+    local LabelText = LabelText or 'Label'
+    local LabelFunctions = {}
 
-                Utility:Create('Frame', {
-                    Name = LabelText..'LabelHolder',
-                    Parent = Section,
-                    BackgroundColor3 = Theme.OtherElementColor,
-                    Size = UDim2.new(0, 410, 0, 30)
-                }, {
-                    Utility:Create('UICorner', {
-                        CornerRadius = UDim.new(0, 5),
-                        Name = LabelText..'LabelHolderCorner'
-                    }),
-                    Utility:Create('UIStroke', {
-                        Name = LabelText..'LabelStroke',
-                        ApplyStrokeMode = 'Contextual',
-                        Color = Theme.UIStrokeColor,
-                        LineJoinMode = 'Round',
-                        Thickness = 1
-                    }),
-                    Utility:Create('TextLabel', {
-                        Name = LabelText..'Label',
-                        BackgroundColor3 = Theme.OtherElementColor,
-                        BackgroundTransparency = 1,
-                        Size = UDim2.new(0, 410, 0, 30),
-                        Font = Enum.Font.Gotham,
-                        TextColor3 = Theme.PrimaryTextColor,
-                        TextSize = 16,
-                        Text = LabelText,
-                        TextXAlignment = Enum.TextXAlignment.Left
-                    }, {
-                        Utility:Create('UICorner', {
-                            CornerRadius = UDim.new(0, 5),
-                            Name = LabelText..'LabelCorner'
-                        }),
-                        Utility:Create('UIPadding', {
-                            Name = LabelText..'LabelPadding',
-                            PaddingLeft = UDim.new(0, 7)
-                        })
-                    })
-                })
+    -- Creating the label holder frame
+    local LabelHolder = Utility:Create('Frame', {
+        Name = LabelText..'LabelHolder',
+        Parent = Section,
+        BackgroundColor3 = Theme.OtherElementColor,
+        Size = UDim2.new(0, 410, 0, 30)
+    }, {
+        Utility:Create('UICorner', {
+            CornerRadius = UDim.new(0, 5),
+            Name = LabelText..'LabelHolderCorner'
+        }),
+        Utility:Create('UIStroke', {
+            Name = LabelText..'LabelStroke',
+            ApplyStrokeMode = 'Contextual',
+            Color = Theme.UIStrokeColor,
+            LineJoinMode = 'Round',
+            Thickness = 1
+        }),
+        Utility:Create('TextLabel', {
+            Name = LabelText..'Label',
+            BackgroundColor3 = Theme.OtherElementColor,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 410, 0, 30),
+            Font = Enum.Font.Gotham,
+            TextColor3 = Theme.PrimaryTextColor,
+            TextSize = 16,
+            Text = LabelText,
+            TextXAlignment = Enum.TextXAlignment.Left
+        }, {
+            Utility:Create('UICorner', {
+                CornerRadius = UDim.new(0, 5),
+                Name = LabelText..'LabelCorner'
+            }),
+            Utility:Create('UIPadding', {
+                Name = LabelText..'LabelPadding',
+                PaddingLeft = UDim.new(0, 7)
+            })
+        })
+    })
+
+    -- Refresh Functionality: You can use this function to refresh/update the label text dynamically
+    function LabelFunctions:Refresh(NewLabelText)
+        local TextLabel = LabelHolder:FindFirstChild(LabelText..'Label')
+        if TextLabel then
+            TextLabel.Text = NewLabelText or 'Label' -- Update the label text
+        end
+    end
+
+    -- You can access the Refresh function from LabelFunctions if needed
+    return LabelFunctions
+end
+
 
                 UpdateSectionSize()
 
