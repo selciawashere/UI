@@ -265,61 +265,30 @@ do
         local R, G, B = Table[1], Table[2], Table[3]
         return Color3.fromRGB(R, G, B)
     end
-local toggleButton = CreateInstance("ImageButton", screen, {
-    Name = "ToggleButton",
-    Size = UDim2.new(0, 75, 0, 75),
-    Position = UDim2.new(0, 50, 0, 50), -- Set the initial position of the button
-    BackgroundTransparency = 0,
-    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
-    Image = "rbxassetid://79844696964613",
-})
-
-CreateInstance("UICorner", toggleButton, {
-    CornerRadius = UDim.new(0, 10),
-})
-
-local dragging = false
-local dragStart, startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    toggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
-    end
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    -- Call the Utility:ToggleUI function when the button is clicked
-    Utility:ToggleUI()
-end)
 
     function Utility:ToggleUI()
         if CoreGui:FindFirstChild(UIName) ~= nil then
             CoreGui:FindFirstChild(UIName).Enabled = not CoreGui:FindFirstChild(UIName).Enabled
         end
     end
+
+
+local UserInputService = game:GetService("UserInputService")
+
+local function toggleGuiVisibility()
+    local gui = CoreGui:FindFirstChild(UIName)
+    if gui then
+        gui.Enabled = not gui.Enabled
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    -- Check if Left Alt is pressed and no other game interaction is blocking the input
+    if not gameProcessedEvent and input.KeyCode == Enum.KeyCode.LeftAlt then
+        toggleGuiVisibility()
+    end
+end)
+
 
     function Utility:EnableDragging(Frame)
         local Dragging, DraggingInput, DragStart, StartPosition
