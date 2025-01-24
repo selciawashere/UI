@@ -364,11 +364,10 @@ end)
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 0,
+    ScrollBarThickness = 8,  -- Set a visible scroll bar width
     ScrollBarImageTransparency = 1,
     VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-    AutomaticCanvasSize = Enum.AutomaticSize.X,
-    CanvasSize = UDim2.new(0, 0, 0, 0),
+    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Set canvas size dynamically
     Name = "ScrollingFrameTabs",
     Position = UDim2.new(0, 0, 0.01, 0),
     Size = UDim2.new(0, 160, 0, 355),
@@ -376,17 +375,31 @@ end)
     BackgroundColor3 = Colors.Gray.Top,
 })
 
-CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Horizontal,  -- Change to horizontal scroll
-    CellSize = UDim2.new(0, 150, 0, 25),  -- Adjust for horizontal tab size
+local gridLayout = CreateInstance("UIGridLayout", scrollingFrameTabs, {
+    FillDirection = Enum.FillDirection.Horizontal,  -- Horizontal scrolling
+    CellSize = UDim2.new(0, 150, 0, 25),  -- Adjust the width and height of tabs
     SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 10, 0, 5),  -- Adjust padding for horizontal alignment
+    CellPadding = UDim2.new(0, 10, 0, 5),  -- Adjust padding
 })
 
 CreateInstance("UIPadding", scrollingFrameTabs, {
     PaddingTop = UDim.new(0, 10),
     PaddingLeft = UDim.new(0, 5),
 })
+
+-- Dynamically update the CanvasSize based on the number of tabs
+local function updateCanvasSize()
+    local totalWidth = 0
+    for _, v in pairs(scrollingFrameTabs:GetChildren()) do
+        if v:IsA("TextButton") then
+            totalWidth = totalWidth + v.Size.X.Offset + 10  -- Add padding to total width
+        end
+    end
+    scrollingFrameTabs.CanvasSize = UDim2.new(0, totalWidth, 0, 0)  -- Set CanvasSize dynamically
+end
+
+-- Call updateCanvasSize whenever tabs are created or updated
+updateCanvasSize()
 
 -- Keep the rest of your code unchanged
 
