@@ -406,54 +406,93 @@ local destructionHooks = {}
         end
 
         ---@param name string
-       function window:CreateTab(name)
+       local dragging = false
+local dragStart = Vector3.new()
+local startPos = UDim2.new()
+
+function window:CreateTab(name)
     local tab = {}
     local tabId = #tabs + 1
 
-    -- Create the scrolling frame for the tab container
     local tabContainer = CreateInstance("ScrollingFrame", windowBody, {
         Visible = false,
-        Size = UDim2.new(0, 507, 0, 400),  -- Keep the same size for the tab container
+        Size = UDim2.new(0, 507, 0, 400),
         BackgroundTransparency = 1,
         Position = UDim2.new(0.0179270469, 0, -0.00809493847, 0),
         BorderColor3 = Colors.White,
         ZIndex = 3,
         Name = "Tab" .. tabId,
         BackgroundColor3 = Colors.White,
-        ScrollBarThickness = 12,  -- Set the thickness of the scroll bar
-        VerticalScrollBarPosition = Enum.ScrollBarPosition.Right,  -- Set the scroll bar position to the right
-        CanvasSize = UDim2.new(0, 0, 0, 0),  -- Allow canvas resizing (based on content)
+        ScrollBarThickness = 12,
+        VerticalScrollBarPosition = Enum.ScrollBarPosition.Right,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
     })
 
-    -- Make the current tab visible
     if currentTab == tabId then
         tabContainer.Visible = true
     end
 
-    -- Add the tab name and tabContainer to the lists
     table.insert(tabsNames, name)
     table.insert(tabs, tabContainer)
 
-    -- Create the tab button
     createTabButton(tabId, name)
 
-    -- Add padding and layout
     CreateInstance("UIPadding", tabContainer, {
         PaddingTop = UDim.new(0, 7)
-    }) 
+    })
 
-    -- Create a vertical layout within the scrolling frame
     CreateInstance("UIListLayout", tabContainer, {
         Padding = UDim.new(0, 7),
         SortOrder = Enum.SortOrder.LayoutOrder,
-        FillDirection = Enum.FillDirection.Vertical,  -- Ensure vertical stacking
+        FillDirection = Enum.FillDirection.Vertical,
     })
 
-    -- Adjust the CanvasSize to fit all children dynamically
     tabContainer:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         tabContainer.CanvasSize = UDim2.new(0, 0, 0, tabContainer.AbsoluteContentSize.Y)
     end)
+
+    tabContainer.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = tabContainer.Position
+        end
+    end)
+
+    tabContainer.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            local delta = input.Position - dragStart
+            tabContainer.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset)
+        end
+    end)
+
+    tabContainer.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+
+            local swipeThreshold = 100
+            if tabContainer.Position.X.Offset > startPos.X.Offset + swipeThreshold then
+                if tabId > 1 then
+                    changeTab(tabId - 1)
+                end
+            elseif tabContainer.Position.X.Offset < startPos.X.Offset - swipeThreshold then
+                if tabId < #tabs then
+                    changeTab(tabId + 1)
+                end
+            end
+
+            tabContainer.Position = UDim2.new(startPos.X.Scale, 0, startPos.Y.Scale, 0)
+        end
+    end)
 end
+
+local function changeTab(id)
+    for i, tab in ipairs(tabs) do
+        tab.Visible = (i == id)
+    end
+    currentTab = id
+end
+
 
 
             ---@param label string
