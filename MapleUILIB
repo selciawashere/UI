@@ -776,7 +776,7 @@ end
             end)
         end
 
-       function Elements:Dropdown(Name, Listx, Callback)
+function Elements:Dropdown(Name, Listx, Callback)
     local Name = Name or "Dropdown"
     local DropdownFunction = {}
     local Callback = Callback or function() end
@@ -903,7 +903,28 @@ end
         end 
     end)  
 
-    for i, v in pairs(Listx) do 
+    local function selectOption(option)
+        Callback(option)
+        for a, b in pairs(DropList:GetChildren()) do 
+            if b:IsA("TextButton") then 
+                b.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end 
+        end
+        game:GetService("TweenService"):Create(option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            TextColor3 = Color3.fromRGB(55, 74, 251)
+        }):Play()
+        DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
+        game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            ImageColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+        wait(0.1)
+        DropList.Visible = false
+        opened = false
+        DropElements(true)
+        Size()
+    end
+
+    for _, v in pairs(Listx) do 
         local Option = Instance.new("TextButton")
         local OptionCorner = Instance.new("UICorner")
 
@@ -922,24 +943,7 @@ end
         OptionCorner.Parent = Option
 
         Option.MouseButton1Down:Connect(function()
-            Callback(v)
-            for a, b in pairs(DropList:GetChildren()) do 
-                if b:IsA("TextButton") then 
-                    b.TextColor3 = Color3.fromRGB(255, 255, 255)
-                end 
-            end
-            game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                TextColor3 = Color3.fromRGB(55, 74, 251)
-            }):Play()
-            DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
-            game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                ImageColor3 = Color3.fromRGB(255, 255, 255)
-            }):Play()
-            wait(0.1)
-            DropList.Visible = false
-            opened = false
-            DropElements(true)
-            Size()
+            selectOption(Option)
         end)
 
         Option.MouseEnter:Connect(function()
@@ -956,12 +960,17 @@ end
     end
 
     function DropdownFunction:UpdateDropdown(List)
-        local List = List or {}
-        for i, v in pairs(List) do 
+        -- Reset and clear existing options
+        for _, v in pairs(DropList:GetChildren()) do
+            if v:IsA("TextButton") then
+                v:Destroy()
+            end
+        end
+
+        -- Add updated options
+        for _, v in pairs(List) do 
             local Option = Instance.new("TextButton")
             local OptionCorner = Instance.new("UICorner")
-
-            DropSize = DropSize + 35
 
             Option.Name = tostring(v).."_Option"
             Option.Parent = DropList
@@ -978,24 +987,7 @@ end
             OptionCorner.Parent = Option
 
             Option.MouseButton1Down:Connect(function()
-                Callback(v)
-                for a, b in pairs(DropList:GetChildren()) do 
-                    if b:IsA("TextButton") then 
-                        b.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    end 
-                end
-                game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                    TextColor3 = Color3.fromRGB(55, 74, 251)
-                }):Play()
-                DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
-                game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                    ImageColor3 = Color3.fromRGB(255, 255, 255)
-                }):Play()
-                wait(0.1)
-                DropList.Visible = false
-                opened = false
-                DropElements(true)
-                Size()
+                selectOption(Option)
             end)
 
             Option.MouseEnter:Connect(function()
@@ -1011,6 +1003,7 @@ end
             end)
         end
     end
+
     return DropdownFunction
 end
 
