@@ -247,7 +247,116 @@ local destructionHooks = {}
                 end
             end)
         end)
-                local windowContainer = CreateInstance("Frame", top, {
+        local top = CreateInstance("Frame", screen, {
+            Name = "Top",
+            Position = UDim2.new(0.375, 0, 0.184, 0),
+            BorderColor3 = Colors.Gray.Stroke,
+            Size = UDim2.new(0, 612, 0, 42),
+            BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        })
+
+        CreateInstance("UICorner", top, {
+            CornerRadius = UDim.new(0, 4)
+        })
+
+        CreateInstance("TextLabel", top, {
+            TextColor3 = Colors.White,
+            BorderColor3 = Colors.Gray.Stroke,
+            Text = title,
+            Font = Font,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 50),
+            Position = UDim2.new(0, 15, -0.194, 0),
+            TextSize = 14,
+            TextWrapped = true,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+
+        local closeButton = CreateInstance("ImageButton", top, {
+            ImageRectSize = Vector2.new(24, 24),
+            ImageRectOffset = Vector2.new(284, 4),
+            Name = "close",
+            Position = UDim2.new(0.934862137, 0, 0.0846694857, 0),
+            Image = "rbxassetid://3926305904",
+            ZIndex = 2,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 25, 0, 25)
+        })
+
+        closeButton.MouseButton1Click:Connect(function () window:Destroy() end)
+
+        local minimizeButton = CreateInstance("ImageButton", top, {
+            ImageRectSize = Vector2.new(36, 36),
+            ImageRectOffset = Vector2.new(44, 164),
+            Name = "filter_none",
+            Position = UDim2.new(0.88778609, 0, 0.143002853, 0),
+            Image = "rbxassetid://3926305904",
+            ZIndex = 2,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 18, 0, 20)
+        })
+
+        local hideButton = CreateInstance("TextButton", top, {
+            BackgroundTransparency = 1,
+            Font = Enum.Font.SourceSans,
+            Name = "-",
+            Position = UDim2.new(0.829, 0, 0, 0),
+            TextColor3 = Color3.new(0.768628, 0.764706, 0.780392),
+            Text = "-",
+            TextSize = 67,
+            Size = UDim2.new(0, 22, 0, 22)
+        })
+
+        hideButton.MouseButton1Click:Connect(function ()
+            window:Hide()
+
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Minimized",
+                Text = "KeyBind : LeftAlt",
+                Duration = 1
+            })
+        end)
+
+        pcall(function ()
+            local IsDragging = false
+            local dragInput
+            local StartingPoint
+            local oldPos
+
+            local function update(input)
+                local delta = input.Position - StartingPoint
+                top.Position = UDim2.new(oldPos.X.Scale, oldPos.X.Offset + delta.X, oldPos.Y.Scale,
+                    oldPos.Y.Offset + delta.Y)
+            end
+
+            top.InputBegan:Connect(function (input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    IsDragging = true
+                    StartingPoint = input.Position
+                    oldPos = top.Position
+
+                    input.Changed:Connect(function ()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            IsDragging = false
+                        end
+                    end)
+                end
+            end)
+
+            top.InputChanged:Connect(function (input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    dragInput = input
+                end
+            end)
+
+            UserInputService.InputChanged:Connect(function (input)
+                if input == dragInput and IsDragging then
+                    update(input)
+                end
+            end)
+        end)
+
+        local windowContainer = CreateInstance("Frame", top, {
             Position = UDim2.new(0, 0, 0.764, 0),
             BorderColor3 = Colors.White,
             ZIndex = 0,
@@ -403,7 +512,8 @@ local destructionHooks = {}
         function window:GetCurrentState()
             return state
         end
-  ---@param name string
+
+        ---@param name string
         function window:CreateTab(name)
             local tab = {}
             local tabId = #tabs + 1
@@ -435,8 +545,6 @@ local destructionHooks = {}
                 Padding = UDim.new(0, 7),
                 SortOrder = Enum.SortOrder.LayoutOrder,
             })
-
-
 
             ---@param label string
             ---@param callback ?function
