@@ -1412,7 +1412,7 @@ end)
 
 local WeaponList = {"Melee","Blox Fruit","Sword","Gun"}
 SelectWeaponFarm = "Melee"
-settings:CreateDropdown("Select Weapon", WeaponList, SelectWeaponFarm, function(weaponfunc)
+settings:Dropdown("Select Weapon", WeaponList, SelectWeaponFarm, function(weaponfunc)
     SelectWeaponFarm = weaponfunc
 end)
 task.spawn(function()
@@ -1466,7 +1466,7 @@ end)
 local AttackList = {"Slow", "Normal", "Fast"}
 
 FastAttackSelected = "Normal"
-settings:CreateDropdown("Fast Attack Delay", AttackList, FastAttackSelected,  function(Value)
+settings:Dropdown("Fast Attack Delay", AttackList, FastAttackSelected,  function(Value)
     FastAttackSelected = Value
 end)
 
@@ -2171,7 +2171,7 @@ local BoatList = {
     'Dinghy'; 'PirateSloop'; 'PirateBrigade'; 'PirateGrandBrigade';
     'Dinghy'; 'MarineSloop'; 'MarineBrigade'; 'MarineGrandBrigade';
 }
-local BoatRefreshed = sea_event:CreateDropdown("Select Boat", BoatList, BoatSelected,  function(Value)
+local BoatRefreshed = sea_event:Dropdown("Select Boat", BoatList, BoatSelected,  function(Value)
     BoatSelected = Value
 end)
 
@@ -2200,7 +2200,7 @@ local SeaLevelList = {
 }
 
 
-sea_event:CreateDropdown("Select Sea Level", SeaLevelList, SeaLevelSelected, function(Value)
+sea_event:Dropdown("Select Sea Level", SeaLevelList, SeaLevelSelected, function(Value)
     SeaLevelSelected = Value
 end)
 
@@ -2481,7 +2481,7 @@ end)
 local WeaponList = {"Melee","Blox Fruit","Sword","Gun"}
 
 SelectWeaponSeaFarm = 'Melee'
-sea_event:CreateDropdown("Select Weapon", WeaponList, SelectWeaponSeaFarm,function(weaponfunc)
+sea_event:Dropdown("Select Weapon", WeaponList, SelectWeaponSeaFarm,function(weaponfunc)
     SelectWeaponSeaFarm = weaponfunc
 end)
 spawn(function()
@@ -3582,7 +3582,7 @@ spawn(function()
     end
 end)
 
-mainfarm:CreateDropdown("Select Monster", tableMon, _G.SelectMonster,  function(Value)
+mainfarm:Dropdown("Select Monster", tableMon, _G.SelectMonster,  function(Value)
     _G.SelectMonster = Value
 end)
 
@@ -3679,7 +3679,7 @@ end)
 
 local MasteryType = {'Quest', 'No Quest', 'Nearest', 'Bone', 'Ecto', 'Cake Prince'}
 SelectedMethodMastery = "Quest"
-mainfarm:CreateDropdown('Select Method', MasteryType, SelectedMethodMastery,  function(Value)
+mainfarm:Dropdown('Select Method', MasteryType, SelectedMethodMastery,  function(Value)
     SelectedMethodMastery = Value
 end)
 
@@ -4470,7 +4470,7 @@ for i,v in pairs(game.ReplicatedStorage:GetChildren()) do
     end
 end
 
-mainfarm:CreateDropdown('Select Boss', BossList, SelectBoss, function(Value)
+mainfarm:Dropdown('Select Boss', BossList, SelectBoss, function(Value)
     SelectBoss = Value
 end)
 
@@ -4942,7 +4942,7 @@ elseif Second_Sea then
 elseif Third_Sea then
     MaterialList = {"Scrap Metal","Leather","Demonic Wisp","Conjured Cocoa","Dragon Scale","Gunpowder","Fish Tail","Mini Tusk"}
 end
-subsfarm:CreateDropdown('Select Material', MaterialList, SelectMaterial, function(Value)
+subsfarm:Dropdown('Select Material', MaterialList, SelectMaterial, function(Value)
     SelectMaterial = Value
 end)
 subsfarm:Toggle('Auto Farm Material', Auto_Farm_Material, function(Value)
@@ -6976,7 +6976,7 @@ end)
 
 local RaidWeaponList = {"Melee", "Sword", "Blox Fruit", "Gun"}
 RaidSelectedWeapon = "Melee"
-lawraids:CreateDropdown("Select Weapon", RaidWeaponList, RaidSelectedWeapon,  function(Value)
+lawraids:Dropdown("Select Weapon", RaidWeaponList, RaidSelectedWeapon,  function(Value)
     RaidSelectedWeapon = Value
 end)
 task.spawn(function()
@@ -7090,7 +7090,7 @@ end)
 local Chips = {"Flame","Ice","Quake","Light","Dark","Spider","Rumble","Magma","Buddha","Sand","Phoenix","Dough"}
 local SelectChip = "Flame"
 
-raids:CreateDropdown("Select Chips", Chips, SelectChip, function(Value)
+raids:Dropdown("Select Chips", Chips, SelectChip, function(Value)
     SelectChip = Value
 end)
 
@@ -7275,7 +7275,7 @@ spawn(function()
 end)
 
 local PvpWeaponList = {"Melee", "Sword", "Blox Fruit", "Gun"}
-pvp:CreateDropdown("Select Weapon", PvpWeaponList, PvpSelectedWeapon, function(Value)
+pvp:Dropdown("Select Weapon", PvpWeaponList, PvpSelectedWeapon, function(Value)
     PvpSelectedWeapon = Value
 end)
 task.spawn(function()
@@ -7324,7 +7324,7 @@ local PvpTable = {
     "Behind"
 }
 AutoPvpType = "Behind"
-pvp:CreateDropdown("Select Pvp Type", PvpTable, AutoPvpType, function(Value)
+pvp:Dropdown("Select Pvp Type", PvpTable, AutoPvpType, function(Value)
     AutoPvpType = Value
 end)
 spawn(function()
@@ -7421,7 +7421,7 @@ for i,v in pairs(game:GetService('Workspace').Characters:GetChildren()) do
         table.insert(PlayerList, v.Name)
     end
 end
-local DropdownPlayer = pvp:CreateDropdown("Select Player", PlayerList, SelectedPlayer, function(Value)
+local DropdownPlayer = pvp:Dropdown("Select Player", PlayerList, SelectedPlayer, function(Value)
     SelectedPlayer = Value
 end)
 pvp:Button("Refresh Player",function()
@@ -7640,7 +7640,7 @@ elseif Third_Sea then
         "Sea Beast";
     }
 end
-tst:CreateDropdown("Select Island", IslandCheck, SelectedIsland, function(Value)
+tst:Dropdown("Select Island", IslandCheck, SelectedIsland, function(Value)
     SelectedIsland = Value
 end)
 
@@ -7997,7 +7997,7 @@ for i,v in pairs(game.Workspace.NPCs:GetChildren()) do
     table.insert(NPCLIST, v.Name)
 end
 
-local NPCSelecRefresh = tst:CreateDropdown('Select Npc', NPCLIST, SelectedNpc, function(Value)
+local NPCSelecRefresh = tst:Dropdown('Select Npc', NPCLIST, SelectedNpc, function(Value)
     SelectedNpc = Value
 end)
 
