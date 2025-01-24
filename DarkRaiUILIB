@@ -69,69 +69,6 @@ else
 game.CoreGui:FindFirstChild("Darkrai").Enabled = true
 end
 end
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player.PlayerGui
-
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 100)
-toggleButton.Position = UDim2.new(0, 100, 0, 100)
-toggleButton.Image = "rbxassetid://79844696964613"
-toggleButton.Parent = screenGui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = toggleButton
-
-toggleButton.BackgroundTransparency = 1
-toggleButton.ClipsDescendants = true
-toggleButton.BorderSizePixel = 0
-
-local dragging = false
-local dragStart, startPos
-local uihide = false  -- Initial state for hiding/showing the UI
-
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    toggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
-    end
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    if uihide == false then
-        uihide = true
-        Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
-    else
-        uihide = false
-        Main:TweenSize(UDim2.new(0, 656, 0, 400), "Out", "Quad", 0.4, true)
-    end
-end)
 
 function DarkraiX:Window(text,gamenme,logo,keybind)
     local hubname = text
@@ -1094,4 +1031,70 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 end
 return DarkraiX
 
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 100)
+toggleButton.Position = UDim2.new(0, 100, 0, 100)
+toggleButton.Image = "rbxassetid://79844696964613"
+
+-- Create corner for smooth edges
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 20)
+corner.Parent = toggleButton
+
+toggleButton.BackgroundTransparency = 1
+toggleButton.ClipsDescendants = true
+toggleButton.BorderSizePixel = 0
+
+-- Add drag functionality for the button
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+-- Click event for toggling the Main UI visibility
+toggleButton.MouseButton1Click:Connect(function()
+    local Main = game.CoreGui:FindFirstChild("Main")
+    if Main then
+        if Main.Enabled then
+            Main.Enabled = false
+        else
+            Main.Enabled = true
+        end
+    end
+end)
+
+print("Script loaded successfully!")
 
