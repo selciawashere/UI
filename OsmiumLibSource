@@ -338,122 +338,121 @@ end)
             end)
         end)
 
-        local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            Position = UDim2.new(0.257, 0, 0.025, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Size = UDim2.new(0, 451, 0, 350),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color3.fromRGB(19, 19, 19)
-        })
+       local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 0,
+    ScrollBarImageTransparency = 1,
+    Position = UDim2.new(0.257, 0, 0.025, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    Size = UDim2.new(0, 451, 0, 350),
+    BorderSizePixel = 0,
+    BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+})
 
-        local tabs = {}
-        local tabsNames = {}
-        local currentTab = 1
-    
-        local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-            AutomaticCanvasSize = Enum.AutomaticSize.X,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Name = "ScrollingFrameTabs",
-            Position = UDim2.new(0, 0, 0.01, 0),
-            Size = UDim2.new(0, 160, 0, 355),
-            BackgroundTransparency = 1,
-            BackgroundColor3 = Colors.Gray.Top,
-        })
+local tabs = {}
+local tabsNames = {}
+local currentTab = 1
 
-        CreateInstance("UIGridLayout", scrollingFrameTabs, {
-            FillDirection = Enum.FillDirection.Vertical,
-            CellSize = UDim2.new(0, 150, 0, 25),
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            CellPadding = UDim2.new(0, 5, 0, 10),
-        })
-        
-        CreateInstance("UIPadding", scrollingFrameTabs, {
-            PaddingTop = UDim.new(0, 10),
-            PaddingLeft = UDim.new(0, 5),
-        })
+local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 0,
+    ScrollBarImageTransparency = 1,
+    VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+    AutomaticCanvasSize = Enum.AutomaticSize.X,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    Name = "ScrollingFrameTabs",
+    Position = UDim2.new(0, 0, 0.01, 0),
+    Size = UDim2.new(0, 160, 0, 355),
+    BackgroundTransparency = 1,
+    BackgroundColor3 = Colors.Gray.Top,
+})
 
-        pcall(function ()
-            local frame = top.Frame
+CreateInstance("UIGridLayout", scrollingFrameTabs, {
+    FillDirection = Enum.FillDirection.Vertical, -- Stacking vertically
+    CellSize = UDim2.new(0, 150, 0, 25),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    CellPadding = UDim2.new(0, 5, 0, 10),
+})
 
-            local function PlayTween(first, bool)
-                local speed = 0.3
+CreateInstance("UIPadding", scrollingFrameTabs, {
+    PaddingTop = UDim.new(0, 10),
+    PaddingLeft = UDim.new(0, 5),
+})
 
-                frame:TweenSize(first, "Out", "Quint", speed)
-                windowBody.Visible = bool
-                scrollingFrameTabs.Visible = bool
-                ustrbord.Enabled = bool
-            end
+pcall(function ()
+    local frame = top.Frame
 
-            minimizeButton.MouseButton1Click:Connect(function ()
-                if windowBody.Visible == true then
-                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 10), false)
-                    state = library.WindowState.Minimized
-                else
-                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 370), true)
-                    state = library.WindowState.Opened
-                end
-            end)
-        end)
-
-        local function changeTab(id)
-            local name = "Tab" .. id
-
-            for _, v in pairs(windowBody:GetChildren()) do
-                if name ~= v.Name and v:IsA("Frame") then
-                    v.Visible = false
-                end
-            end
-
-            for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
-                if name ~= v.Name and v:IsA("TextButton") then
-                    v.TextColor3 = Color3.fromRGB(173, 173, 173)
-                end
-            end
-
-            windowBody[name].Visible = true
-            scrollingFrameTabs[name].TextColor3 = Colors.White
+    -- Replacing the tween logic with showing and hiding frames based on tab
+    minimizeButton.MouseButton1Click:Connect(function ()
+        if windowBody.Visible == true then
+            -- Simply hide or show the window body, no tween animation
+            windowBody.Visible = false
+            scrollingFrameTabs.Visible = false
+            ustrbord.Enabled = false
+            state = library.WindowState.Minimized
+        else
+            windowBody.Visible = true
+            scrollingFrameTabs.Visible = true
+            ustrbord.Enabled = true
+            state = library.WindowState.Opened
         end
+    end)
+end)
 
-        local function createTabButton(id, text)
-            local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
-                TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
-                BorderColor3 = Colors.Gray.Stroke,
-                Text = text,
-                Font = Font,
-                Name = "Tab" .. id,
-                Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
-                AutoButtonColor = false,
-                Size = UDim2.new(0, 200, 0, 50),
-                TextSize = 12,
-                BackgroundColor3 = Colors.Gray.Top
-            })
+local function changeTab(id)
+    local name = "Tab" .. id
 
-            CreateInstance("UICorner", tabButton, {
-                CornerRadius = UDim.new(0, 2)
-            })
-
-            autobutcolor(tabButton, Colors.Gray.Top)
-
-            tabButton.MouseButton1Click:Connect(function ()
-                changeTab(id)
-            end)
+    -- Hide all frames except the selected tab
+    for _, v in pairs(windowBody:GetChildren()) do
+        if name ~= v.Name and v:IsA("Frame") then
+            v.Visible = false
         end
+    end
 
-        function window:GetCurrentState()
-            return state
+    -- Update tab text color for selected tab
+    for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
+        if name ~= v.Name and v:IsA("TextButton") then
+            v.TextColor3 = Color3.fromRGB(173, 173, 173)
         end
+    end
+
+    windowBody[name].Visible = true
+    scrollingFrameTabs[name].TextColor3 = Colors.White
+end
+
+local function createTabButton(id, text)
+    local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
+        TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
+        BorderColor3 = Colors.Gray.Stroke,
+        Text = text,
+        Font = Font,
+        Name = "Tab" .. id,
+        Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
+        AutoButtonColor = false,
+        Size = UDim2.new(0, 200, 0, 50),
+        TextSize = 12,
+        BackgroundColor3 = Colors.Gray.Top
+    })
+
+    CreateInstance("UICorner", tabButton, {
+        CornerRadius = UDim.new(0, 2)
+    })
+
+    autobutcolor(tabButton, Colors.Gray.Top)
+
+    tabButton.MouseButton1Click:Connect(function ()
+        changeTab(id)
+    end)
+end
+
+function window:GetCurrentState()
+    return state
+end
 
         ---@param name string
         function window:CreateTab(name)
@@ -857,60 +856,65 @@ end)
 
             ---@param title string
             ---@param description ?string    
-            function tab:CreateLabel(title, description)
-                local label = {}
+           function tab:CreateLabel(title, description)
+    local label = {}
 
-                local textLabel = CreateInstance("TextLabel", tabContainer, {
-                    TextWrapped = true,
-                    TextColor3 = Colors.White,
-                    Text = "  " .. (title or ""),
-                    TextYAlignment = Enum.TextYAlignment.Top,
-                    Font = Font,
-                    Name = "Label",
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Size = UDim2.new(0, 438, 0, 35),
-                    ZIndex = 0,
-                    TextSize = 14,
-                    BackgroundColor3 = Colors.Gray.DarkButton
-                })
- 
-                CreateInstance("UICorner", textLabel, {
-                    CornerRadius = UDim.new(0, 2)
-                })
+    local textLabel = CreateInstance("TextLabel", tabContainer, {
+        TextWrapped = true,
+        TextColor3 = Colors.White,
+        Text = "  " .. (title or ""),
+        TextYAlignment = Enum.TextYAlignment.Top,
+        Font = Font,
+        Name = "Label",
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Size = UDim2.new(0, 438, 0, 35),
+        ZIndex = 0,
+        TextSize = 14,
+        BackgroundColor3 = Colors.Gray.DarkButton
+    })
 
-                local textDescription = CreateInstance("TextLabel", textLabel, {
-                    TextColor3 = Colors.White,
-                    Text = "   " .. (description or ""),
-                    Font = Font,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 0, 0.350000083, 0),
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Size = UDim2.new(0, 119, 0, 26),
-                    TextSize = 12,
-                    BackgroundColor3 = Colors.White,
-                    Visible = #(description or "") > 0
-                })
+    CreateInstance("UICorner", textLabel, {
+        CornerRadius = UDim.new(0, 2)
+    })
 
-                function label:GetTitle()
-                    return string.sub(textLabel.Text, 1)
-                end
+    local textDescription = CreateInstance("TextLabel", textLabel, {
+        TextColor3 = Colors.White,
+        Text = "   " .. (description or ""),
+        Font = Font,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0.350000083, 0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Size = UDim2.new(0, 119, 0, 26),
+        TextSize = 12,
+        BackgroundColor3 = Colors.White,
+        Visible = #(description or "") > 0
+    })
 
-                function label:SetTitle(title)
-                    textLabel.Text = "  " .. title
-                end
+    function label:GetTitle()
+        return string.sub(textLabel.Text, 3) -- Removing leading spaces
+    end
 
-                function label:GetDescription()
-                    return string.sub(textDescription.Text, 1)
-                end
+    function label:SetTitle(title)
+        textLabel.Text = "  " .. title
+    end
 
-                function label:SetDescription(description)
-                    textDescription.Text = "   " .. description
+    function label:GetDescription()
+        return string.sub(textDescription.Text, 4) -- Removing leading spaces
+    end
 
-                    textDescription.Visible = #(description or "") > 0
-                end
+    function label:SetDescription(description)
+        textDescription.Text = "   " .. description
+        textDescription.Visible = #(description or "") > 0
+    end
 
-                return label
-            end
+    function label:Refresh(newTitle, newDescription)
+        self:SetTitle(newTitle or self:GetTitle())
+        self:SetDescription(newDescription or self:GetDescription())
+    end
+
+    return label
+end
+
 
             function tab:CreateButton(name, callback)
                 local callback = callback or function (_) end
