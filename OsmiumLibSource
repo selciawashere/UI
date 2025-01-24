@@ -338,7 +338,7 @@ end)
             end)
         end)
 
-      local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+   local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
             BorderColor3 = Colors.Gray.Stroke,
@@ -388,7 +388,7 @@ end)
             local frame = top.Frame
 
             local function PlayTween(first, bool)
-                local speed = 5
+                local speed = 0.3
 
                 frame:TweenSize(first, "Out", "Quint", speed)
                 windowBody.Visible = bool
@@ -454,7 +454,6 @@ end)
         function window:GetCurrentState()
             return state
         end
-
 
         ---@param name string
         function window:CreateTab(name)
