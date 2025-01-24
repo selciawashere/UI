@@ -249,7 +249,66 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 			end
 		end
 	end)
-	
+	-- Create the toggle button
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 75, 0, 75)
+toggleButton.Position = UDim2.new(0, 50, 0, 50) -- Initial position
+toggleButton.BackgroundTransparency = 0
+toggleButton.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+toggleButton.Image = "rbxassetid://79844696964613"
+toggleButton.Parent = screen -- Replace 'screen' with your actual parent GUI element
+
+-- Add corner rounding
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = toggleButton
+
+-- Dragging functionality
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+-- GUI toggle functionality
+local uihide = false -- Keeps track of GUI visibility
+toggleButton.MouseButton1Click:Connect(function()
+    if uihide then
+        uihide = false
+        Main:TweenSize(UDim2.new(0, 656, 0, 400), "Out", "Quad", 0.4, true)
+    else
+        uihide = true
+        Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
+    end
+end)
+
 	local uitab = {}
 	
 	function uitab:Tab(text)
