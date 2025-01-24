@@ -250,45 +250,54 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 			end
 		end
 	end)
-local ImageButton = Instance.new("ImageButton")
-ImageButton.Size = UDim2.new(0, 100, 0, 100)  -- Set size of the button
-ImageButton.Position = UDim2.new(0, 50, 0, 50)  -- Set position of the button
-ImageButton.Image = "rbxassetid://79844696964613"  -- Set your icon image ID here
-ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set the background color
-ImageButton.BackgroundTransparency = 0.5  -- Set transparency for background
-
--- Create a UICorner for the rounded corners
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 12)  -- Set curved corners with a radius of 12
-UICorner.Parent = ImageButton  -- Parent the UICorner to the ImageButton
-
-local uihide = false
-local Main = script.Parent:WaitForChild("Darkrai")  -- Ensure 'Main' exists in your parent UI
-
-ImageButton.MouseButton1Click:Connect(function()
-    if uihide == false then
-        uihide = true
-        -- Assuming 'Main' is a UI component like a frame
-        Main:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.4, true)
-    else
-        uihide = false
-        Main:TweenSize(UDim2.new(0, 656, 0, 400), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.4, true)
-    end
-end)
-
--- Make the button smooth by adjusting the transparency on hover or when clicked
-ImageButton.MouseEnter:Connect(function()
-    ImageButton.BackgroundTransparency = 0.3  -- Change transparency on hover
-end)
-
-ImageButton.MouseLeave:Connect(function()
-    ImageButton.BackgroundTransparency = 0.5  -- Reset transparency when the mouse leaves
-end)
-
-ImageButton.Parent = script.Parent  -- Add the button to your GUI
 
 	local DarkraiX = {}
 
+	-- Create the Toggle Button (ImageButton)
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 75, 0, 75)  -- Size of the button
+toggleButton.Position = UDim2.new(0, 50, 0, 50)  -- Position of the button
+toggleButton.BackgroundTransparency = 0
+toggleButton.BackgroundColor3 = Color3.fromRGB(36, 36, 36)  -- Background color of the button
+toggleButton.Image = "rbxassetid://79844696964613"  -- Image asset ID for the button
+toggleButton.Parent = game.CoreGui  -- Parent it to CoreGui (or your GUI)
+
+-- Create UICorner for rounded corners on the button
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = toggleButton
+
+-- Track the visibility of the "Main" UI element
+local uihide = false
+
+-- Get the "Main" UI element (replace "Main" with the actual name of your UI element)
+local Main = game.CoreGui:FindFirstChild("Main")
+if not Main then
+    -- Create a "Main" UI if it doesn't exist (for example, a Frame)
+    Main = Instance.new("Frame")
+    Main.Name = "Main"
+    Main.Size = UDim2.new(0, 656, 0, 400)
+    Main.Position = UDim2.new(0.5, -328, 0.5, -200)
+    Main.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    Main.Parent = game.CoreGui
+end
+
+-- Function to toggle the visibility of the "Main" UI element
+local function ToggleUIVisibility()
+    if uihide == false then
+        uihide = true
+        Main.Visible = false  -- Hide the UI element
+    else
+        uihide = false
+        Main.Visible = true  -- Show the UI element
+    end
+end
+
+-- ImageButton click to toggle UI visibility
+toggleButton.MouseButton1Click:Connect(function()
+    ToggleUIVisibility()  -- Call the function to toggle visibility when the button is clicked
+end)
 
 
 	local uitab = {}
