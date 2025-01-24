@@ -310,50 +310,61 @@ function Library:Create(xHubName,xGameName)
 
         local Elements = {}
 
-        function Elements:Label(Name)
-            local Name = Name or "Label"
-            local LabelFunction = {}
-            local LabelFrame = Instance.new("Frame")
-            local LabelFrameCorner = Instance.new("UICorner")
-            local Label = Instance.new("TextLabel")
+      function Elements:Label(Name)
+    local Name = Name or "Label"
+    local LabelFunction = {}
+    local LabelFrame = Instance.new("Frame")
+    local LabelFrameCorner = Instance.new("UICorner")
+    local Label = Instance.new("TextLabel")
 
-            LabelFrame.Name = tostring(Name).."_Label"
-            LabelFrame.Parent = Tab
-            LabelFrame.BackgroundColor3 = Color3.fromRGB(55, 74, 251)
-            LabelFrame.Position = UDim2.new(0.0456621014, 0, 0, 0)
-            LabelFrame.Size = UDim2.new(0, 408, 0, 35)
+    LabelFrame.Name = tostring(Name) .. "_Label"
+    LabelFrame.Parent = Tab
+    LabelFrame.BackgroundColor3 = Color3.fromRGB(55, 74, 251)
+    LabelFrame.Position = UDim2.new(0.0456621014, 0, 0, 0)
+    LabelFrame.Size = UDim2.new(0, 408, 0, 35)
 
-            LabelFrameCorner.Name = "LabelFrameCorner"
-            LabelFrameCorner.Parent = LabelFrame
+    LabelFrameCorner.Name = "LabelFrameCorner"
+    LabelFrameCorner.Parent = LabelFrame
 
-            Label.Name = "Label"
-            Label.Parent = LabelFrame
-            Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Label.BackgroundTransparency = 1.000
-            Label.BorderSizePixel = 0
-            Label.Size = UDim2.new(0, 408, 0, 35)
-            Label.Font = Enum.Font.Gotham
-            Label.Text = Name
-            Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Label.TextSize = 16.000
+    Label.Name = "Label"
+    Label.Parent = LabelFrame
+    Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Label.BackgroundTransparency = 1.000
+    Label.BorderSizePixel = 0
+    Label.Size = UDim2.new(0, 408, 0, 35)
+    Label.Font = Enum.Font.Gotham
+    Label.Text = Name
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 16.000
 
-            Label.MouseEnter:Connect(function()
-                game:GetService("TweenService"):Create(LabelFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                    BackgroundColor3 = Color3.fromRGB(63, 83, 255)
-                }):Play()
-            end)
-            Label.MouseLeave:Connect(function()
-                game:GetService("TweenService"):Create(LabelFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                    BackgroundColor3 = Color3.fromRGB(55, 74, 251)
-                }):Play()
-            end)
+    -- Hover effect for LabelFrame
+    Label.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(LabelFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            BackgroundColor3 = Color3.fromRGB(63, 83, 255)
+        }):Play()
+    end)
 
-            function LabelFunction:UpdateLabel(Name)
-                Label.Text = Name
-                LabelHolder.Name = tostring(Name).."_Label"
-            end
-            return LabelFunction
-        end
+    Label.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(LabelFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            BackgroundColor3 = Color3.fromRGB(55, 74, 251)
+        }):Play()
+    end)
+
+    -- Function to update the label text
+    function LabelFunction:UpdateLabel(Name)
+        Label.Text = Name
+        LabelFrame.Name = tostring(Name) .. "_Label"
+    end
+
+    -- Function to refresh the label
+    function LabelFunction:Refresh()
+        Label.Text = "Label"
+        LabelFrame.Name = "Label_Label"
+    end
+
+    return LabelFunction
+end
+
 
         function Elements:Button(Name,Callback)
             local Name = Name or "Button"
