@@ -433,10 +433,12 @@ local destructionHooks = {}
             CreateInstance("UIPadding", tabContainer, {
                 PaddingTop = UDim.new(0, 7)
             }) 
-            CreateInstance("UIListLayout", tabContainer, {
-                Padding = UDim.new(0, 7),
-                FillDirection = Enum.FillDirection.Vertical,
-            })
+CreateInstance("UIListLayout", tabContainer, {
+    Padding = UDim.new(0, 7),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    FillDirection = Enum.FillDirection.Vertical,  -- Added this line for vertical layout
+})
+
 
             ---@param label string
             ---@param callback ?function
