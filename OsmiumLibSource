@@ -247,57 +247,7 @@ local destructionHooks = {}
                 end
             end)
         end)
- local toggleButton = CreateInstance("ImageButton", screen, {
-    Name = "ToggleButton",
-    Size = UDim2.new(0, 75, 0, 75),
-    Position = UDim2.new(0, 50, 0, 50), -- Set the initial position of the button
-    BackgroundTransparency = 0,
-    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
-    Image = "rbxassetid://79844696964613",
-})
 
-CreateInstance("UICorner", toggleButton, {
-    CornerRadius = UDim.new(0, 10),
-})
-
-local dragging = false
-local dragStart, startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    toggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
-    end
-end)
-toggleButton.MouseButton1Click:Connect(function()
-    if opened then
-        window:Hide()
-    else
-        window:Show()
-    end
-end)
         local windowContainer = CreateInstance("Frame", top, {
             Position = UDim2.new(0, 0, 0.764, 0),
             BorderColor3 = Colors.White,
@@ -338,7 +288,7 @@ end)
             end)
         end)
 
-   local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+        local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
             BorderColor3 = Colors.Gray.Stroke,
@@ -457,36 +407,41 @@ end)
 
         ---@param name string
         function window:CreateTab(name)
-            local tab = {}
-            local tabId = #tabs + 1
+    local tab = {}
+    local tabId = #tabs + 1
 
-            local tabContainer = CreateInstance("Frame", windowBody, {
-                Visible = false,
-                Size = UDim2.new(0, 507, 0, 400),
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0.0179270469, 0, -0.00809493847, 0),
-                BorderColor3 = Colors.White,
-                ZIndex = 3,
-                Name = "Tab" .. tabId,
-                BackgroundColor3 = Colors.White
-            })
+    local tabContainer = CreateInstance("Frame", windowBody, {
+        Visible = false,
+        Size = UDim2.new(0, 507, 0, 400),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.0179270469, 0, -0.00809493847, 0),
+        BorderColor3 = Colors.White,
+        ZIndex = 3,
+        Name = "Tab" .. tabId,
+        BackgroundColor3 = Colors.White
+    })
 
-            if currentTab == tabId then
-                tabContainer.Visible = true
-            end
+    if currentTab == tabId then
+        tabContainer.Visible = true
+    end
 
-            table.insert(tabsNames, name)
-            table.insert(tabs, tabContainer)
+    table.insert(tabsNames, name)
+    table.insert(tabs, tabContainer)
 
-            createTabButton(tabId, name)
+    createTabButton(tabId, name)
 
-            CreateInstance("UIPadding", tabContainer, {
-                PaddingTop = UDim.new(0, 7)
-            }) 
-            CreateInstance("UIListLayout", tabContainer, {
-                Padding = UDim.new(0, 7),
-                SortOrder = Enum.SortOrder.LayoutOrder,
-            })
+    CreateInstance("UIPadding", tabContainer, {
+        PaddingTop = UDim.new(0, 7)
+    }) 
+    
+    -- Modify this part to ensure the layout is vertical
+    CreateInstance("UIListLayout", tabContainer, {
+        Padding = UDim.new(0, 7),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        FillDirection = Enum.FillDirection.Vertical,  -- Added this line to make the layout vertical
+    })
+end
+
 
             ---@param label string
             ---@param callback ?function
@@ -857,65 +812,60 @@ end)
 
             ---@param title string
             ---@param description ?string    
-           function tab:CreateLabel(title, description)
-    local label = {}
+            function tab:CreateLabel(title, description)
+                local label = {}
 
-    local textLabel = CreateInstance("TextLabel", tabContainer, {
-        TextWrapped = true,
-        TextColor3 = Colors.White,
-        Text = "  " .. (title or ""),
-        TextYAlignment = Enum.TextYAlignment.Top,
-        Font = Font,
-        Name = "Label",
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 438, 0, 35),
-        ZIndex = 0,
-        TextSize = 14,
-        BackgroundColor3 = Colors.Gray.DarkButton
-    })
+                local textLabel = CreateInstance("TextLabel", tabContainer, {
+                    TextWrapped = true,
+                    TextColor3 = Colors.White,
+                    Text = "  " .. (title or ""),
+                    TextYAlignment = Enum.TextYAlignment.Top,
+                    Font = Font,
+                    Name = "Label",
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 438, 0, 35),
+                    ZIndex = 0,
+                    TextSize = 14,
+                    BackgroundColor3 = Colors.Gray.DarkButton
+                })
+ 
+                CreateInstance("UICorner", textLabel, {
+                    CornerRadius = UDim.new(0, 2)
+                })
 
-    CreateInstance("UICorner", textLabel, {
-        CornerRadius = UDim.new(0, 2)
-    })
+                local textDescription = CreateInstance("TextLabel", textLabel, {
+                    TextColor3 = Colors.White,
+                    Text = "   " .. (description or ""),
+                    Font = Font,
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 0, 0.350000083, 0),
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 119, 0, 26),
+                    TextSize = 12,
+                    BackgroundColor3 = Colors.White,
+                    Visible = #(description or "") > 0
+                })
 
-    local textDescription = CreateInstance("TextLabel", textLabel, {
-        TextColor3 = Colors.White,
-        Text = "   " .. (description or ""),
-        Font = Font,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0.350000083, 0),
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 119, 0, 26),
-        TextSize = 12,
-        BackgroundColor3 = Colors.White,
-        Visible = #(description or "") > 0
-    })
+                function label:GetTitle()
+                    return string.sub(textLabel.Text, 1)
+                end
 
-    function label:GetTitle()
-        return string.sub(textLabel.Text, 3) -- Removing leading spaces
-    end
+                function label:SetTitle(title)
+                    textLabel.Text = "  " .. title
+                end
 
-    function label:SetTitle(title)
-        textLabel.Text = "  " .. title
-    end
+                function label:GetDescription()
+                    return string.sub(textDescription.Text, 1)
+                end
 
-    function label:GetDescription()
-        return string.sub(textDescription.Text, 4) -- Removing leading spaces
-    end
+                function label:SetDescription(description)
+                    textDescription.Text = "   " .. description
 
-    function label:SetDescription(description)
-        textDescription.Text = "   " .. description
-        textDescription.Visible = #(description or "") > 0
-    end
+                    textDescription.Visible = #(description or "") > 0
+                end
 
-    function label:Refresh(newTitle, newDescription)
-        self:SetTitle(newTitle or self:GetTitle())
-        self:SetDescription(newDescription or self:GetDescription())
-    end
-
-    return label
-end
-
+                return label
+            end
 
             function tab:CreateButton(name, callback)
                 local callback = callback or function (_) end
@@ -1262,5 +1212,3 @@ end
 end)()
 
 return library
-       
-  
