@@ -306,60 +306,33 @@ local destructionHooks = {}
         local tabsNames = {}
         local currentTab = 1
 
-local UserInputService = game:GetService("UserInputService")
+        local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+            ScrollBarImageColor3 = Colors.Black,
+            Active = true,
+            BorderColor3 = Colors.Gray.Stroke,
+            ScrollBarThickness = 0,
+            ScrollBarImageTransparency = 1,
+            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+            AutomaticCanvasSize = Enum.AutomaticSize.X,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            Name = "ScrollingFrameTabs",
+            Position = UDim2.new(0, 0, 0.01, 0),
+            Size = UDim2.new(0, 160, 0, 355),
+            BackgroundTransparency = 1,
+            BackgroundColor3 = Colors.Gray.Top,
+        })
 
--- Create ScrollingFrame for Tabs
-local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
-    Active = true,
-    BorderColor3 = Colors.Gray.Stroke,
-    BackgroundTransparency = 1,
-    AutomaticCanvasSize = Enum.AutomaticSize.X, -- Automatically adjusts height
-    CanvasSize = UDim2.new(0, 0, 0, 0),
-    Name = "ScrollingFrameTabs",
-    Position = UDim2.new(0, 0, 0.01, 0),
-    Size = UDim2.new(0, 160, 0, 355),
-    BackgroundColor3 = Colors.Gray.Top,
-})
-
--- Add Layout to Align Tabs Vertically
-CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical, -- Align tabs vertically
-    CellSize = UDim2.new(0, 150, 0, 40), -- Adjust tab size
-    SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 5, 0, 10), -- Add padding between tabs
-})
-
--- Dragging Functionality
-local dragging = false
-local dragStart
-local startPosition
-
-scrollingFrameTabs.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPosition = scrollingFrameTabs.CanvasPosition
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-scrollingFrameTabs.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        scrollingFrameTabs.CanvasPosition = startPosition - Vector2.new(0, delta.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
+        CreateInstance("UIGridLayout", scrollingFrameTabs, {
+            FillDirection = Enum.FillDirection.Vertical,
+            CellSize = UDim2.new(0, 150, 0, 25),
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            CellPadding = UDim2.new(0, 5, 0, 10),
+        })
+        
+        CreateInstance("UIPadding", scrollingFrameTabs, {
+            PaddingTop = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 5),
+        })
 
         pcall(function ()
             local frame = top.Frame
@@ -834,7 +807,7 @@ end)
 
             ---@param title string
             ---@param description ?string    
-            local textLabel = CreateInstance("TextLabel", tabContainer, {
+           local textLabel = CreateInstance("TextLabel", tabContainer, {
         TextWrapped = true,
         TextColor3 = Colors.White,
         Text = "  " .. (title or ""),
