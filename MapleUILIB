@@ -1012,7 +1012,9 @@ end
         end
     end
     return DropdownFunction
-end
+        end
+        return Elements
+    end
     return xTabs
 end
 return Library
