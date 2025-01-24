@@ -345,7 +345,7 @@ end)
     ScrollBarThickness = 8, -- Increased for better visibility on mobile
     ScrollBarImageTransparency = 0, -- Make the scrollbar visible
     Position = UDim2.new(0.257, 0, 0.025, 0),
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Adjust based on content height
+    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Automatically adjust based on content height
     CanvasSize = UDim2.new(0, 0, 0, 0), -- Dynamic sizing
     Size = UDim2.new(0, 451, 0, 350),
     BorderSizePixel = 0,
@@ -363,7 +363,7 @@ local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarThickness = 8, -- Increased for mobile support
     ScrollBarImageTransparency = 0, -- Visible scrollbar
     VerticalScrollBarInset = Enum.ScrollBarInset.Always, -- Always show the scrollbar
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Adjust based on the vertical content
+    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Automatically adjust based on vertical content
     CanvasSize = UDim2.new(0, 0, 0, 0), -- Initial size
     Name = "ScrollingFrameTabs",
     Position = UDim2.new(0, 0, 0.01, 0),
@@ -373,7 +373,7 @@ local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
 })
 
 CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical,
+    FillDirection = Enum.FillDirection.Vertical, -- Ensure items are arranged vertically
     CellSize = UDim2.new(0, 150, 0, 25),
     SortOrder = Enum.SortOrder.LayoutOrder,
     CellPadding = UDim2.new(0, 5, 0, 10),
@@ -399,8 +399,8 @@ pcall(function()
         scrollingFrameTabs.Visible = bool
         ustrbord.Enabled = bool
 
-        -- Update scrolling frame CanvasSize dynamically if needed
-        scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, scrollingFrameTabs.UIListLayout.AbsoluteContentSize.Y)
+        -- Update scrolling frame CanvasSize dynamically based on vertical content
+        scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, scrollingFrameTabs.UIGridLayout.AbsoluteContentSize.Y)
     end
 end)
 
