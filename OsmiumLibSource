@@ -343,24 +343,24 @@ end)
         end)
 
         local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            Position = UDim2.new(0.257, 0, 0.025, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Size = UDim2.new(0, 451, 0, 350),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color3.fromRGB(19, 19, 19)
-        })
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 0,
+    ScrollBarImageTransparency = 1,
+    Position = UDim2.new(0.257, 0, 0.025, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    Size = UDim2.new(0, 451, 0, 350),
+    BorderSizePixel = 0,
+    BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+})
 
-        local tabs = {}
-        local tabsNames = {}
-        local currentTab = 1
+local tabs = {}
+local tabsNames = {}
+local currentTab = 1
 
-      local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
@@ -438,78 +438,76 @@ scrollingFrameTabs.InputEnded:Connect(function(input)
     end
 end)
 
+pcall(function ()
+    local frame = top.Frame
 
+    local function PlayTween(first, bool)
+        local speed = 0.3
+        frame:TweenSize(first, "Out", "Quint", speed)
+        windowBody.Visible = bool
+        scrollingFrameTabs.Visible = bool
+        ustrbord.Enabled = bool
+    end
 
-        pcall(function ()
-            local frame = top.Frame
-
-            local function PlayTween(first, bool)
-                local speed = 0.3
-
-                frame:TweenSize(first, "Out", "Quint", speed)
-                windowBody.Visible = bool
-                scrollingFrameTabs.Visible = bool
-                ustrbord.Enabled = bool
-            end
-
-            minimizeButton.MouseButton1Click:Connect(function ()
-                if windowBody.Visible == true then
-                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 10), false)
-                    state = library.WindowState.Minimized
-                else
-                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 370), true)
-                    state = library.WindowState.Opened
-                end
-            end)
-        end)
-
-        local function changeTab(id)
-            local name = "Tab" .. id
-
-            for _, v in pairs(windowBody:GetChildren()) do
-                if name ~= v.Name and v:IsA("Frame") then
-                    v.Visible = false
-                end
-            end
-
-            for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
-                if name ~= v.Name and v:IsA("TextButton") then
-                    v.TextColor3 = Color3.fromRGB(173, 173, 173)
-                end
-            end
-
-            windowBody[name].Visible = true
-            scrollingFrameTabs[name].TextColor3 = Colors.White
+    minimizeButton.MouseButton1Click:Connect(function ()
+        if windowBody.Visible == true then
+            PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 10), false)
+            state = library.WindowState.Minimized
+        else
+            PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 370), true)
+            state = library.WindowState.Opened
         end
+    end)
+end)
 
-        local function createTabButton(id, text)
-            local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
-                TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
-                BorderColor3 = Colors.Gray.Stroke,
-                Text = text,
-                Font = Font,
-                Name = "Tab" .. id,
-                Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
-                AutoButtonColor = false,
-                Size = UDim2.new(0, 200, 0, 50),
-                TextSize = 12,
-                BackgroundColor3 = Colors.Gray.Top
-            })
+local function changeTab(id)
+    local name = "Tab" .. id
 
-            CreateInstance("UICorner", tabButton, {
-                CornerRadius = UDim.new(0, 2)
-            })
-
-            autobutcolor(tabButton, Colors.Gray.Top)
-
-            tabButton.MouseButton1Click:Connect(function ()
-                changeTab(id)
-            end)
+    for _, v in pairs(windowBody:GetChildren()) do
+        if name ~= v.Name and v:IsA("Frame") then
+            v.Visible = false
         end
+    end
 
-        function window:GetCurrentState()
-            return state
+    for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
+        if name ~= v.Name and v:IsA("TextButton") then
+            v.TextColor3 = Color3.fromRGB(173, 173, 173)
         end
+    end
+
+    windowBody[name].Visible = true
+    scrollingFrameTabs[name].TextColor3 = Colors.White
+end
+
+local function createTabButton(id, text)
+    local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
+        TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
+        BorderColor3 = Colors.Gray.Stroke,
+        Text = text,
+        Font = Font,
+        Name = "Tab" .. id,
+        Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
+        AutoButtonColor = false,
+        Size = UDim2.new(0, 200, 0, 50),
+        TextSize = 12,
+        BackgroundColor3 = Colors.Gray.Top
+    })
+
+    CreateInstance("UICorner", tabButton, {
+        CornerRadius = UDim.new(0, 2)
+    })
+
+    autobutcolor(tabButton, Colors.Gray.Top)
+
+    tabButton.MouseButton1Click:Connect(function ()
+        changeTab(id)
+    end)
+end
+
+function window:GetCurrentState()
+    return state
+end
+
 
         ---@param name string
         function window:CreateTab(name)
