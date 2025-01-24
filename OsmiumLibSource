@@ -52,7 +52,7 @@ local library = (function ()
             Stroke = Color3.fromRGB(145, 145, 145),
             Button = Color3.fromRGB(45, 45, 45),
             DarkButton = Color3.fromRGB(40, 40, 40),
-            Top = Color3.fromRGB(26, 26, 26),
+            Top = Color3.fromRGB(26, 26, 26),d
             FramesBack = Color3.fromRGB(36, 36, 36),
             TogBox = Color3.fromRGB(32, 33, 32),
             DropDownButton = Color3.new(0.235294, 0.235294, 0.235294)
@@ -302,204 +302,122 @@ end)
             end)
         end)
 
-       local windowContainer = CreateInstance("Frame", top, {
-    Position = UDim2.new(0, 0, 0.764, 0),
-    BorderColor3 = Colors.White,
-    ZIndex = 0,
-    Size = UDim2.new(0, 612, 0, 370),
-    BackgroundColor3 = Colors.Gray.Top
-})
+        local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+            ScrollBarImageColor3 = Colors.Black,
+            Active = true,
+            BorderColor3 = Colors.Gray.Stroke,
+            ScrollBarThickness = 0,
+            ScrollBarImageTransparency = 1,
+            Position = UDim2.new(0.257, 0, 0.025, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            Size = UDim2.new(0, 451, 0, 350),
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+        })
 
-CreateInstance("UICorner", windowContainer, {
-    CornerRadius = UDim.new(0, 3)
-})
+        local tabs = {}
+        local tabsNames = {}
+        local currentTab = 1
 
-pcall(function ()
-    local opened = true
+        local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+            ScrollBarImageColor3 = Colors.Black,
+            Active = true,
+            BorderColor3 = Colors.Gray.Stroke,
+            ScrollBarThickness = 0,
+            ScrollBarImageTransparency = 1,
+            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+            AutomaticCanvasSize = Enum.AutomaticSize.X,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            Name = "ScrollingFrameTabs",
+            Position = UDim2.new(0, 0, 0.01, 0),
+            Size = UDim2.new(0, 160, 0, 355),
+            BackgroundTransparency = 1,
+            BackgroundColor3 = Colors.Gray.Top,
+        })
 
-    function window:Hide()
-        opened = false
-        top.Visible = false
-    end
+        CreateInstance("UIGridLayout", scrollingFrameTabs, {
+            FillDirection = Enum.FillDirection.Vertical,
+            CellSize = UDim2.new(0, 150, 0, 25),
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            CellPadding = UDim2.new(0, 5, 0, 10),
+        })
+        
+        CreateInstance("UIPadding", scrollingFrameTabs, {
+            PaddingTop = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 5),
+        })
 
-    function window:Show()
-        opened = true
-        top.Visible = true
-    end
+        pcall(function ()
+            local frame = top.Frame
 
-    local handler = UserInputService.InputBegan:Connect(function (input)
-        if input.KeyCode == Enum.KeyCode.LeftAlt then
-            if opened then
-                window:Hide()
-            else
-                window:Show()
+            local function PlayTween(first, bool)
+                local speed = 0.3
+
+                frame:TweenSize(first, "Out", "Quint", speed)
+                windowBody.Visible = bool
+                scrollingFrameTabs.Visible = bool
+                ustrbord.Enabled = bool
             end
+
+            minimizeButton.MouseButton1Click:Connect(function ()
+                if windowBody.Visible == true then
+                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 10), false)
+                    state = library.WindowState.Minimized
+                else
+                    PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 370), true)
+                    state = library.WindowState.Opened
+                end
+            end)
+        end)
+
+        local function changeTab(id)
+            local name = "Tab" .. id
+
+            for _, v in pairs(windowBody:GetChildren()) do
+                if name ~= v.Name and v:IsA("Frame") then
+                    v.Visible = false
+                end
+            end
+
+            for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
+                if name ~= v.Name and v:IsA("TextButton") then
+                    v.TextColor3 = Color3.fromRGB(173, 173, 173)
+                end
+            end
+
+            windowBody[name].Visible = true
+            scrollingFrameTabs[name].TextColor3 = Colors.White
         end
-    end)
 
-    window:OnDestroy(function ()
-        handler:Disconnect()
-    end)
-end)
+        local function createTabButton(id, text)
+            local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
+                TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
+                BorderColor3 = Colors.Gray.Stroke,
+                Text = text,
+                Font = Font,
+                Name = "Tab" .. id,
+                Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
+                AutoButtonColor = false,
+                Size = UDim2.new(0, 200, 0, 50),
+                TextSize = 12,
+                BackgroundColor3 = Colors.Gray.Top
+            })
 
--- Update: Vertical Scrolling
-local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
-    ScrollBarImageColor3 = Colors.Black,
-    Active = true,
-    BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 8,  -- Visible scrollbar width
-    ScrollBarImageTransparency = 1,
-    Position = UDim2.new(0.257, 0, 0.025, 0),
-    AutomaticCanvasSize = Enum.AutomaticSize.Y,  -- Automatically adjust the height
-    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Default to 0, so it adjusts based on content
-    Size = UDim2.new(0, 451, 0, 350),
-    BorderSizePixel = 0,
-    BackgroundColor3 = Color3.fromRGB(19, 19, 19)
-})
+            CreateInstance("UICorner", tabButton, {
+                CornerRadius = UDim.new(0, 2)
+            })
 
-local tabs = {}
-local tabsNames = {}
-local currentTab = 1
+            autobutcolor(tabButton, Colors.Gray.Top)
 
--- Update: Vertical Scrolling for Tabs (using vertical scrolling direction)
-local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
-    ScrollBarImageColor3 = Colors.Black,
-    Active = true,
-    BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 8,  -- Visible scrollbar width
-    ScrollBarImageTransparency = 1,
-    VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Automatically adjust CanvasSize
-    ScrollDirection = Enum.ScrollingDirection.Y,  -- Vertical scrolling
-    Name = "ScrollingFrameTabs",
-    Position = UDim2.new(0, 0, 0.01, 0),
-    Size = UDim2.new(0, 160, 0, 355),
-    BackgroundTransparency = 1,
-    BackgroundColor3 = Colors.Gray.Top,
-})
-
-CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical,  -- Arrange buttons vertically
-    CellSize = UDim2.new(0, 150, 0, 25),
-    SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 5, 0, 10),  -- Padding between buttons
-})
-
-CreateInstance("UIPadding", scrollingFrameTabs, {
-    PaddingTop = UDim.new(0, 10),
-    PaddingLeft = UDim.new(0, 5),
-})
-
--- Dynamically update the CanvasSize based on the number of tabs
-local function updateCanvasSize()
-    local totalHeight = 0
-    for _, v in pairs(scrollingFrameTabs:GetChildren()) do
-        if v:IsA("TextButton") then
-            totalHeight = totalHeight + v.Size.Y.Offset + 10  -- Add padding to total height
+            tabButton.MouseButton1Click:Connect(function ()
+                changeTab(id)
+            end)
         end
-    end
-    scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, totalHeight)  -- Update canvas size
-end
 
--- Call updateCanvasSize whenever tabs are created or updated
-updateCanvasSize()
-
--- Mobile Drag-to-Scroll Support for windowBody
-local userInputService = game:GetService("UserInputService")
-local draggingWindowBody = false
-local dragStartPosWindowBody = nil
-
-windowBody.InputBegan:Connect(function(input, gameProcessedEvent)
-    if not gameProcessedEvent then
-        if input.UserInputType == Enum.UserInputType.Touch then
-            draggingWindowBody = true
-            dragStartPosWindowBody = input.Position.Y
+        function window:GetCurrentState()
+            return state
         end
-    end
-end)
-
-windowBody.InputChanged:Connect(function(input)
-    if draggingWindowBody and input.UserInputType == Enum.UserInputType.Touch then
-        local delta = input.Position.Y - dragStartPosWindowBody
-        windowBody.CanvasPosition = windowBody.CanvasPosition - Vector2.new(0, delta)  -- Update scroll position
-        dragStartPosWindowBody = input.Position.Y  -- Update the drag start position for smooth dragging
-    end
-end)
-
-windowBody.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch then
-        draggingWindowBody = false  -- End dragging when touch is released
-    end
-end)
-
--- Mobile Drag-to-Scroll Support for scrollingFrameTabs
-local draggingTabs = false
-local dragStartPosTabs = nil
-
-scrollingFrameTabs.InputBegan:Connect(function(input, gameProcessedEvent)
-    if not gameProcessedEvent then
-        if input.UserInputType == Enum.UserInputType.Touch then
-            draggingTabs = true
-            dragStartPosTabs = input.Position.Y
-        end
-    end
-end)
-
-scrollingFrameTabs.InputChanged:Connect(function(input)
-    if draggingTabs and input.UserInputType == Enum.UserInputType.Touch then
-        local delta = input.Position.Y - dragStartPosTabs
-        scrollingFrameTabs.CanvasPosition = scrollingFrameTabs.CanvasPosition - Vector2.new(0, delta)  -- Update scroll position
-        dragStartPosTabs = input.Position.Y  -- Update the drag start position for smooth dragging
-    end
-end)
-
-scrollingFrameTabs.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch then
-        draggingTabs = false  -- End dragging when touch is released
-    end
-end)
-
-pcall(function ()
-    local frame = top.Frame
-
-    local function PlayTween(first, bool)
-        local speed = 0.3
-        frame:TweenSize(first, "Out", "Quint", speed)
-        windowBody.Visible = bool
-        scrollingFrameTabs.Visible = bool
-        ustrbord.Enabled = bool
-    end
-
-    minimizeButton.MouseButton1Click:Connect(function ()
-        if windowBody.Visible == true then
-            PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 10), false)
-            state = library.WindowState.Minimized
-        else
-            PlayTween(UDim2.new(0, frame.AbsoluteSize.X, 0, 370), true)
-            state = library.WindowState.Opened
-        end
-    end)
-end)
-
-local function changeTab(id)
-    local name = "Tab" .. id
-
-    for _, v in pairs(windowBody:GetChildren()) do
-        if name ~= v.Name and v:IsA("Frame") then
-            v.Visible = false
-        end
-    end
-
-    for i, v in pairs(scrollingFrameTabs:GetChildren()) do 
-        if name ~= v.Name and v:IsA("TextButton") then
-            v.TextColor3 = Color3.fromRGB(173, 173, 173)
-        end
-    end
-
-    windowBody[name].Visible = true
-    scrollingFrameTabs[name].TextColor3 = Colors.White
-end
-
 local function createTabButton(id, text)
     local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
         TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
