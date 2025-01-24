@@ -2,13 +2,79 @@ local Library = {}
 -- Random UI Name
 local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
 
+-- Toggle function for the Library
 function Library:Toggle()
-    if game.CoreGui:FindFirstChild(LibraryName).Enabled then 
-        game.CoreGui:FindFirstChild(LibraryName).Enabled = false
-    else 
-        game.CoreGui:FindFirstChild(LibraryName).Enabled = true
+    local ui = game.CoreGui:FindFirstChild(LibraryName)
+    if ui then
+        ui.Enabled = not ui.Enabled -- Toggle the UI's Enabled state
+    else
+        warn("Library UI not found!")
     end
 end
+
+-- Draggable ImageButton implementation
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Create a ScreenGui for the ImageButton
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+-- Create the ImageButton
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 100)
+toggleButton.Position = UDim2.new(0, 100, 0, 100)
+toggleButton.Image = "rbxassetid://79844696964613"
+toggleButton.Parent = screenGui
+
+-- Add rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 20)
+corner.Parent = toggleButton
+
+toggleButton.BackgroundTransparency = 1
+toggleButton.ClipsDescendants = true
+toggleButton.BorderSizePixel = 0
+
+-- Variables for dragging
+local dragging = false
+local dragStart, startPos
+
+-- Dragging functionality
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+-- Toggle the UI on button click
+toggleButton.MouseButton1Click:Connect(function()
+    Library:Toggle() -- Call the Library's toggle function
+end)
+
 
 function Library:Drag(obj)
     local UserInputService = game:GetService("UserInputService")
