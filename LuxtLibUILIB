@@ -1013,7 +1013,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                 end)
                             end
 
-                           function ItemHandling:Label(labelInfo)
+                          function ItemHandling:Label(labelInfo)
     local TextLabelFrame = Instance.new("Frame")
     local UIListLayout = Instance.new("UIListLayout")
     local TextLabel = Instance.new("TextLabel")
@@ -1043,13 +1043,14 @@ function Luxt1.CreateWindow(libName, logoId)
     UICorner.CornerRadius = UDim.new(0, 5)
     UICorner.Parent = TextLabel
 
+    -- Define the Refresh method to update the label text
     function TextLabelFrame:Refresh(newLabelInfo)
-        newLabelInfo = newLabelInfo or labelInfo
-        TextLabel.Text = newLabelInfo
+        TextLabel.Text = newLabelInfo or labelInfo
     end
 
     return TextLabelFrame
 end
+
 
                                 function ItemHandling:DropDown(dropInfo, list, callback)
                                     callback = callback or function() end
