@@ -360,14 +360,15 @@ end)
         local tabsNames = {}
         local currentTab = 1
 
-       local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+      local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 8,  -- Set a visible scroll bar width
+    ScrollBarThickness = 8,  -- Visible scrollbar width
     ScrollBarImageTransparency = 1,
     VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Set canvas size dynamically
+    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Dynamically adjust CanvasSize
+    ScrollDirection = Enum.ScrollingDirection.XY,  -- Enable both X and Y scrolling
     Name = "ScrollingFrameTabs",
     Position = UDim2.new(0, 0, 0.01, 0),
     Size = UDim2.new(0, 160, 0, 355),
@@ -376,10 +377,10 @@ end)
 })
 
 local gridLayout = CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Horizontal,  -- Horizontal scrolling
-    CellSize = UDim2.new(0, 150, 0, 25),  -- Adjust the width and height of tabs
+    FillDirection = Enum.FillDirection.Horizontal,  -- Horizontal tab buttons
+    CellSize = UDim2.new(0, 150, 0, 25),  -- Tab button size
     SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 10, 0, 5),  -- Adjust padding
+    CellPadding = UDim2.new(0, 10, 0, 5),  -- Padding between tabs
 })
 
 CreateInstance("UIPadding", scrollingFrameTabs, {
@@ -392,16 +393,51 @@ local function updateCanvasSize()
     local totalWidth = 0
     for _, v in pairs(scrollingFrameTabs:GetChildren()) do
         if v:IsA("TextButton") then
-            totalWidth = totalWidth + v.Size.X.Offset + 10  -- Add padding to total width
+            totalWidth = totalWidth + v.Size.X.Offset + 10  -- Add padding to the total width
         end
     end
-    scrollingFrameTabs.CanvasSize = UDim2.new(0, totalWidth, 0, 0)  -- Set CanvasSize dynamically
+    scrollingFrameTabs.CanvasSize = UDim2.new(0, totalWidth, 0, 0)  -- Update canvas size
 end
 
 -- Call updateCanvasSize whenever tabs are created or updated
 updateCanvasSize()
 
--- Keep the rest of your code unchanged
+-- Mouse wheel scroll support (desktop)
+scrollingFrameTabs.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent and input.UserInputType == Enum.UserInputType.MouseWheel then
+        local scrollAmount = input.Position.X > 0 and 1 or -1
+        scrollingFrameTabs.ScrollPosition = scrollingFrameTabs.ScrollPosition + UDim2.new(0, scrollAmount * 30, 0, 0)  -- Adjust the scroll speed
+    end
+end)
+
+-- Mobile drag-to-scroll support
+local userInputService = game:GetService("UserInputService")
+local dragging = false
+local dragStartPos = nil
+
+scrollingFrameTabs.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent then
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStartPos = input.Position.X
+        end
+    end
+end)
+
+scrollingFrameTabs.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position.X - dragStartPos
+        scrollingFrameTabs.ScrollPosition = scrollingFrameTabs.ScrollPosition - UDim2.new(0, delta, 0, 0)  -- Update scroll position
+        dragStartPos = input.Position.X  -- Update the drag start position for smooth dragging
+    end
+end)
+
+scrollingFrameTabs.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false  -- End dragging when the touch is released
+    end
+end)
+
 
 
         pcall(function ()
