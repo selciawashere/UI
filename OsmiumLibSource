@@ -1,4 +1,4 @@
---[[
+  --[[
 
                                                                                                                                                                       
   ,ad8888ba,                                   88                                      88           88  88                                                            
@@ -407,37 +407,53 @@ local destructionHooks = {}
 
         ---@param name string
        function window:CreateTab(name)
-            local tab = {}
-            local tabId = #tabs + 1
+    local tab = {}
+    local tabId = #tabs + 1
 
-            local tabContainer = CreateInstance("Frame", windowBody, {
-                Visible = false,
-                Size = UDim2.new(0, 507, 0, 400),
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0.0179270469, 0, -0.00809493847, 0),
-                BorderColor3 = Colors.White,
-                ZIndex = 3,
-                Name = "Tab" .. tabId,
-                BackgroundColor3 = Colors.White
-            })
+    -- Create the scrolling frame for the tab container
+    local tabContainer = CreateInstance("ScrollingFrame", windowBody, {
+        Visible = false,
+        Size = UDim2.new(0, 507, 0, 400),  -- Keep the same size for the tab container
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.0179270469, 0, -0.00809493847, 0),
+        BorderColor3 = Colors.White,
+        ZIndex = 3,
+        Name = "Tab" .. tabId,
+        BackgroundColor3 = Colors.White,
+        ScrollBarThickness = 12,  -- Set the thickness of the scroll bar
+        VerticalScrollBarPosition = Enum.ScrollBarPosition.Right,  -- Set the scroll bar position to the right
+        CanvasSize = UDim2.new(0, 0, 0, 0),  -- Allow canvas resizing (based on content)
+    })
 
-            if currentTab == tabId then
-                tabContainer.Visible = true
-            end
+    -- Make the current tab visible
+    if currentTab == tabId then
+        tabContainer.Visible = true
+    end
 
-            table.insert(tabsNames, name)
-            table.insert(tabs, tabContainer)
+    -- Add the tab name and tabContainer to the lists
+    table.insert(tabsNames, name)
+    table.insert(tabs, tabContainer)
 
-            createTabButton(tabId, name)
+    -- Create the tab button
+    createTabButton(tabId, name)
 
-            CreateInstance("UIPadding", tabContainer, {
-                PaddingTop = UDim.new(0, 7)
-            }) 
-CreateInstance("UIListLayout", tabContainer, {
-    Padding = UDim.new(0, 7),
-    SortOrder = Enum.SortOrder.LayoutOrder,
-    FillDirection = Enum.FillDirection.Vertical,  -- Added this line for vertical layout
-})
+    -- Add padding and layout
+    CreateInstance("UIPadding", tabContainer, {
+        PaddingTop = UDim.new(0, 7)
+    }) 
+
+    -- Create a vertical layout within the scrolling frame
+    CreateInstance("UIListLayout", tabContainer, {
+        Padding = UDim.new(0, 7),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        FillDirection = Enum.FillDirection.Vertical,  -- Ensure vertical stacking
+    })
+
+    -- Adjust the CanvasSize to fit all children dynamically
+    tabContainer:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        tabContainer.CanvasSize = UDim2.new(0, 0, 0, tabContainer.AbsoluteContentSize.Y)
+    end)
+end
 
 
             ---@param label string
