@@ -77,6 +77,62 @@ else
 game.CoreGui:FindFirstChild("Darkrai").Enabled = true
 end
 end
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 100)
+toggleButton.Position = UDim2.new(0, 100, 0, 100)
+toggleButton.Image = "rbxassetid://79844696964613"
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 20)
+corner.Parent = toggleButton
+
+toggleButton.BackgroundTransparency = 1
+toggleButton.ClipsDescendants = true
+toggleButton.BorderSizePixel = 0
+
+local dragging = false
+local dragStart, startPos
+local uihide = false  -- Initial state for hiding/showing the UI
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    toggleButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = toggleButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateDrag(input)
+    end
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    if uihide == false then
+        uihide = true
+        -- Replace 'YourGuiElement' with the actual name of the GUI element you want to toggle
+        Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
+    else
+        uihide = false
+        Main:TweenSize(UDim2.new(0, 656, 0, 400), "Out", "Quad", 0.4, true)
+    end
+end)
 
 function DarkraiX:Window(text,gamenme,logo,keybind)
     local hubname = text
@@ -1038,3 +1094,5 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 	return uitab
 end
 return DarkraiX
+
+
