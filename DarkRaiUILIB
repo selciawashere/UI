@@ -259,13 +259,13 @@ toggleButton.BackgroundTransparency = 0
 toggleButton.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
 toggleButton.Image = "rbxassetid://79844696964613"
 
--- Parent the button to the 'Darkrai' GUI element
-toggleButton.Parent = game.CoreGui:FindFirstChild("Darkrai")
-
 -- Add corner rounding
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0, 10)
 uiCorner.Parent = toggleButton
+
+-- Parent the button to PlayerGui, so it's visible on the screen
+toggleButton.Parent = game.Players.LocalPlayer.PlayerGui
 
 -- Dragging functionality
 local dragging = false
@@ -302,9 +302,9 @@ end)
 
 -- Toggle functionality for the GUI
 toggleButton.MouseButton1Click:Connect(function()
-    local darkraiGui = game.CoreGui:FindFirstChild("Darkrai")
-    if darkraiGui then
-        darkraiGui.Enabled = not darkraiGui.Enabled
+    local darkrai = game.CoreGui:FindFirstChild("Darkrai")
+    if darkrai then
+        darkrai.Enabled = not darkrai.Enabled
     end
 end)
 
