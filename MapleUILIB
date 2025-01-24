@@ -776,7 +776,7 @@ end
             end)
         end
 
-        function Elements:Dropdown(Name, Listx, Callback)
+       function Elements:Dropdown(Name, Listx, Callback)
     local Name = Name or "Dropdown"
     local DropdownFunction = {}
     local Callback = Callback or function() end
@@ -845,7 +845,7 @@ end
     DropList.BorderSizePixel = 0
     DropList.ClipsDescendants = true
     DropList.Size = UDim2.new(0, 408, 0, 35)
-    DropList.ZIndex = 999  -- Set a high ZIndex for the dropdown to always appear on top
+    DropList.ZIndex = 999  -- Ensure the dropdown is on top
     DropList.Position = UDim2.new(0, 0, 1.14285719, 0)
     DropList.Visible = false
 
@@ -916,7 +916,7 @@ end
         Option.TextColor3 = Color3.fromRGB(255, 255, 255)
         Option.TextSize = 16.000
 
-        Option.ZIndex = 999  -- Set a high ZIndex to ensure the options are on top
+        Option.ZIndex = 999  -- High ZIndex to ensure it's on top
 
         OptionCorner.Name = "OptionCorner"
         OptionCorner.Parent = Option
@@ -1012,7 +1012,8 @@ end
         end
     end
     return DropdownFunction
-        end
+end
+
         return Elements
     end
     return xTabs
