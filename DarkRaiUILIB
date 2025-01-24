@@ -69,10 +69,17 @@ else
 game.CoreGui:FindFirstChild("Darkrai").Enabled = true
 end
 end
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 100, 0, 100)
 toggleButton.Position = UDim2.new(0, 100, 0, 100)
 toggleButton.Image = "rbxassetid://79844696964613"
+toggleButton.Parent = screenGui
 
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 20)
@@ -85,6 +92,7 @@ toggleButton.BorderSizePixel = 0
 local dragging = false
 local dragStart, startPos
 local uihide = false  -- Initial state for hiding/showing the UI
+
 
 local function updateDrag(input)
     local delta = input.Position - dragStart
@@ -118,7 +126,6 @@ end)
 toggleButton.MouseButton1Click:Connect(function()
     if uihide == false then
         uihide = true
-        -- Replace 'YourGuiElement' with the actual name of the GUI element you want to toggle
         Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
     else
         uihide = false
