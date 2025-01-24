@@ -52,7 +52,7 @@ local library = (function ()
             Stroke = Color3.fromRGB(145, 145, 145),
             Button = Color3.fromRGB(45, 45, 45),
             DarkButton = Color3.fromRGB(40, 40, 40),
-            Top = Color3.fromRGB(26, 26, 26),d
+            Top = Color3.fromRGB(26, 26, 26),
             FramesBack = Color3.fromRGB(36, 36, 36),
             TogBox = Color3.fromRGB(32, 33, 32),
             DropDownButton = Color3.new(0.235294, 0.235294, 0.235294)
@@ -209,6 +209,84 @@ local destructionHooks = {}
             })
         end)
 
+        pcall(function ()
+            local IsDragging = false
+            local dragInput
+            local StartingPoint
+            local oldPos
+
+            local function update(input)
+                local delta = input.Position - StartingPoint
+                top.Position = UDim2.new(oldPos.X.Scale, oldPos.X.Offset + delta.X, oldPos.Y.Scale,
+                    oldPos.Y.Offset + delta.Y)
+            end
+
+            top.InputBegan:Connect(function (input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    IsDragging = true
+                    StartingPoint = input.Position
+                    oldPos = top.Position
+
+                    input.Changed:Connect(function ()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            IsDragging = false
+                        end
+                    end)
+                end
+            end)
+
+            top.InputChanged:Connect(function (input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    dragInput = input
+                end
+            end)
+
+            UserInputService.InputChanged:Connect(function (input)
+                if input == dragInput and IsDragging then
+                    update(input)
+                end
+            end)
+        end)
+
+        local windowContainer = CreateInstance("Frame", top, {
+            Position = UDim2.new(0, 0, 0.764, 0),
+            BorderColor3 = Colors.White,
+            ZIndex = 0,
+            Size = UDim2.new(0, 612, 0, 370),
+            BackgroundColor3 = Colors.Gray.Top
+        })
+
+        CreateInstance("UICorner", windowContainer, {
+            CornerRadius = UDim.new(0, 3)
+        })
+
+        pcall(function ()
+            local opened = true
+
+            function window:Hide()
+                opened = false
+                top.Visible = false
+            end
+
+            function window:Show()
+                opened = true
+                top.Visible = true
+            end
+
+            local handler = UserInputService.InputBegan:Connect(function (input)
+                if input.KeyCode == Enum.KeyCode.LeftAlt then
+                    if opened then
+                        window:Hide()
+                    else
+                        window:Show()
+                    end
+                end
+            end)
+
+            window:OnDestroy(function ()
+                handler:Disconnect()
+            end)
+        end)
         local toggleButton = CreateInstance("ImageButton", screen, {
     Name = "ToggleButton",
     Size = UDim2.new(0, 75, 0, 75),
@@ -260,88 +338,6 @@ toggleButton.MouseButton1Click:Connect(function()
         window:Show()
     end
 end)
-
-
-
-        pcall(function ()
-            local IsDragging = false
-            local dragInput
-            local StartingPoint
-            local oldPos
-
-            local function update(input)
-                local delta = input.Position - StartingPoint
-                top.Position = UDim2.new(oldPos.X.Scale, oldPos.X.Offset + delta.X, oldPos.Y.Scale,
-                    oldPos.Y.Offset + delta.Y)
-            end
-
-            top.InputBegan:Connect(function (input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    IsDragging = true
-                    StartingPoint = input.Position
-                    oldPos = top.Position
-
-                    input.Changed:Connect(function ()
-                        if input.UserInputState == Enum.UserInputState.End then
-                            IsDragging = false
-                        end
-                    end)
-                end
-            end)
-
-            top.InputChanged:Connect(function (input)
-                if input.UserInputType == Enum.UserInputType.MouseMovement then
-                    dragInput = input
-                end
-            end)
-
-            UserInputService.InputChanged:Connect(function (input)
-                if input == dragInput and IsDragging then
-                    update(input)
-                end
-            end)
-        end)
-
-       local windowContainer = CreateInstance("Frame", top, {
-            Position = UDim2.new(0, 0, 0.764, 0),
-            BorderColor3 = Colors.White,
-            ZIndex = 0,
-            Size = UDim2.new(0, 612, 0, 370),
-            BackgroundColor3 = Colors.Gray.Top
-        })
-
-        CreateInstance("UICorner", windowContainer, {
-            CornerRadius = UDim.new(0, 3)
-        })
-
-        pcall(function ()
-            local opened = true
-
-            function window:Hide()
-                opened = false
-                top.Visible = false
-            end
-
-            function window:Show()
-                opened = true
-                top.Visible = true
-            end
-
-            local handler = UserInputService.InputBegan:Connect(function (input)
-                if input.KeyCode == Enum.KeyCode.LeftAlt then
-                    if opened then
-                        window:Hide()
-                    else
-                        window:Show()
-                    end
-                end
-            end)
-
-            window:OnDestroy(function ()
-                handler:Disconnect()
-            end)
-        end)
-
         local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
@@ -458,9 +454,6 @@ end)
         function window:GetCurrentState()
             return state
         end
-
-        ---@param name string
-
 
         ---@param name string
         function window:CreateTab(name)
@@ -865,70 +858,59 @@ end)
             ---@param title string
             ---@param description ?string    
             function tab:CreateLabel(title, description)
-    local label = {}
+                local label = {}
 
-    local textLabel = CreateInstance("TextLabel", tabContainer, {
-        TextWrapped = true,
-        TextColor3 = Colors.White,
-        Text = "  " .. (title or ""),
-        TextYAlignment = Enum.TextYAlignment.Top,
-        Font = Font,
-        Name = "Label",
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 438, 0, 35),
-        ZIndex = 0,
-        TextSize = 14,
-        BackgroundColor3 = Colors.Gray.DarkButton
-    })
+                local textLabel = CreateInstance("TextLabel", tabContainer, {
+                    TextWrapped = true,
+                    TextColor3 = Colors.White,
+                    Text = "  " .. (title or ""),
+                    TextYAlignment = Enum.TextYAlignment.Top,
+                    Font = Font,
+                    Name = "Label",
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 438, 0, 35),
+                    ZIndex = 0,
+                    TextSize = 14,
+                    BackgroundColor3 = Colors.Gray.DarkButton
+                })
+ 
+                CreateInstance("UICorner", textLabel, {
+                    CornerRadius = UDim.new(0, 2)
+                })
 
-    CreateInstance("UICorner", textLabel, {
-        CornerRadius = UDim.new(0, 2)
-    })
+                local textDescription = CreateInstance("TextLabel", textLabel, {
+                    TextColor3 = Colors.White,
+                    Text = "   " .. (description or ""),
+                    Font = Font,
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 0, 0.350000083, 0),
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 119, 0, 26),
+                    TextSize = 12,
+                    BackgroundColor3 = Colors.White,
+                    Visible = #(description or "") > 0
+                })
 
-    local textDescription = CreateInstance("TextLabel", textLabel, {
-        TextColor3 = Colors.White,
-        Text = "   " .. (description or ""),
-        Font = Font,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0.350000083, 0),
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 119, 0, 26),
-        TextSize = 12,
-        BackgroundColor3 = Colors.White,
-        Visible = #(description or "") > 0
-    })
+                function label:GetTitle()
+                    return string.sub(textLabel.Text, 1)
+                end
 
-    function label:GetTitle()
-        return string.sub(textLabel.Text, 1)
-    end
+                function label:SetTitle(title)
+                    textLabel.Text = "  " .. title
+                end
 
-    function label:SetTitle(title)
-        textLabel.Text = "  " .. title
-    end
+                function label:GetDescription()
+                    return string.sub(textDescription.Text, 1)
+                end
 
-    function label:GetDescription()
-        return string.sub(textDescription.Text, 1)
-    end
+                function label:SetDescription(description)
+                    textDescription.Text = "   " .. description
 
-    function label:SetDescription(description)
-        textDescription.Text = "   " .. description
-        textDescription.Visible = #(description or "") > 0
-    end
+                    textDescription.Visible = #(description or "") > 0
+                end
 
-    function label:Refresh(newTitle, newDescription)
-        self:SetTitle(newTitle or title)
-        self:SetDescription(newDescription or description)
-    end
-
-    function label:Clear()
-        textLabel.Text = "  "
-        textDescription.Text = "   "
-        textDescription.Visible = false
-    end
-
-    return label
-end
-
+                return label
+            end
 
             function tab:CreateButton(name, callback)
                 local callback = callback or function (_) end
