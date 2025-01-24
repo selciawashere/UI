@@ -807,61 +807,60 @@ local destructionHooks = {}
 
             ---@param title string
             ---@param description ?string    
-           local textLabel = CreateInstance("TextLabel", tabContainer, {
-        TextWrapped = true,
-        TextColor3 = Colors.White,
-        Text = "  " .. (title or ""),
-        TextYAlignment = Enum.TextYAlignment.Top,
-        Font = Font,
-        Name = "Label",
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 438, 0, 35),
-        ZIndex = 0,
-        TextSize = 14,
-        BackgroundColor3 = Colors.Gray.DarkButton
-    })
+            function tab:CreateLabel(title, description)
+                local label = {}
 
-    CreateInstance("UICorner", textLabel, {
-        CornerRadius = UDim.new(0, 2)
-    })
+                local textLabel = CreateInstance("TextLabel", tabContainer, {
+                    TextWrapped = true,
+                    TextColor3 = Colors.White,
+                    Text = "  " .. (title or ""),
+                    TextYAlignment = Enum.TextYAlignment.Top,
+                    Font = Font,
+                    Name = "Label",
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 438, 0, 35),
+                    ZIndex = 0,
+                    TextSize = 14,
+                    BackgroundColor3 = Colors.Gray.DarkButton
+                })
+ 
+                CreateInstance("UICorner", textLabel, {
+                    CornerRadius = UDim.new(0, 2)
+                })
 
-    local textDescription = CreateInstance("TextLabel", textLabel, {
-        TextColor3 = Colors.White,
-        Text = "   " .. (description or ""),
-        Font = Font,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0.350000083, 0),
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Size = UDim2.new(0, 119, 0, 26),
-        TextSize = 12,
-        BackgroundColor3 = Colors.White,
-        Visible = #(description or "") > 0
-    })
+                local textDescription = CreateInstance("TextLabel", textLabel, {
+                    TextColor3 = Colors.White,
+                    Text = "   " .. (description or ""),
+                    Font = Font,
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 0, 0.350000083, 0),
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Size = UDim2.new(0, 119, 0, 26),
+                    TextSize = 12,
+                    BackgroundColor3 = Colors.White,
+                    Visible = #(description or "") > 0
+                })
 
-    function label:GetTitle()
-        return string.sub(textLabel.Text, 3) -- Removing leading spaces
-    end
+                function label:GetTitle()
+                    return string.sub(textLabel.Text, 1)
+                end
 
-    function label:SetTitle(title)
-        textLabel.Text = "  " .. title
-    end
+                function label:SetTitle(title)
+                    textLabel.Text = "  " .. title
+                end
 
-    function label:GetDescription()
-        return string.sub(textDescription.Text, 4) -- Removing leading spaces
-    end
+                function label:GetDescription()
+                    return string.sub(textDescription.Text, 1)
+                end
 
-    function label:SetDescription(description)
-        textDescription.Text = "   " .. description
-        textDescription.Visible = #(description or "") > 0
-    end
+                function label:SetDescription(description)
+                    textDescription.Text = "   " .. description
 
-    function label:Refresh(newTitle, newDescription)
-        self:SetTitle(newTitle or self:GetTitle())
-        self:SetDescription(newDescription or self:GetDescription())
-    end
+                    textDescription.Visible = #(description or "") > 0
+                end
 
-    return label
-end
+                return label
+            end
 
             function tab:CreateButton(name, callback)
                 local callback = callback or function (_) end
