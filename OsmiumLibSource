@@ -338,63 +338,71 @@ toggleButton.MouseButton1Click:Connect(function()
         window:Show()
     end
 end)
-        local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            Position = UDim2.new(0.257, 0, 0.025, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Size = UDim2.new(0, 451, 0, 350),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color3.fromRGB(19, 19, 19)
-        })
+       local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 8, -- Increased for better visibility on mobile
+    ScrollBarImageTransparency = 0, -- Make the scrollbar visible
+    Position = UDim2.new(0.257, 0, 0.025, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Adjust based on content height
+    CanvasSize = UDim2.new(0, 0, 0, 0), -- Dynamic sizing
+    Size = UDim2.new(0, 451, 0, 350),
+    BorderSizePixel = 0,
+    BackgroundColor3 = Color3.fromRGB(19, 19, 19),
+})
 
-        local tabs = {}
-        local tabsNames = {}
-        local currentTab = 1
+local tabs = {}
+local tabsNames = {}
+local currentTab = 1
 
-        local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-            AutomaticCanvasSize = Enum.AutomaticSize.X,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Name = "ScrollingFrameTabs",
-            Position = UDim2.new(0, 0, 0.01, 0),
-            Size = UDim2.new(0, 160, 0, 355),
-            BackgroundTransparency = 1,
-            BackgroundColor3 = Colors.Gray.Top,
-        })
+local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 8, -- Increased for mobile support
+    ScrollBarImageTransparency = 0, -- Visible scrollbar
+    VerticalScrollBarInset = Enum.ScrollBarInset.Always, -- Always show the scrollbar
+    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Adjust based on the vertical content
+    CanvasSize = UDim2.new(0, 0, 0, 0), -- Initial size
+    Name = "ScrollingFrameTabs",
+    Position = UDim2.new(0, 0, 0.01, 0),
+    Size = UDim2.new(0, 160, 0, 355),
+    BackgroundTransparency = 1,
+    BackgroundColor3 = Colors.Gray.Top,
+})
 
-        CreateInstance("UIGridLayout", scrollingFrameTabs, {
-            FillDirection = Enum.FillDirection.Vertical,
-            CellSize = UDim2.new(0, 150, 0, 25),
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            CellPadding = UDim2.new(0, 5, 0, 10),
-        })
-        
-        CreateInstance("UIPadding", scrollingFrameTabs, {
-            PaddingTop = UDim.new(0, 10),
-            PaddingLeft = UDim.new(0, 5),
-        })
+CreateInstance("UIGridLayout", scrollingFrameTabs, {
+    FillDirection = Enum.FillDirection.Vertical,
+    CellSize = UDim2.new(0, 150, 0, 25),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    CellPadding = UDim2.new(0, 5, 0, 10),
+})
 
-        pcall(function ()
-            local frame = top.Frame
+CreateInstance("UIPadding", scrollingFrameTabs, {
+    PaddingTop = UDim.new(0, 10),
+    PaddingLeft = UDim.new(0, 5),
+})
 
-            local function PlayTween(first, bool)
-                local speed = 0.3
+pcall(function()
+    local frame = top.Frame
 
-                frame:TweenSize(first, "Out", "Quint", speed)
-                windowBody.Visible = bool
-                scrollingFrameTabs.Visible = bool
-                ustrbord.Enabled = bool
-            end
+    -- Refactored PlayTween function for vertical scrolling
+    local function PlayTween(first, bool)
+        local speed = 0.3
+
+        -- Smoothly adjust the size of the frame
+        frame:TweenSize(first, "Out", "Quint", speed)
+
+        -- Manage visibility of UI components
+        windowBody.Visible = bool
+        scrollingFrameTabs.Visible = bool
+        ustrbord.Enabled = bool
+
+        -- Update scrolling frame CanvasSize dynamically if needed
+        scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, scrollingFrameTabs.UIListLayout.AbsoluteContentSize.Y)
+    end
+end)
 
             minimizeButton.MouseButton1Click:Connect(function ()
                 if windowBody.Visible == true then
