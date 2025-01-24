@@ -302,7 +302,7 @@ end)
             end)
         end)
 
-        local windowContainer = CreateInstance("Frame", top, {
+       local windowContainer = CreateInstance("Frame", top, {
             Position = UDim2.new(0, 0, 0.764, 0),
             BorderColor3 = Colors.White,
             ZIndex = 0,
@@ -429,6 +429,7 @@ end)
             windowBody[name].Visible = true
             scrollingFrameTabs[name].TextColor3 = Colors.White
         end
+
         local function createTabButton(id, text)
             local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
                 TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
@@ -457,94 +458,8 @@ end)
         function window:GetCurrentState()
             return state
         end
-local function createTabButton(id, text)
-    local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
-        TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
-        BorderColor3 = Colors.Gray.Stroke,
-        Text = text,
-        Font = Font,
-        Name = "Tab" .. id,
-        Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
-        AutoButtonColor = false,
-        Size = UDim2.new(0, 200, 0, 50),
-        TextSize = 12,
-        BackgroundColor3 = Colors.Gray.Top
-    })
 
-    CreateInstance("UICorner", tabButton, {
-        CornerRadius = UDim.new(0, 2)
-    })
-
-    autobutcolor(tabButton, Colors.Gray.Top)
-
-    tabButton.MouseButton1Click:Connect(function ()
-        changeTab(id)
-    end)
-end
-
-function window:GetCurrentState()
-    return state
-end
-
-
-local function createTabButton(id, text)
-    local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
-        TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
-        BorderColor3 = Colors.Gray.Stroke,
-        Text = text,
-        Font = Font,
-        Name = "Tab" .. id,
-        Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
-        AutoButtonColor = false,
-        Size = UDim2.new(0, 200, 0, 50),
-        TextSize = 12,
-        BackgroundColor3 = Colors.Gray.Top
-    })
-
-    CreateInstance("UICorner", tabButton, {
-        CornerRadius = UDim.new(0, 2)
-    })
-
-    autobutcolor(tabButton, Colors.Gray.Top)
-
-    tabButton.MouseButton1Click:Connect(function ()
-        changeTab(id)
-    end)
-end
-
-function window:GetCurrentState()
-    return state
-end
-
-
-local function createTabButton(id, text)
-    local tabButton = CreateInstance("TextButton", scrollingFrameTabs, {
-        TextColor3 = _if(id == 1, Colors.White, Color3.fromRGB(173, 173, 173)),
-        BorderColor3 = Colors.Gray.Stroke,
-        Text = text,
-        Font = Font,
-        Name = "Tab" .. id,
-        Position = UDim2.new(-1.12306619, 0, 2.00234604, 0),
-        AutoButtonColor = false,
-        Size = UDim2.new(0, 200, 0, 50),
-        TextSize = 12,
-        BackgroundColor3 = Colors.Gray.Top
-    })
-
-    CreateInstance("UICorner", tabButton, {
-        CornerRadius = UDim.new(0, 2)
-    })
-
-    autobutcolor(tabButton, Colors.Gray.Top)
-
-    tabButton.MouseButton1Click:Connect(function ()
-        changeTab(id)
-    end)
-end
-
-function window:GetCurrentState()
-    return state
-end
+        ---@param name string
 
 
         ---@param name string
