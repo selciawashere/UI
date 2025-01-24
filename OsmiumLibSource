@@ -306,15 +306,18 @@ local destructionHooks = {}
         local tabsNames = {}
         local currentTab = 1
 
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
 -- Create ScrollingFrame for Tabs with Vertical Scrolling
 local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 5, -- Adjust scroll bar thickness for better visibility
-    ScrollBarImageTransparency = 0.5, -- Slight transparency for aesthetics
+    ScrollBarThickness = 5,
+    ScrollBarImageTransparency = 0.5,
     VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar,
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Enable dynamic vertical scrolling
+    AutomaticCanvasSize = Enum.AutomaticSize.X,
     CanvasSize = UDim2.new(0, 0, 0, 0),
     Name = "ScrollingFrameTabs",
     Position = UDim2.new(0, 0, 0.01, 0),
@@ -323,19 +326,31 @@ local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     BackgroundColor3 = Colors.Gray.Top,
 })
 
--- Adjust Layout to Support Vertical Scrolling
-CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical, -- Align tabs vertically
-    CellSize = UDim2.new(0, 150, 0, 40), -- Adjust cell size for better spacing
-    SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 5, 0, 10), -- Add consistent padding
-})
+-- Enable Dragging or Scrolling with Mouse
+local isDragging = false
+local dragStart
+local startPos
 
--- Add Padding for Aesthetic Alignment
-CreateInstance("UIPadding", scrollingFrameTabs, {
-    PaddingTop = UDim.new(0, 10),
-    PaddingLeft = UDim.new(0, 5),
-})
+scrollingFrameTabs.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = true
+        dragStart = input.Position
+        startPos = scrollingFrameTabs.CanvasPosition
+    end
+end)
+
+scrollingFrameTabs.InputChanged:Connect(function(input)
+    if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        scrollingFrameTabs.CanvasPosition = startPos + Vector2.new(0, -delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = false
+    end
+end)
 
 
         pcall(function ()
