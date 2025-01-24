@@ -776,7 +776,7 @@ end
             end)
         end
 
- function Elements:Dropdown(Name,Listx,Callback)
+  function Elements:Dropdown(Name,Listx,Callback)
             local Name = Name or "Dropdown"
             local DropdownFunction = {}
             local Callback = Callback or function() end
@@ -845,7 +845,7 @@ end
             DropList.BorderSizePixel = 0
             DropList.ClipsDescendants = true
             DropList.Size = UDim2.new(0, 408, 0, 35)
-            DropList.ZIndex = 999
+            DropList.ZIndex = 100
             DropList.Position = UDim2.new(0, 0, 1.14285719, 0)
             DropList.Visible = false
 
@@ -914,7 +914,7 @@ end
                 Option.Text = v
                 Option.TextColor3 = Color3.fromRGB(255, 255, 255)
                 Option.TextSize = 16.000
-                Option.ZIndex = 999
+
                 OptionCorner.Name = "OptionCorner"
                 OptionCorner.Parent = Option
 
@@ -958,7 +958,7 @@ end
                     local OptionCorner = Instance.new("UICorner")
     
                     DropSize = DropSize + 35
-                    
+    
                     Option.Name = tostring(v).."_Option"
                     Option.Parent = DropList
                     Option.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
@@ -967,9 +967,7 @@ end
                     Option.Text = v
                     Option.TextColor3 = Color3.fromRGB(255, 255, 255)
                     Option.TextSize = 16.000
-                    
-                    Option.ZIndex = 999    
-                    
+    
                     OptionCorner.Name = "OptionCorner"
                     OptionCorner.Parent = Option
     
@@ -1007,7 +1005,7 @@ end
                 end
             end
             return DropdownFunction
-          end
+        end
         return Elements
     end
     return xTabs
