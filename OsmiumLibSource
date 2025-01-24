@@ -302,6 +302,18 @@ end)
             end)
         end)
 
+        local windowContainer = CreateInstance("Frame", top, {
+            Position = UDim2.new(0, 0, 0.764, 0),
+            BorderColor3 = Colors.White,
+            ZIndex = 0,
+            Size = UDim2.new(0, 612, 0, 370),
+            BackgroundColor3 = Colors.Gray.Top
+        })
+
+        CreateInstance("UICorner", windowContainer, {
+            CornerRadius = UDim.new(0, 3)
+        })
+
         local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
