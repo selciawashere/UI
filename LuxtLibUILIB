@@ -1013,68 +1013,43 @@ function Luxt1.CreateWindow(libName, logoId)
                                 end)
                             end
 
-                            function ItemHandling:Label(labelInfo)
-                                local TextLabelFrame = Instance.new("Frame")
-                                local UIListLayout = Instance.new("UIListLayout")
-                                local TextLabel = Instance.new("TextLabel")
-                                local UICorner = Instance.new("UICorner")
-                                labelInfo = labelInfo or "Text Label"
+                           function ItemHandling:Label(labelInfo)
+    local TextLabelFrame = Instance.new("Frame")
+    local UIListLayout = Instance.new("UIListLayout")
+    local TextLabel = Instance.new("TextLabel")
+    local UICorner = Instance.new("UICorner")
+    labelInfo = labelInfo or "Text Label"
 
-                                TextLabelFrame.Name = "TextLabelFrame"
-                                TextLabelFrame.Parent = sectionFrame
-                                TextLabelFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-                                TextLabelFrame.BackgroundTransparency = 1.000
-                                TextLabelFrame.Size = UDim2.new(0, 365, 0, 36)
+    TextLabelFrame.Name = "TextLabelFrame"
+    TextLabelFrame.Parent = sectionFrame
+    TextLabelFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+    TextLabelFrame.BackgroundTransparency = 1.000
+    TextLabelFrame.Size = UDim2.new(0, 365, 0, 36)
 
-                                UIListLayout.Parent = TextLabelFrame
-                                UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-                                UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-                                UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    UIListLayout.Parent = TextLabelFrame
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
-                                TextLabel.Parent = TextLabelFrame
-                                TextLabel.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-                                TextLabel.Size = UDim2.new(0, 365, 0, 36)
-                                TextLabel.ZIndex = 2
-                                TextLabel.Font = Enum.Font.GothamSemibold
-                                TextLabel.Text = labelInfo
-                                TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                                TextLabel.TextSize = 14.000
+    TextLabel.Parent = TextLabelFrame
+    TextLabel.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+    TextLabel.Size = UDim2.new(0, 365, 0, 36)
+    TextLabel.ZIndex = 2
+    TextLabel.Font = Enum.Font.GothamSemibold
+    TextLabel.Text = labelInfo
+    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.TextSize = 14.000
 
-                                UICorner.CornerRadius = UDim.new(0, 5)
-                                UICorner.Parent = TextLabel
-                            end
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = TextLabel
 
-                            function ItemHandling:Credit(creditWho)
-                                local TextLabelFrame = Instance.new("Frame")
-                                local UIListLayout = Instance.new("UIListLayout")
-                                local TextLabel = Instance.new("TextLabel")
-                                local UICorner = Instance.new("UICorner")
-                                creditWho = creditWho or "Text Label"
+    function TextLabelFrame:Refresh(newLabelInfo)
+        newLabelInfo = newLabelInfo or labelInfo
+        TextLabel.Text = newLabelInfo
+    end
 
-                                TextLabelFrame.Name = "TextLabelFrame"
-                                TextLabelFrame.Parent = sectionFrame
-                                TextLabelFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-                                TextLabelFrame.BackgroundTransparency = 1.000
-                                TextLabelFrame.Size = UDim2.new(0, 365, 0, 36)
-
-                                UIListLayout.Parent = TextLabelFrame
-                                UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-                                UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-                                UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-
-                                TextLabel.Parent = TextLabelFrame
-                                TextLabel.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-                                TextLabel.Size = UDim2.new(0, 365, 0, 36)
-                                TextLabel.ZIndex = 2
-                                TextLabel.Font = Enum.Font.Gotham
-                                TextLabel.Text = "  "..creditWho
-                                TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                                TextLabel.TextSize = 14.000
-                                TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-                                UICorner.CornerRadius = UDim.new(0, 5)
-                                UICorner.Parent = TextLabel
-                            end
+    return TextLabelFrame
+end
 
                                 function ItemHandling:DropDown(dropInfo, list, callback)
                                     callback = callback or function() end
