@@ -360,33 +360,36 @@ end)
         local tabsNames = {}
         local currentTab = 1
 
-        local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
-            ScrollBarImageColor3 = Colors.Black,
-            Active = true,
-            BorderColor3 = Colors.Gray.Stroke,
-            ScrollBarThickness = 0,
-            ScrollBarImageTransparency = 1,
-            VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-            AutomaticCanvasSize = Enum.AutomaticSize.X,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Name = "ScrollingFrameTabs",
-            Position = UDim2.new(0, 0, 0.01, 0),
-            Size = UDim2.new(0, 160, 0, 355),
-            BackgroundTransparency = 1,
-            BackgroundColor3 = Colors.Gray.Top,
-        })
+       local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
+    ScrollBarImageColor3 = Colors.Black,
+    Active = true,
+    BorderColor3 = Colors.Gray.Stroke,
+    ScrollBarThickness = 0,
+    ScrollBarImageTransparency = 1,
+    VerticalScrollBarInset = Enum.ScrollBarInset.Always,
+    AutomaticCanvasSize = Enum.AutomaticSize.X,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    Name = "ScrollingFrameTabs",
+    Position = UDim2.new(0, 0, 0.01, 0),
+    Size = UDim2.new(0, 160, 0, 355),
+    BackgroundTransparency = 1,
+    BackgroundColor3 = Colors.Gray.Top,
+})
 
-        CreateInstance("UIGridLayout", scrollingFrameTabs, {
-            FillDirection = Enum.FillDirection.Vertical,
-            CellSize = UDim2.new(0, 150, 0, 25),
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            CellPadding = UDim2.new(0, 5, 0, 10),
-        })
-        
-        CreateInstance("UIPadding", scrollingFrameTabs, {
-            PaddingTop = UDim.new(0, 10),
-            PaddingLeft = UDim.new(0, 5),
-        })
+CreateInstance("UIGridLayout", scrollingFrameTabs, {
+    FillDirection = Enum.FillDirection.Horizontal,  -- Change to horizontal scroll
+    CellSize = UDim2.new(0, 150, 0, 25),  -- Adjust for horizontal tab size
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    CellPadding = UDim2.new(0, 10, 0, 5),  -- Adjust padding for horizontal alignment
+})
+
+CreateInstance("UIPadding", scrollingFrameTabs, {
+    PaddingTop = UDim.new(0, 10),
+    PaddingLeft = UDim.new(0, 5),
+})
+
+-- Keep the rest of your code unchanged
+
 
         pcall(function ()
             local frame = top.Frame
