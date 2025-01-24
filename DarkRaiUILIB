@@ -250,31 +250,41 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 			end
 		end
 	end)
-	local DarkraiX = {}
+local ImageButton = Instance.new("ImageButton")
+ImageButton.Size = UDim2.new(0, 100, 0, 100)  -- Set size of the button
+ImageButton.Position = UDim2.new(0, 50, 0, 50)  -- Set position of the button
+ImageButton.Image = "rbxassetid://79844696964613"  -- Set your icon image ID here
+ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set the background color
+ImageButton.BackgroundTransparency = 0.5  -- Set transparency for background
+ImageButton.BackgroundCornerRadius = UDim.new(0, 12)  -- Set curved corners with a radius of 12
 
-local toggleButton = CreateInstance("ImageButton", screen, {
-    Name = "ToggleButton",
-    Size = UDim2.new(0, 75, 0, 75),
-    Position = UDim2.new(0, 50, 0, 50),
-    BackgroundTransparency = 0,
-    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
-    Image = "rbxassetid://79844696964613",
-})
+local uihide = false
+local Main = script.Parent.Main  -- Replace with your actual main UI element
 
-CreateInstance("UICorner", toggleButton, {
-    CornerRadius = UDim.new(0, 10),
-})
-
-toggleButton.MouseButton1Click:Connect(function()
-    DarkraiX:ToggleUi()
+ImageButton.MouseButton1Click:Connect(function()
+    if uihide == false then
+        uihide = true
+        Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
+    else
+        uihide = false
+        Main:TweenSize(UDim2.new(0, 656, 0, 400), "Out", "Quad", 0.4, true)
+    end
 end)
 
-function DarkraiX:ToggleUi()
-    local darkraiGui = game.CoreGui:FindFirstChild("Darkrai")
-    if darkraiGui then
-        darkraiGui.Enabled = not darkraiGui.Enabled
-    end
-end
+-- Make the button smooth by adjusting the transparency on hover or when clicked
+ImageButton.MouseEnter:Connect(function()
+    ImageButton.BackgroundTransparency = 0.3  -- Change transparency on hover
+end)
+
+ImageButton.MouseLeave:Connect(function()
+    ImageButton.BackgroundTransparency = 0.5  -- Reset transparency when the mouse leaves
+end)
+
+ImageButton.Parent = script.Parent  -- Add the button to your GUI
+
+	local DarkraiX = {}
+
+
 
 	local uitab = {}
 	
