@@ -250,63 +250,31 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 			end
 		end
 	end)
-	-- Create the toggle button
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 75, 0, 75)
-toggleButton.Position = UDim2.new(0, 50, 0, 50) -- Initial position
-toggleButton.BackgroundTransparency = 0
-toggleButton.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
-toggleButton.Image = "rbxassetid://79844696964613"
+	local DarkraiX = {}
 
--- Add corner rounding
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10)
-uiCorner.Parent = toggleButton
+local toggleButton = CreateInstance("ImageButton", screen, {
+    Name = "ToggleButton",
+    Size = UDim2.new(0, 75, 0, 75),
+    Position = UDim2.new(0, 50, 0, 50),
+    BackgroundTransparency = 0,
+    BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+    Image = "rbxassetid://79844696964613",
+})
 
--- Parent the button to PlayerGui, so it's visible on the screen
-toggleButton.Parent = game.Players.LocalPlayer.PlayerGui
+CreateInstance("UICorner", toggleButton, {
+    CornerRadius = UDim.new(0, 10),
+})
 
--- Dragging functionality
-local dragging = false
-local dragStart, startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    toggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-toggleButton.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
-    end
-end)
-
--- Toggle functionality for the GUI
 toggleButton.MouseButton1Click:Connect(function()
-    local darkrai = game.CoreGui:FindFirstChild("Darkrai")
-    if darkrai then
-        darkrai.Enabled = not darkrai.Enabled
-    end
+    DarkraiX:ToggleUi()
 end)
+
+function DarkraiX:ToggleUi()
+    local darkraiGui = game.CoreGui:FindFirstChild("Darkrai")
+    if darkraiGui then
+        darkraiGui.Enabled = not darkraiGui.Enabled
+    end
+end
 
 	local uitab = {}
 	
