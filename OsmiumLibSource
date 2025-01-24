@@ -338,42 +338,38 @@ toggleButton.MouseButton1Click:Connect(function()
         window:Show()
     end
 end)
-       local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+      local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 8, -- Increased for better visibility on mobile
-    ScrollBarImageTransparency = 0, -- Make the scrollbar visible
+    ScrollBarThickness = 8, -- Make the scrollbar visible and usable
+    ScrollBarImageTransparency = 0,
     Position = UDim2.new(0.257, 0, 0.025, 0),
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Automatically adjust based on content height
-    CanvasSize = UDim2.new(0, 0, 0, 0), -- Dynamic sizing
+    AutomaticCanvasSize = Enum.AutomaticSize.None, -- Disable automatic canvas resizing
+    CanvasSize = UDim2.new(0, 0, 1, 0), -- Start with a fixed CanvasSize
     Size = UDim2.new(0, 451, 0, 350),
     BorderSizePixel = 0,
     BackgroundColor3 = Color3.fromRGB(19, 19, 19),
+    VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar, -- Ensure the scrollbar is for vertical scrolling
 })
-
-local tabs = {}
-local tabsNames = {}
-local currentTab = 1
 
 local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 8, -- Increased for mobile support
-    ScrollBarImageTransparency = 0, -- Visible scrollbar
-    VerticalScrollBarInset = Enum.ScrollBarInset.Always, -- Always show the scrollbar
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Automatically adjust based on vertical content
-    CanvasSize = UDim2.new(0, 0, 0, 0), -- Initial size
-    Name = "ScrollingFrameTabs",
+    ScrollBarThickness = 8, -- Visible scrollbar
+    ScrollBarImageTransparency = 0,
     Position = UDim2.new(0, 0, 0.01, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.None, -- Disable automatic canvas resizing
+    CanvasSize = UDim2.new(0, 0, 0, 0), -- Canvas will update dynamically
     Size = UDim2.new(0, 160, 0, 355),
     BackgroundTransparency = 1,
     BackgroundColor3 = Colors.Gray.Top,
+    VerticalScrollBarInset = Enum.ScrollBarInset.Always, -- Ensure vertical scrolling
 })
 
-CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical, -- Ensure items are arranged vertically
+local layout = CreateInstance("UIGridLayout", scrollingFrameTabs, {
+    FillDirection = Enum.FillDirection.Vertical, -- Arrange items vertically
     CellSize = UDim2.new(0, 150, 0, 25),
     SortOrder = Enum.SortOrder.LayoutOrder,
     CellPadding = UDim2.new(0, 5, 0, 10),
@@ -384,23 +380,33 @@ CreateInstance("UIPadding", scrollingFrameTabs, {
     PaddingLeft = UDim.new(0, 5),
 })
 
+-- Function to update CanvasSize dynamically based on content
+local function UpdateCanvasSize()
+    if scrollingFrameTabs.UIGridLayout then
+        scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
+    end
+end
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateCanvasSize)
+UpdateCanvasSize() -- Initial update
+
+-- Refactored PlayTween function
 pcall(function()
     local frame = top.Frame
 
-    -- Refactored PlayTween function for vertical scrolling
     local function PlayTween(first, bool)
         local speed = 0.3
 
-        -- Smoothly adjust the size of the frame
+        -- Tween frame size
         frame:TweenSize(first, "Out", "Quint", speed)
 
-        -- Manage visibility of UI components
+        -- Manage visibility
         windowBody.Visible = bool
         scrollingFrameTabs.Visible = bool
         ustrbord.Enabled = bool
 
-        -- Update scrolling frame CanvasSize dynamically based on vertical content
-        scrollingFrameTabs.CanvasSize = UDim2.new(0, 0, 0, scrollingFrameTabs.UIGridLayout.AbsoluteContentSize.Y)
+        -- Update CanvasSize dynamically
+        UpdateCanvasSize()
     end
 end)
 
