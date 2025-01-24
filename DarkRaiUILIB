@@ -1,6 +1,4 @@
 
-
-
 local PlaceName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
 
     if not game:IsLoaded() then repeat game.Loaded:Wait() until game:IsLoaded() end
@@ -130,8 +128,7 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 	Logo.BackgroundTransparency = 1.000
 	Logo.Position = UDim2.new(0, 10, 0, 1)
 	Logo.Size = UDim2.new(0, 25, 0, 25)
-	Logo.Image = "rbxassetid://79844696964613"
-
+	Logo.Image = ""
 
 	local Name = Instance.new("TextLabel")
 	Name.Name = "Name"
@@ -252,11 +249,7 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 			end
 		end
 	end)
-
-	local DarkraiX = {}
-
 	
-
 	local uitab = {}
 	
 	function uitab:Tab(text)
@@ -1040,5 +1033,3 @@ function DarkraiX:Window(text,gamenme,logo,keybind)
 	return uitab
 end
 return DarkraiX
-
-
