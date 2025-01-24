@@ -256,7 +256,11 @@ ImageButton.Position = UDim2.new(0, 50, 0, 50)  -- Set position of the button
 ImageButton.Image = "rbxassetid://79844696964613"  -- Set your icon image ID here
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set the background color
 ImageButton.BackgroundTransparency = 0.5  -- Set transparency for background
-ImageButton.BackgroundCornerRadius = UDim.new(0, 12)  -- Set curved corners with a radius of 12
+
+-- Create a UICorner for the rounded corners
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)  -- Set curved corners with a radius of 12
+UICorner.Parent = ImageButton  -- Parent the UICorner to the ImageButton
 
 local uihide = false
 local Main = script.Parent:WaitForChild("Darkrai")  -- Ensure 'Main' exists in your parent UI
