@@ -34,8 +34,8 @@ local credits = Window:Tab("👤 Credits")
 
 
 getgenv().WalkSpeedValue = 26
-home:CreateLabel("Created By Galaxy/#galaxywithnate")
-misc:CreateSlider("Speed Hack", 1, 500,function(speedfunc)
+home:Label("Created By Galaxy/#galaxywithnate")
+misc:Slider("Speed Hack", 1, 500,function(speedfunc)
     getgenv().WalkSpeedValue = speedfunc
                     if getgenv().WalkSpeedValue then
                         local Player = game:service'Players'.LocalPlayer
@@ -46,7 +46,7 @@ misc:CreateSlider("Speed Hack", 1, 500,function(speedfunc)
                     end
 end)
 
-misc:CreateSlider("Jump Hack", 0, 500, function(Value)
+misc:Slider("Jump Hack", 0, 500, function(Value)
         getgenv().JumpValue = Value
         if getgenv().JumpValue then
             game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().JumpValue
@@ -1683,8 +1683,8 @@ end
 
 local DojoQuestNpc = CFrame.new(5855.19629, 1208.32178, 872.713501, 0.606994748, -1.81058823e-09, -0.794705868, 5.72712722e-09, 1, 2.09605577e-09, 0.794705868, -5.82367621e-09, 0.606994748)
 
-local DojoProgessCheck = main_dojo:CreateLabel('')
-local DojoInfoCheck = main_dojo:CreateLabel('')
+local DojoProgessCheck = main_dojo:Label('')
+local DojoInfoCheck = main_dojo:Label('')
 task.spawn(function()
     while task.wait() do
         if getAcc("Dojo Belt (White)") == false and getAcc("Dojo Belt (Yellow)") == false and getAcc("Dojo Belt (Orange)") == false and getAcc("Dojo Belt (Green)") == false and getAcc("Dojo Belt (Blue)") == false and getAcc("Dojo Belt (Purple)") == false and getAcc("Dojo Belt (Red)") == false and getAcc("Dojo Belt (Black)") == false then
@@ -1956,7 +1956,7 @@ main_dojo:Button('Teleport Dragon Hunter', function()
 end)
 
 
-local PrehistoricCheck = prehistorics_islands:CreateLabel('')
+local PrehistoricCheck = prehistorics_islands:Label('')
 
 spawn(function()
     while task.wait() do
@@ -2494,11 +2494,11 @@ spawn(function()
     end
 end)
 
-sea_event:CreateSlider("Tween Boat Speed", 1, 500,  function(Value)
+sea_event:Slider("Tween Boat Speed", 1, 500,  function(Value)
     SpeedBoatTween = Value
 end)
 
-sea_event:CreateSlider("Speed Boat Hack", 1, 500, function(Value)
+sea_event:Slider("Speed Boat Hack", 1, 500, function(Value)
     SpeedAllBoat = Value
 
     if SpeedAllBoat then
@@ -2710,9 +2710,9 @@ spawn(function()
 end)
 
 
-local IslandInfo = race_v4:CreateLabel("Island Status")
+local IslandInfo = race_v4:Label("Island Status")
 
-local MirageCheck = race_v4:CreateLabel("")
+local MirageCheck = race_v4:Label("")
 spawn(function()
     while task.wait() do
         if game.Workspace._WorldOrigin.Locations:FindFirstChild("Mirage Island") then
@@ -2723,7 +2723,7 @@ spawn(function()
     end
 end)
 
-local KitsuneCheck = race_v4:CreateLabel("")
+local KitsuneCheck = race_v4:Label("")
 spawn(function()
     while task.wait() do
         if game.Workspace._WorldOrigin.Locations:FindFirstChild("Kitsune Island") then
@@ -3261,7 +3261,7 @@ mainfarm:Toggle('Level Farm No Quest', LevelFarmNoQuest, function(Value)
     CancelTween(LevelFarmNoQuest)
 end)
 DistanceFarm = 50
-mainfarm:CreateSlider("Distance Farm", 50, 100, function(Value)
+mainfarm:Slider("Distance Farm", 50, 100, function(Value)
     DistanceFarm = Value
 end)
 
@@ -3341,7 +3341,7 @@ spawn(function()
         end
     end
 end)
-mainfarm:CreateSlider("Bring Mobs Distance", 50, 450, function(Value)
+mainfarm:Slider("Bring Mobs Distance", 50, 450, function(Value)
     bringfrec = Value
 end)
 BringMobs = true
@@ -3672,7 +3672,7 @@ spawn(function()
     end
 end)
 
-mainfarm:CreateSlider("Skill Percentage %", 1, 100, function(Value)
+mainfarm:Slider("Skill Percentage %", 1, 100, function(Value)
     KillPercent = Value
 end)
 
@@ -4568,8 +4568,8 @@ end)
 
 
 
-local Label1 = subsfarm:CreateLabel("Elite Boss Killed : ?")
-local Label2 = subsfarm:CreateLabel("")
+local Label1 = subsfarm:Label("Elite Boss Killed : ?")
+local Label2 = subsfarm:Label("")
 spawn(function()
     while task.wait() do
         if game:GetService('ReplicatedStorage'):FindFirstChild('Diablo') or game:GetService('ReplicatedStorage'):FindFirstChild('Deandre') or game:GetService('ReplicatedStorage'):FindFirstChild('Urban') then
@@ -4639,8 +4639,8 @@ spawn(function()
     end
 end)
 
-local Label3 = subsfarm:CreateLabel("Killed Left : ?")
-local Label4 = subsfarm:CreateLabel("")
+local Label3 = subsfarm:Label("Killed Left : ?")
+local Label4 = subsfarm:Label("")
 subsfarm:Toggle('Auto Cake Prince', AutoCakePrince, function(Value)
     AutoCakePrince = Value
     CancelTween(AutoCakePrince)
@@ -4985,7 +4985,7 @@ end)
 
 
 
-local Labels = subsfarm:CreateLabel("")
+local Labels = subsfarm:Label("")
 spawn(function()
     while task.wait() do
         Labels:Refresh("Observation Level : " .. tostring(game:GetService("Players").LocalPlayer.VisionRadius.Value))
@@ -6075,8 +6075,8 @@ end)
 
 
 
-local TushitaSword = squest:CreateLabel("")
-local YamaSword = squest:CreateLabel("")
+local TushitaSword = squest:Label("")
+local YamaSword = squest:Label("")
 
 function GetWeaponInventory(Sword)
     for i,v in pairs(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("getInventory")) do
@@ -6108,7 +6108,7 @@ spawn(function()
     end
 end)
 
-squest:CreateLabel("Will Released Soon")
+squest:Label("Will Released Soon")
 
 squest:Toggle('Auto Dark Dagger', AutoDarkDagger, function(Value)
     AutoDarkDagger = Value
@@ -7019,7 +7019,7 @@ task.spawn(function()
     end
 end)
 
-lawraids:CreateSlider("Distance Farm", 1, 100, function(Value)
+lawraids:Slider("Distance Farm", 1, 100, function(Value)
     DisRaid = Value
 end)
 
@@ -7225,8 +7225,8 @@ end)
 
 
 
-local Current = pvp:CreateLabel("Current Bounties : ")
-local Earn = pvp:CreateLabel("Bounty Earned : ")
+local Current = pvp:Label("Current Bounties : ")
+local Earn = pvp:Label("Bounty Earned : ")
 
 local OldBounty = game:GetService("Players").LocalPlayer.leaderstats["Bounty/Honor"].Value
 local Bounty = tostring(game:GetService("Players").LocalPlayer.leaderstats["Bounty/Honor"].Value)
@@ -7340,7 +7340,7 @@ spawn(function()
 end)
 
 
-pvp:CreateSlider("Distance Pvp", 1, 100, function(Value)
+pvp:Slider("Distance Pvp", 1, 100, function(Value)
     DisPvp = Value
 end)
 
@@ -7990,7 +7990,7 @@ tst:Toggle("Bypass TP", BypassTeleport, function(Value)
     BypassTeleport = Value
 end)
 
-tst:CreateLabel('Teleport to nearest NPC')
+tst:Label('Teleport to nearest NPC')
 
 local NPCLIST = {}
 for i,v in pairs(game.Workspace.NPCs:GetChildren()) do
