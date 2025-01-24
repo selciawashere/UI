@@ -776,238 +776,243 @@ end
             end)
         end
 
-        function Elements:Dropdown(Name,Listx,Callback)
-            local Name = Name or "Dropdown"
-            local DropdownFunction = {}
-            local Callback = Callback or function() end
-            local DropSize = 35
-            local opened = false 
+        function Elements:Dropdown(Name, Listx, Callback)
+    local Name = Name or "Dropdown"
+    local DropdownFunction = {}
+    local Callback = Callback or function() end
+    local DropSize = 35
+    local opened = false 
 
-            local DropdownFrame = Instance.new("Frame")
-            local DropdownFrameCorner = Instance.new("UICorner")
-            local DropdownName = Instance.new("TextLabel")
-            local DropdownNamePadding = Instance.new("UIPadding")
-            local DropdownIcon = Instance.new("ImageButton")
-            local DropdownButton = Instance.new("TextButton")
-            local DropList = Instance.new("Frame")
-            local DropListLayout = Instance.new("UIListLayout")
+    local DropdownFrame = Instance.new("Frame")
+    local DropdownFrameCorner = Instance.new("UICorner")
+    local DropdownName = Instance.new("TextLabel")
+    local DropdownNamePadding = Instance.new("UIPadding")
+    local DropdownIcon = Instance.new("ImageButton")
+    local DropdownButton = Instance.new("TextButton")
+    local DropList = Instance.new("Frame")
+    local DropListLayout = Instance.new("UIListLayout")
 
-            DropdownFrame.Name = tostring(Name).."_Dropdown"
-            DropdownFrame.Parent = Tab
-            DropdownFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-            DropdownFrame.BorderSizePixel = 0
-            DropdownFrame.Size = UDim2.new(0, 408, 0, 35)
+    DropdownFrame.Name = tostring(Name).."_Dropdown"
+    DropdownFrame.Parent = Tab
+    DropdownFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+    DropdownFrame.BorderSizePixel = 0
+    DropdownFrame.Size = UDim2.new(0, 408, 0, 35)
 
-            DropdownFrameCorner.Name = "DropdownFrameCorner"
-            DropdownFrameCorner.Parent = DropdownFrame
+    DropdownFrameCorner.Name = "DropdownFrameCorner"
+    DropdownFrameCorner.Parent = DropdownFrame
 
-            DropdownName.Name = "DropdownName"
-            DropdownName.Parent = DropdownFrame
-            DropdownName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            DropdownName.BackgroundTransparency = 1.000
-            DropdownName.BorderSizePixel = 0
-            DropdownName.Size = UDim2.new(0, 358, 0, 35)
-            DropdownName.Font = Enum.Font.Gotham
-            DropdownName.Text = Name
-            DropdownName.TextColor3 = Color3.fromRGB(255, 255, 255)
-            DropdownName.TextSize = 16.000
-            DropdownName.TextXAlignment = Enum.TextXAlignment.Left
+    DropdownName.Name = "DropdownName"
+    DropdownName.Parent = DropdownFrame
+    DropdownName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownName.BackgroundTransparency = 1.000
+    DropdownName.BorderSizePixel = 0
+    DropdownName.Size = UDim2.new(0, 358, 0, 35)
+    DropdownName.Font = Enum.Font.Gotham
+    DropdownName.Text = Name
+    DropdownName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownName.TextSize = 16.000
+    DropdownName.TextXAlignment = Enum.TextXAlignment.Left
 
-            DropdownNamePadding.Name = "DropdownNamePadding"
-            DropdownNamePadding.Parent = DropdownName
-            DropdownNamePadding.PaddingLeft = UDim.new(0, 10)
+    DropdownNamePadding.Name = "DropdownNamePadding"
+    DropdownNamePadding.Parent = DropdownName
+    DropdownNamePadding.PaddingLeft = UDim.new(0, 10)
 
-            DropdownIcon.Name = "DropdownIcon"
-            DropdownIcon.Parent = DropdownFrame
-            DropdownIcon.BackgroundTransparency = 1.000
-            DropdownIcon.Position = UDim2.new(0.914644599, 0, 0.140659884, 0)
-            DropdownIcon.Size = UDim2.new(0, 25, 0, 25)
-            DropdownIcon.ZIndex = 2
-            DropdownIcon.Image = "rbxassetid://3926305904"
-            DropdownIcon.ImageRectOffset = Vector2.new(604, 684)
-            DropdownIcon.ImageRectSize = Vector2.new(36, 36)
+    DropdownIcon.Name = "DropdownIcon"
+    DropdownIcon.Parent = DropdownFrame
+    DropdownIcon.BackgroundTransparency = 1.000
+    DropdownIcon.Position = UDim2.new(0.914644599, 0, 0.140659884, 0)
+    DropdownIcon.Size = UDim2.new(0, 25, 0, 25)
+    DropdownIcon.ZIndex = 2
+    DropdownIcon.Image = "rbxassetid://3926305904"
+    DropdownIcon.ImageRectOffset = Vector2.new(604, 684)
+    DropdownIcon.ImageRectSize = Vector2.new(36, 36)
 
-            DropdownButton.Name = "DropdownButton"
-            DropdownButton.Parent = DropdownFrame
-            DropdownButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            DropdownButton.BackgroundTransparency = 1.000
-            DropdownButton.BorderSizePixel = 0
-            DropdownButton.Size = UDim2.new(0, 408, 0, 35)
-            DropdownButton.Font = Enum.Font.SourceSans
-            DropdownButton.Text = ""
-            DropdownButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            DropdownButton.TextSize = 14.000
+    DropdownButton.Name = "DropdownButton"
+    DropdownButton.Parent = DropdownFrame
+    DropdownButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownButton.BackgroundTransparency = 1.000
+    DropdownButton.BorderSizePixel = 0
+    DropdownButton.Size = UDim2.new(0, 408, 0, 35)
+    DropdownButton.Font = Enum.Font.SourceSans
+    DropdownButton.Text = ""
+    DropdownButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    DropdownButton.TextSize = 14.000
 
-            DropList.Name = "DropList"
-            DropList.Parent = DropdownFrame
-            DropList.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-            DropList.BackgroundTransparency = 1.000
-            DropList.BorderSizePixel = 0
-            DropList.ClipsDescendants = true
-            DropList.Size = UDim2.new(0, 408, 0, 35)
-            DropList.ZIndex = 100
-            DropList.Position = UDim2.new(0, 0, 1.14285719, 0)
+    DropList.Name = "DropList"
+    DropList.Parent = DropdownFrame
+    DropList.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+    DropList.BackgroundTransparency = 1.000
+    DropList.BorderSizePixel = 0
+    DropList.ClipsDescendants = true
+    DropList.Size = UDim2.new(0, 408, 0, 35)
+    DropList.ZIndex = 999  -- Set a high ZIndex for the dropdown to always appear on top
+    DropList.Position = UDim2.new(0, 0, 1.14285719, 0)
+    DropList.Visible = false
+
+    DropListLayout.Name = "DropListLayout"
+    DropListLayout.Parent = DropList
+    DropListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    DropListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    DropListLayout.Padding = UDim.new(0, 3)
+
+    DropListLayout.Changed:Connect(function()
+        Tab.CanvasSize = UDim2.new(0, 0, 0, DropListLayout.AbsoluteContentSize.Y)
+    end)  
+
+    DropdownButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(DropdownFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            BackgroundColor3 = Color3.fromRGB(48, 51, 70)
+        }):Play()
+    end)
+
+    DropdownButton.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(DropdownFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+        }):Play()
+    end)
+
+    local function DropElements(x)
+        for i, v in pairs(Tab:GetChildren()) do 
+            if v:IsA("Frame") and v ~= DropdownFrame then 
+                v.Visible = x
+            end
+        end
+    end
+
+    DropdownButton.MouseButton1Down:Connect(function()
+        if opened then 
+            Size()
+            opened = false 
+            DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
+            wait(0.1)
+            game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                ImageColor3 = Color3.fromRGB(255, 255, 255)
+            }):Play()
             DropList.Visible = false
+            Size()
+        else 
+            opened = true 
+            DropList.Visible = true
+            DropList:TweenSize(UDim2.new(0, 408, 0, DropListLayout.AbsoluteContentSize.Y), "InOut", "Linear", 0.1)
+            Tab.CanvasSize = UDim2.new(0, 0, 0, DropListLayout.AbsoluteContentSize.Y + 100)
+            wait(0.1)
+            game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                ImageColor3 = Color3.fromRGB(55, 74, 251)
+            }):Play()
+            Tab.CanvasSize = UDim2.new(0, 0, 0, DropListLayout.AbsoluteContentSize.Y + 100)
+        end 
+    end)  
 
-            DropListLayout.Name = "DropListLayout"
-            DropListLayout.Parent = DropList
-            DropListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-            DropListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-            DropListLayout.Padding = UDim.new(0, 3)
+    for i, v in pairs(Listx) do 
+        local Option = Instance.new("TextButton")
+        local OptionCorner = Instance.new("UICorner")
 
-            DropListLayout.Changed:Connect(function()
-                Tab.CanvasSize = UDim2.new(0, 0, 0, DropListLayout.AbsoluteContentSize.Y)
-            end)  
+        Option.Name = tostring(v).."_Option"
+        Option.Parent = DropList
+        Option.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+        Option.Size = UDim2.new(0, 408, 0, 35)
+        Option.Font = Enum.Font.Gotham
+        Option.Text = v
+        Option.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Option.TextSize = 16.000
 
-            DropdownButton.MouseEnter:Connect(function()
-                game:GetService("TweenService"):Create(DropdownFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+        Option.ZIndex = 999  -- Set a high ZIndex to ensure the options are on top
+
+        OptionCorner.Name = "OptionCorner"
+        OptionCorner.Parent = Option
+
+        Option.MouseButton1Down:Connect(function()
+            Callback(v)
+            for a, b in pairs(DropList:GetChildren()) do 
+                if b:IsA("TextButton") then 
+                    b.TextColor3 = Color3.fromRGB(255, 255, 255)
+                end 
+            end
+            game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                TextColor3 = Color3.fromRGB(55, 74, 251)
+            }):Play()
+            DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
+            game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                ImageColor3 = Color3.fromRGB(255, 255, 255)
+            }):Play()
+            wait(0.1)
+            DropList.Visible = false
+            opened = false
+            DropElements(true)
+            Size()
+        end)
+
+        Option.MouseEnter:Connect(function()
+            game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                BackgroundColor3 = Color3.fromRGB(48, 51, 70)
+            }):Play()
+        end)
+
+        Option.MouseLeave:Connect(function()
+            game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+            }):Play()
+        end)
+    end
+
+    function DropdownFunction:UpdateDropdown(List)
+        local List = List or {}
+        for i, v in pairs(List) do 
+            local Option = Instance.new("TextButton")
+            local OptionCorner = Instance.new("UICorner")
+
+            DropSize = DropSize + 35
+
+            Option.Name = tostring(v).."_Option"
+            Option.Parent = DropList
+            Option.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
+            Option.Size = UDim2.new(0, 408, 0, 35)
+            Option.Font = Enum.Font.Gotham
+            Option.Text = v
+            Option.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Option.TextSize = 16.000
+
+            Option.ZIndex = 999  -- Ensure the new options also have a high ZIndex
+
+            OptionCorner.Name = "OptionCorner"
+            OptionCorner.Parent = Option
+
+            Option.MouseButton1Down:Connect(function()
+                Callback(v)
+                for a, b in pairs(DropList:GetChildren()) do 
+                    if b:IsA("TextButton") then 
+                        b.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    end 
+                end
+                game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                    TextColor3 = Color3.fromRGB(55, 74, 251)
+                }):Play()
+                DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
+                game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+                    ImageColor3 = Color3.fromRGB(255, 255, 255)
+                }):Play()
+                wait(0.1)
+                DropList.Visible = false
+                opened = false
+                DropElements(true)
+                Size()
+            end)
+
+            Option.MouseEnter:Connect(function()
+                game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
                     BackgroundColor3 = Color3.fromRGB(48, 51, 70)
                 }):Play()
             end)
-            DropdownButton.MouseLeave:Connect(function()
-                game:GetService("TweenService"):Create(DropdownFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+
+            Option.MouseLeave:Connect(function()
+                game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
                     BackgroundColor3 = Color3.fromRGB(40, 42, 60)
                 }):Play()
             end)
-
-            local function DropElements(x)
-                for i,v in pairs(Tab:GetChildren()) do 
-                    if v:IsA("Frame") and v ~= DropdownFrame then 
-                        v.Visible = x
-                    end
-                end
-            end
-
-            DropdownButton.MouseButton1Down:Connect(function()
-                if opened then 
-                    Size()
-                    opened = false 
-                    DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
-                    wait(0.1)
-                    game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        ImageColor3 = Color3.fromRGB(255,255,255)
-                    }):Play()
-                    DropList.Visible = false
-                    Size()
-                else 
-                    opened = true 
-                    DropList.Visible = true
-                    DropList:TweenSize(UDim2.new(0, 408, 0, DropListLayout.AbsoluteContentSize.Y), "InOut", "Linear", 0.1)
-                    Tab.CanvasSize = UDim2.new(0,0,0,DropListLayout.AbsoluteContentSize.Y + 100)
-                    wait(0.1)
-                    game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        ImageColor3 = Color3.fromRGB(55, 74, 251)
-                    }):Play()
-                    Tab.CanvasSize = UDim2.new(0,0,0,DropListLayout.AbsoluteContentSize.Y + 100)
-                end 
-            end)  
-
-            for i,v in pairs(Listx) do 
-                local Option = Instance.new("TextButton")
-                local OptionCorner = Instance.new("UICorner")
-                
-                Option.Name = tostring(v).."_Option"
-                Option.Parent = DropList
-                Option.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-                Option.Size = UDim2.new(0, 408, 0, 35)
-                Option.Font = Enum.Font.Gotham
-                Option.Text = v
-                Option.TextColor3 = Color3.fromRGB(255, 255, 255)
-                Option.TextSize = 16.000
-
-                OptionCorner.Name = "OptionCorner"
-                OptionCorner.Parent = Option
-
-                Option.MouseButton1Down:Connect(function()
-                    Callback(v)
-                    for a,b in pairs(DropList:GetChildren()) do 
-                        if b:IsA("TextButton") then 
-                            b.TextColor3 = Color3.fromRGB(255,255,255)
-                        end 
-                    end
-                    game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        TextColor3 = Color3.fromRGB(55, 74, 251)
-                    }):Play()
-                    DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
-                    game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        ImageColor3 = Color3.fromRGB(255,255,255)
-                    }):Play()
-                    wait(0.1)
-                    DropList.Visible = false
-                    opened = false
-                    DropElements(true)
-                    Size()
-                end)
-
-                Option.MouseEnter:Connect(function()
-                    game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        BackgroundColor3 = Color3.fromRGB(48, 51, 70)
-                    }):Play()
-                end)
-                Option.MouseLeave:Connect(function()
-                    game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                        BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-                    }):Play()
-                end)
-            end
-
-            function DropdownFunction:UpdateDropdown(List)
-                local List = List or {}
-                for i,v in pairs(List) do 
-                    local Option = Instance.new("TextButton")
-                    local OptionCorner = Instance.new("UICorner")
-    
-                    DropSize = DropSize + 35
-    
-                    Option.Name = tostring(v).."_Option"
-                    Option.Parent = DropList
-                    Option.BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-                    Option.Size = UDim2.new(0, 408, 0, 35)
-                    Option.Font = Enum.Font.Gotham
-                    Option.Text = v
-                    Option.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    Option.TextSize = 16.000
-    
-                    OptionCorner.Name = "OptionCorner"
-                    OptionCorner.Parent = Option
-    
-                    Option.MouseButton1Down:Connect(function()
-                        Callback(v)
-                        for a,b in pairs(DropList:GetChildren()) do 
-                            if b:IsA("TextButton") then 
-                                b.TextColor3 = Color3.fromRGB(255,255,255)
-                            end 
-                        end
-                        game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                            TextColor3 = Color3.fromRGB(55, 74, 251)
-                        }):Play()
-                        DropList:TweenSize(UDim2.new(0, 408, 0, 35), "InOut", "Linear", 0.1)
-                        game:GetService("TweenService"):Create(DropdownIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                            ImageColor3 = Color3.fromRGB(255,255,255)
-                        }):Play()
-                        wait(0.1)
-                        DropList.Visible = false
-                        opened = false
-                        DropElements(true)
-                        Size()
-                    end)
-    
-                    Option.MouseEnter:Connect(function()
-                        game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                            BackgroundColor3 = Color3.fromRGB(48, 51, 70)
-                        }):Play()
-                    end)
-                    Option.MouseLeave:Connect(function()
-                        game:GetService("TweenService"):Create(Option, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-                            BackgroundColor3 = Color3.fromRGB(40, 42, 60)
-                        }):Play()
-                    end)
-                end
-            end
-            return DropdownFunction
         end
-        return Elements
     end
+    return DropdownFunction
+end
     return xTabs
 end
 return Library
