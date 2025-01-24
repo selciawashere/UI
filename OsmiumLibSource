@@ -247,47 +247,7 @@ local destructionHooks = {}
                 end
             end)
         end)
-
-        local windowContainer = CreateInstance("Frame", top, {
-            Position = UDim2.new(0, 0, 0.764, 0),
-            BorderColor3 = Colors.White,
-            ZIndex = 0,
-            Size = UDim2.new(0, 612, 0, 370),
-            BackgroundColor3 = Colors.Gray.Top
-        })
-
-        CreateInstance("UICorner", windowContainer, {
-            CornerRadius = UDim.new(0, 3)
-        })
-
-        pcall(function ()
-            local opened = true
-
-            function window:Hide()
-                opened = false
-                top.Visible = false
-            end
-
-            function window:Show()
-                opened = true
-                top.Visible = true
-            end
-
-            local handler = UserInputService.InputBegan:Connect(function (input)
-                if input.KeyCode == Enum.KeyCode.LeftAlt then
-                    if opened then
-                        window:Hide()
-                    else
-                        window:Show()
-                    end
-                end
-            end)
-
-            window:OnDestroy(function ()
-                handler:Disconnect()
-            end)
-        end)
-        local toggleButton = CreateInstance("ImageButton", screen, {
+ local toggleButton = CreateInstance("ImageButton", screen, {
     Name = "ToggleButton",
     Size = UDim2.new(0, 75, 0, 75),
     Position = UDim2.new(0, 50, 0, 50), -- Set the initial position of the button
@@ -338,7 +298,47 @@ toggleButton.MouseButton1Click:Connect(function()
         window:Show()
     end
 end)
-     local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
+        local windowContainer = CreateInstance("Frame", top, {
+            Position = UDim2.new(0, 0, 0.764, 0),
+            BorderColor3 = Colors.White,
+            ZIndex = 0,
+            Size = UDim2.new(0, 612, 0, 370),
+            BackgroundColor3 = Colors.Gray.Top
+        })
+
+        CreateInstance("UICorner", windowContainer, {
+            CornerRadius = UDim.new(0, 3)
+        })
+
+        pcall(function ()
+            local opened = true
+
+            function window:Hide()
+                opened = false
+                top.Visible = false
+            end
+
+            function window:Show()
+                opened = true
+                top.Visible = true
+            end
+
+            local handler = UserInputService.InputBegan:Connect(function (input)
+                if input.KeyCode == Enum.KeyCode.LeftAlt then
+                    if opened then
+                        window:Hide()
+                    else
+                        window:Show()
+                    end
+                end
+            end)
+
+            window:OnDestroy(function ()
+                handler:Disconnect()
+            end)
+        end)
+
+        local windowBody = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
             BorderColor3 = Colors.Gray.Stroke,
@@ -355,7 +355,7 @@ end)
         local tabs = {}
         local tabsNames = {}
         local currentTab = 1
-
+    
         local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
             ScrollBarImageColor3 = Colors.Black,
             Active = true,
@@ -1257,3 +1257,5 @@ end)
 end)()
 
 return library
+       
+  
