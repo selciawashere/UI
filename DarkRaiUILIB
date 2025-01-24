@@ -259,15 +259,16 @@ ImageButton.BackgroundTransparency = 0.5  -- Set transparency for background
 ImageButton.BackgroundCornerRadius = UDim.new(0, 12)  -- Set curved corners with a radius of 12
 
 local uihide = false
-local Main = script.Parent.Main  -- Replace with your actual main UI element
+local Main = script.Parent:WaitForChild("Darkrai")  -- Ensure 'Main' exists in your parent UI
 
 ImageButton.MouseButton1Click:Connect(function()
     if uihide == false then
         uihide = true
-        Main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Quad", 0.4, true)
+        -- Assuming 'Main' is a UI component like a frame
+        Main:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.4, true)
     else
         uihide = false
-        Main:TweenSize(UDim2.new(0, 656, 0, 400), "Out", "Quad", 0.4, true)
+        Main:TweenSize(UDim2.new(0, 656, 0, 400), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.4, true)
     end
 end)
 
