@@ -306,14 +306,15 @@ local destructionHooks = {}
         local tabsNames = {}
         local currentTab = 1
 
+-- Create ScrollingFrame for Tabs with Vertical Scrolling
 local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     ScrollBarImageColor3 = Colors.Black,
     Active = true,
     BorderColor3 = Colors.Gray.Stroke,
-    ScrollBarThickness = 0,
-    ScrollBarImageTransparency = 1,
-    VerticalScrollBarInset = Enum.ScrollBarInset.Always,
-    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Change to Y for vertical scrolling
+    ScrollBarThickness = 5, -- Adjust scroll bar thickness for better visibility
+    ScrollBarImageTransparency = 0.5, -- Slight transparency for aesthetics
+    VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar,
+    AutomaticCanvasSize = Enum.AutomaticSize.Y, -- Enable dynamic vertical scrolling
     CanvasSize = UDim2.new(0, 0, 0, 0),
     Name = "ScrollingFrameTabs",
     Position = UDim2.new(0, 0, 0.01, 0),
@@ -322,19 +323,20 @@ local scrollingFrameTabs = CreateInstance("ScrollingFrame", windowContainer, {
     BackgroundColor3 = Colors.Gray.Top,
 })
 
-
+-- Adjust Layout to Support Vertical Scrolling
 CreateInstance("UIGridLayout", scrollingFrameTabs, {
-    FillDirection = Enum.FillDirection.Vertical, -- Set to Vertical
-    CellSize = UDim2.new(0, 150, 0, 25),
+    FillDirection = Enum.FillDirection.Vertical, -- Align tabs vertically
+    CellSize = UDim2.new(0, 150, 0, 40), -- Adjust cell size for better spacing
     SortOrder = Enum.SortOrder.LayoutOrder,
-    CellPadding = UDim2.new(0, 5, 0, 10),
+    CellPadding = UDim2.new(0, 5, 0, 10), -- Add consistent padding
 })
 
-        
-        CreateInstance("UIPadding", scrollingFrameTabs, {
-            PaddingTop = UDim.new(0, 10),
-            PaddingLeft = UDim.new(0, 5),
-        })
+-- Add Padding for Aesthetic Alignment
+CreateInstance("UIPadding", scrollingFrameTabs, {
+    PaddingTop = UDim.new(0, 10),
+    PaddingLeft = UDim.new(0, 5),
+})
+
 
         pcall(function ()
             local frame = top.Frame
