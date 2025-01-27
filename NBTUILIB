@@ -341,8 +341,6 @@ function VLib:Window(textgame)
 	DragFrame.Position = UDim2.new(0.30130294, 0, 0.00253164559, 0)
 	DragFrame.Size = UDim2.new(0, 428, 0, 21)
 
-	-- Make the whole Library draggable, not just the MainFrame
-	MakeDraggable(Library, Library)
 end
 
 
