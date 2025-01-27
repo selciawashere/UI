@@ -34,63 +34,6 @@ coroutine.wrap(
 	end
 )()
 
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player.PlayerGui
-
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 100)
-toggleButton.Position = UDim2.new(0, 100, 0, 100)
-toggleButton.Image = "rbxassetid://75237883871377"
-toggleButton.Parent = screenGui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = toggleButton
-
-toggleButton.BackgroundTransparency = 1
-toggleButton.ClipsDescendants = true
-toggleButton.BorderSizePixel = 0
-
-local dragging = false
-local dragStart, startPos
-local uitoggled = false
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        toggleButton.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    if uitoggled then
-        Library.Enabled = true
-    else
-        Library.Enabled = false
-    end
-    uitoggled = not uitoggled
-end)
 local function MakeDraggable(topbarobject, object)
 	local Dragging = nil
 	local DragInput = nil
@@ -148,25 +91,6 @@ local function MakeDraggable(topbarobject, object)
 	)
 end
 
-local Library = Instance.new("ScreenGui")
-Library.Name = "Library"
-Library.Parent = game.CoreGui
-Library.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local uitoggled = false
-UserInputService.InputBegan:Connect(
-	function(io, p)
-		if io.KeyCode == Enum.KeyCode.RightControl then
-			if uitoggled == false then
-				Library.Enabled = false
-				uitoggled = true
-			else
-				Library.Enabled = true
-				uitoggled = false
-			end
-		end
-	end
-)
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -224,6 +148,25 @@ toggleButton.MouseButton1Click:Connect(function()
     end
     uitoggled = not uitoggled
 end)
+local Library = Instance.new("ScreenGui")
+Library.Name = "Library"
+Library.Parent = game.CoreGui
+Library.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local uitoggled = false
+UserInputService.InputBegan:Connect(
+	function(io, p)
+		if io.KeyCode == Enum.KeyCode.RightControl then
+			if uitoggled == false then
+				Library.Enabled = false
+				uitoggled = true
+			else
+				Library.Enabled = true
+				uitoggled = false
+			end
+		end
+	end
+)
 
 function VLib:Window(textgame)
 	local FirstTab = false
@@ -291,7 +234,7 @@ function VLib:Window(textgame)
 	CircleName.BackgroundTransparency = 1.000
 	CircleName.Size = UDim2.new(0, 38, 0, 37)
 	CircleName.Font = Enum.Font.Gotham
-	CircleName.Text = "TBD"
+	CircleName.Text = "NBT"
 	CircleName.TextColor3 = Color3.fromRGB(255, 255, 255)
 	CircleName.TextSize = 16.000
 
@@ -1443,40 +1386,25 @@ function VLib:Window(textgame)
 			)()
 		end
 		function ContainerItems:Label(text)
-    local Label = Instance.new("TextButton")
-    local LabelCorner = Instance.new("UICorner")
+			local Label = Instance.new("TextButton")
+			local LabelCorner = Instance.new("UICorner")
 
-    Label.Name = "Label"
-    Label.Parent = Container
-    Label.BackgroundColor3 = Color3.fromRGB(32, 33, 37)
-    Label.Size = UDim2.new(0, 403, 0, 28)
-    Label.AutoButtonColor = false
-    Label.Font = Enum.Font.Gotham
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 14.000
-    Label.Text = text
+			Label.Name = "Label"
+			Label.Parent = Container
+			Label.BackgroundColor3 = Color3.fromRGB(32, 33, 37)
+			Label.Size = UDim2.new(0, 403, 0, 28)
+			Label.AutoButtonColor = false
+			Label.Font = Enum.Font.Gotham
+			Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Label.TextSize = 14.000
+			Label.Text = text
 
-    LabelCorner.CornerRadius = UDim.new(0, 6)
-    LabelCorner.Name = "LabelCorner"
-    LabelCorner.Parent = Label
+			LabelCorner.CornerRadius = UDim.new(0, 6)
+			LabelCorner.Name = "LabelCorner"
+			LabelCorner.Parent = Label
 
-    self:Refresh()
-
-    return Label
-end
-
-function ContainerItems:Refresh()
-    if ContainerLayout and Container then
-        Container.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y)
-    end
-end
-
-function ContainerItems:UpdateLabel(label, newText)
-    if label and label:IsA("TextButton") then
-        label.Text = newText
-        self:Refresh()
-    end
-end
+			Container.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y)
+		end
 
 		function ContainerItems:Textbox(text, disapper, callback)
 			local Textbox = Instance.new("TextButton")
@@ -1551,4 +1479,4 @@ end
 	end
 	return Tabs
 end
-return VLib
+return VLib	
