@@ -1386,25 +1386,40 @@ function VLib:Window(textgame)
 			)()
 		end
 		function ContainerItems:Label(text)
-			local Label = Instance.new("TextButton")
-			local LabelCorner = Instance.new("UICorner")
+    local Label = Instance.new("TextButton")
+    local LabelCorner = Instance.new("UICorner")
 
-			Label.Name = "Label"
-			Label.Parent = Container
-			Label.BackgroundColor3 = Color3.fromRGB(32, 33, 37)
-			Label.Size = UDim2.new(0, 403, 0, 28)
-			Label.AutoButtonColor = false
-			Label.Font = Enum.Font.Gotham
-			Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-			Label.TextSize = 14.000
-			Label.Text = text
+    Label.Name = "Label"
+    Label.Parent = Container
+    Label.BackgroundColor3 = Color3.fromRGB(32, 33, 37)
+    Label.Size = UDim2.new(0, 403, 0, 28)
+    Label.AutoButtonColor = false
+    Label.Font = Enum.Font.Gotham
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 14.000
+    Label.Text = text
 
-			LabelCorner.CornerRadius = UDim.new(0, 6)
-			LabelCorner.Name = "LabelCorner"
-			LabelCorner.Parent = Label
+    LabelCorner.CornerRadius = UDim.new(0, 6)
+    LabelCorner.Name = "LabelCorner"
+    LabelCorner.Parent = Label
 
-			Container.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y)
-		end
+    self:Refresh()
+
+    return Label
+end
+
+function ContainerItems:Refresh()
+    if ContainerLayout and Container then
+        Container.CanvasSize = UDim2.new(0, 0, 0, ContainerLayout.AbsoluteContentSize.Y)
+    end
+end
+
+function ContainerItems:UpdateLabel(label, newText)
+    if label and label:IsA("TextButton") then
+        label.Text = newText
+        self:Refresh()
+    end
+end
 
 		function ContainerItems:Textbox(text, disapper, callback)
 			local Textbox = Instance.new("TextButton")
