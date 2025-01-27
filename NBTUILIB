@@ -91,63 +91,7 @@ local function MakeDraggable(topbarobject, object)
 	)
 end
 
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player.PlayerGui
-
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 100)
-toggleButton.Position = UDim2.new(0, 100, 0, 100)
-toggleButton.Image = "rbxassetid://75237883871377"
-toggleButton.Parent = screenGui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = toggleButton
-
-toggleButton.BackgroundTransparency = 1
-toggleButton.ClipsDescendants = true
-toggleButton.BorderSizePixel = 0
-
-local dragging = false
-local dragStart, startPos
-local uitoggled = false
-
-toggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = toggleButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        toggleButton.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    if uitoggled then
-        Library.Enabled = true
-    else
-        Library.Enabled = false
-    end
-    uitoggled = not uitoggled
-end)
 local Library = Instance.new("ScreenGui")
 Library.Name = "Library"
 Library.Parent = game.CoreGui
