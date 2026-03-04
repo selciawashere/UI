@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
 
 local WindowMethods = {}
 local TabMethods = {}
@@ -49,11 +50,45 @@ local function clamp(value, minimum, maximum)
     return value
 end
 
-local function roundToStep(value, step, minimum)
+local function countDecimals(value)
+    value = tonumber(value)
+    if not value then
+        return 0
+    end
+    local text = string.format("%.8f", math.abs(value))
+    text = text:gsub("0+$", "")
+    local dot = text:find("%.")
+    if not dot then
+        return 0
+    end
+    return #text - dot
+end
+
+local function roundToDecimals(value, decimals)
+    decimals = math.max(0, math.floor(tonumber(decimals) or 0))
+    local multiplier = 10 ^ decimals
+    if value >= 0 then
+        return math.floor(value * multiplier + 0.5) / multiplier
+    end
+    return math.ceil(value * multiplier - 0.5) / multiplier
+end
+
+local function roundToStep(value, step, minimum, decimals)
     if step <= 0 then
+        if decimals and decimals > 0 then
+            return roundToDecimals(value, decimals)
+        end
         return value
     end
-    return minimum + math.floor(((value - minimum) / step) + 0.5) * step
+    local rounded = minimum + math.floor(((value - minimum) / step) + 0.5) * step
+    local places = decimals
+    if places == nil then
+        places = math.max(countDecimals(step), countDecimals(minimum))
+    end
+    if places > 0 then
+        rounded = roundToDecimals(rounded, places)
+    end
+    return rounded
 end
 
 local function lerpUDim2(a, b, alpha)
@@ -65,27 +100,366 @@ local function lerpUDim2(a, b, alpha)
     )
 end
 
-local function mergeTheme(customTheme)
-    local theme = {
-        Background = Color3.fromRGB(10, 11, 14),
-        Window = Color3.fromRGB(18, 19, 24),
-        Panel = Color3.fromRGB(22, 23, 29),
-        Card = Color3.fromRGB(20, 21, 27),
-        Control = Color3.fromRGB(25, 26, 33),
-        ControlHover = Color3.fromRGB(32, 33, 42),
-        Stroke = Color3.fromRGB(74, 76, 94),
-        Text = Color3.fromRGB(235, 236, 242),
-        SubText = Color3.fromRGB(164, 167, 185),
-        Accent = Color3.fromRGB(224, 163, 255),
-        AccentDark = Color3.fromRGB(156, 102, 210),
-        Success = Color3.fromRGB(108, 219, 171)
+local themeColorKeys = {
+    "Background",
+    "Window",
+    "Panel",
+    "Card",
+    "Control",
+    "ControlHover",
+    "Stroke",
+    "Text",
+    "SubText",
+    "Accent",
+    "AccentDark",
+    "Success"
+}
+
+local ThemeOrder = {
+    "Isaeva",
+    "Vaclav",
+    "Midnight",
+    "Ember",
+    "Emerald",
+    "Ocean",
+    "Sunset",
+    "Graphite",
+    "Sakura",
+    "Frost",
+    "Forest"
+}
+
+local ThemePresets = {
+    Isaeva = {
+        Background = Color3.fromRGB(10, 10, 10),
+        Window = Color3.fromRGB(26, 26, 26),
+        Panel = Color3.fromRGB(22, 22, 22),
+        Card = Color3.fromRGB(20, 20, 20),
+        Control = Color3.fromRGB(30, 30, 30),
+        ControlHover = Color3.fromRGB(39, 39, 39),
+        Stroke = Color3.fromRGB(108, 77, 83),
+        Text = Color3.fromRGB(240, 236, 238),
+        SubText = Color3.fromRGB(178, 168, 171),
+        Accent = Color3.fromRGB(184, 106, 115),
+        AccentDark = Color3.fromRGB(145, 84, 92),
+        Success = Color3.fromRGB(115, 204, 154)
+    },
+    Vaclav = {
+        Background = Color3.fromRGB(10, 10, 10),
+        Window = Color3.fromRGB(26, 26, 26),
+        Panel = Color3.fromRGB(22, 22, 22),
+        Card = Color3.fromRGB(20, 20, 20),
+        Control = Color3.fromRGB(30, 30, 30),
+        ControlHover = Color3.fromRGB(39, 39, 39),
+        Stroke = Color3.fromRGB(108, 77, 83),
+        Text = Color3.fromRGB(240, 236, 238),
+        SubText = Color3.fromRGB(178, 168, 171),
+        Accent = Color3.fromRGB(184, 106, 115),
+        AccentDark = Color3.fromRGB(145, 84, 92),
+        Success = Color3.fromRGB(115, 204, 154)
+    },
+    Midnight = {
+        Background = Color3.fromRGB(8, 11, 18),
+        Window = Color3.fromRGB(14, 19, 29),
+        Panel = Color3.fromRGB(18, 24, 36),
+        Card = Color3.fromRGB(16, 21, 33),
+        Control = Color3.fromRGB(23, 30, 45),
+        ControlHover = Color3.fromRGB(31, 39, 58),
+        Stroke = Color3.fromRGB(72, 88, 120),
+        Text = Color3.fromRGB(232, 238, 248),
+        SubText = Color3.fromRGB(153, 169, 196),
+        Accent = Color3.fromRGB(97, 149, 255),
+        AccentDark = Color3.fromRGB(68, 111, 198),
+        Success = Color3.fromRGB(96, 203, 160)
+    },
+    Ember = {
+        Background = Color3.fromRGB(15, 11, 11),
+        Window = Color3.fromRGB(24, 17, 17),
+        Panel = Color3.fromRGB(31, 22, 22),
+        Card = Color3.fromRGB(27, 19, 19),
+        Control = Color3.fromRGB(36, 25, 25),
+        ControlHover = Color3.fromRGB(47, 32, 32),
+        Stroke = Color3.fromRGB(121, 80, 73),
+        Text = Color3.fromRGB(244, 236, 232),
+        SubText = Color3.fromRGB(193, 162, 156),
+        Accent = Color3.fromRGB(219, 114, 90),
+        AccentDark = Color3.fromRGB(170, 83, 64),
+        Success = Color3.fromRGB(129, 211, 143)
+    },
+    Emerald = {
+        Background = Color3.fromRGB(9, 13, 11),
+        Window = Color3.fromRGB(16, 22, 18),
+        Panel = Color3.fromRGB(21, 28, 24),
+        Card = Color3.fromRGB(19, 25, 21),
+        Control = Color3.fromRGB(26, 34, 29),
+        ControlHover = Color3.fromRGB(35, 44, 38),
+        Stroke = Color3.fromRGB(78, 112, 92),
+        Text = Color3.fromRGB(232, 241, 236),
+        SubText = Color3.fromRGB(159, 184, 171),
+        Accent = Color3.fromRGB(102, 198, 151),
+        AccentDark = Color3.fromRGB(73, 150, 113),
+        Success = Color3.fromRGB(125, 224, 171)
+    },
+    Ocean = {
+        Background = Color3.fromRGB(7, 12, 15),
+        Window = Color3.fromRGB(13, 20, 25),
+        Panel = Color3.fromRGB(17, 26, 32),
+        Card = Color3.fromRGB(15, 23, 29),
+        Control = Color3.fromRGB(22, 31, 38),
+        ControlHover = Color3.fromRGB(30, 41, 50),
+        Stroke = Color3.fromRGB(76, 106, 126),
+        Text = Color3.fromRGB(231, 239, 245),
+        SubText = Color3.fromRGB(151, 176, 194),
+        Accent = Color3.fromRGB(92, 172, 216),
+        AccentDark = Color3.fromRGB(63, 130, 169),
+        Success = Color3.fromRGB(102, 204, 182)
+    },
+    Sunset = {
+        Background = Color3.fromRGB(17, 12, 8),
+        Window = Color3.fromRGB(27, 20, 14),
+        Panel = Color3.fromRGB(35, 26, 18),
+        Card = Color3.fromRGB(31, 23, 16),
+        Control = Color3.fromRGB(41, 30, 21),
+        ControlHover = Color3.fromRGB(53, 39, 28),
+        Stroke = Color3.fromRGB(134, 100, 76),
+        Text = Color3.fromRGB(246, 238, 227),
+        SubText = Color3.fromRGB(204, 176, 153),
+        Accent = Color3.fromRGB(224, 157, 92),
+        AccentDark = Color3.fromRGB(178, 117, 62),
+        Success = Color3.fromRGB(139, 212, 156)
+    },
+    Graphite = {
+        Background = Color3.fromRGB(12, 12, 13),
+        Window = Color3.fromRGB(19, 19, 21),
+        Panel = Color3.fromRGB(24, 24, 27),
+        Card = Color3.fromRGB(22, 22, 25),
+        Control = Color3.fromRGB(31, 31, 35),
+        ControlHover = Color3.fromRGB(40, 40, 46),
+        Stroke = Color3.fromRGB(98, 98, 108),
+        Text = Color3.fromRGB(236, 236, 238),
+        SubText = Color3.fromRGB(171, 171, 178),
+        Accent = Color3.fromRGB(167, 177, 194),
+        AccentDark = Color3.fromRGB(123, 132, 149),
+        Success = Color3.fromRGB(124, 198, 163)
+    },
+    Sakura = {
+        Background = Color3.fromRGB(13, 10, 12),
+        Window = Color3.fromRGB(22, 16, 20),
+        Panel = Color3.fromRGB(29, 21, 26),
+        Card = Color3.fromRGB(25, 19, 23),
+        Control = Color3.fromRGB(34, 25, 30),
+        ControlHover = Color3.fromRGB(44, 32, 38),
+        Stroke = Color3.fromRGB(116, 80, 98),
+        Text = Color3.fromRGB(243, 234, 240),
+        SubText = Color3.fromRGB(197, 162, 181),
+        Accent = Color3.fromRGB(225, 129, 167),
+        AccentDark = Color3.fromRGB(176, 94, 130),
+        Success = Color3.fromRGB(129, 212, 165)
+    },
+    Frost = {
+        Background = Color3.fromRGB(9, 12, 14),
+        Window = Color3.fromRGB(16, 21, 25),
+        Panel = Color3.fromRGB(21, 27, 32),
+        Card = Color3.fromRGB(19, 24, 29),
+        Control = Color3.fromRGB(27, 34, 40),
+        ControlHover = Color3.fromRGB(36, 44, 52),
+        Stroke = Color3.fromRGB(90, 116, 132),
+        Text = Color3.fromRGB(234, 242, 246),
+        SubText = Color3.fromRGB(165, 187, 201),
+        Accent = Color3.fromRGB(133, 191, 222),
+        AccentDark = Color3.fromRGB(94, 149, 181),
+        Success = Color3.fromRGB(120, 211, 188)
+    },
+    Forest = {
+        Background = Color3.fromRGB(8, 12, 9),
+        Window = Color3.fromRGB(14, 20, 16),
+        Panel = Color3.fromRGB(18, 25, 20),
+        Card = Color3.fromRGB(16, 22, 18),
+        Control = Color3.fromRGB(23, 30, 25),
+        ControlHover = Color3.fromRGB(31, 40, 33),
+        Stroke = Color3.fromRGB(75, 105, 82),
+        Text = Color3.fromRGB(231, 240, 233),
+        SubText = Color3.fromRGB(151, 178, 159),
+        Accent = Color3.fromRGB(119, 177, 118),
+        AccentDark = Color3.fromRGB(84, 132, 87),
+        Success = Color3.fromRGB(135, 215, 145)
     }
-    if type(customTheme) == "table" then
-        for key, value in pairs(customTheme) do
+}
+
+Library.ThemeOrder = ThemeOrder
+Library.ThemePresets = ThemePresets
+
+local function copyTheme(source)
+    local target = {}
+    for key, value in pairs(source or {}) do
+        target[key] = value
+    end
+    return target
+end
+
+local function getThemeStyleNames()
+    local names = {}
+    local seen = {}
+    for _, name in ipairs(ThemeOrder) do
+        if ThemePresets[name] then
+            table.insert(names, name)
+            seen[name] = true
+        end
+    end
+    for name in pairs(ThemePresets) do
+        if not seen[name] then
+            table.insert(names, name)
+        end
+    end
+    return names
+end
+
+local function resolveThemeName(themeInput)
+    if themeInput == nil then
+        return "Isaeva"
+    end
+    if type(themeInput) == "string" then
+        if ThemePresets[themeInput] then
+            return themeInput
+        end
+        return "Isaeva"
+    end
+    if type(themeInput) == "table" then
+        local presetName = themeInput.Preset or themeInput.Style or themeInput.StyleName
+        if type(presetName) == "string" and ThemePresets[presetName] then
+            return presetName
+        end
+    end
+    return "Custom"
+end
+
+local function mergeTheme(customTheme)
+    local theme = copyTheme(ThemePresets.Isaeva)
+    local presetName
+
+    if type(customTheme) == "string" then
+        presetName = customTheme
+    elseif type(customTheme) == "table" then
+        presetName = customTheme.Preset or customTheme.Style or customTheme.StyleName
+    end
+
+    local preset = type(presetName) == "string" and ThemePresets[presetName] or nil
+    if preset then
+        for key, value in pairs(preset) do
             theme[key] = value
         end
     end
+
+    if type(customTheme) == "table" then
+        for key, value in pairs(customTheme) do
+            if key ~= "Preset" and key ~= "Style" and key ~= "StyleName" then
+                theme[key] = value
+            end
+        end
+    end
+
     return theme
+end
+
+function Library:GetThemeNames()
+    return getThemeStyleNames()
+end
+
+function Library:GetTheme(themeInput)
+    return mergeTheme(themeInput)
+end
+
+local colorProperties = {
+    "BackgroundColor3",
+    "TextColor3",
+    "ImageColor3",
+    "PlaceholderColor3",
+    "ScrollBarImageColor3",
+    "BorderColor3"
+}
+
+local function colorsMatch(a, b)
+    return typeof(a) == "Color3"
+        and typeof(b) == "Color3"
+        and math.abs(a.R - b.R) <= 0.0005
+        and math.abs(a.G - b.G) <= 0.0005
+        and math.abs(a.B - b.B) <= 0.0005
+end
+
+local function remapThemeColor(color, colorMap)
+    for _, entry in ipairs(colorMap) do
+        if colorsMatch(color, entry.From) then
+            return entry.To
+        end
+    end
+    return color
+end
+
+local function buildThemeColorMap(oldTheme, newTheme)
+    local map = {}
+    for _, key in ipairs(themeColorKeys) do
+        local fromColor = oldTheme and oldTheme[key]
+        local toColor = newTheme and newTheme[key]
+        if typeof(fromColor) == "Color3" and typeof(toColor) == "Color3" and not colorsMatch(fromColor, toColor) then
+            table.insert(map, {
+                From = fromColor,
+                To = toColor
+            })
+        end
+    end
+    return map
+end
+
+local function remapInstanceThemeColors(instance, colorMap)
+    for _, propertyName in ipairs(colorProperties) do
+        local ok, current = pcall(function()
+            return instance[propertyName]
+        end)
+        if ok and typeof(current) == "Color3" then
+            local target = remapThemeColor(current, colorMap)
+            if not colorsMatch(target, current) then
+                pcall(function()
+                    instance[propertyName] = target
+                end)
+            end
+        end
+    end
+
+    if instance:IsA("UIStroke") then
+        local targetColor = remapThemeColor(instance.Color, colorMap)
+        if not colorsMatch(targetColor, instance.Color) then
+            instance.Color = targetColor
+        end
+    elseif instance:IsA("UIGradient") then
+        local sequence = instance.Color
+        local changed = false
+        local keypoints = sequence.Keypoints
+        local newKeypoints = table.create(#keypoints)
+        for index, keypoint in ipairs(keypoints) do
+            local mapped = remapThemeColor(keypoint.Value, colorMap)
+            if not colorsMatch(mapped, keypoint.Value) then
+                changed = true
+            end
+            newKeypoints[index] = ColorSequenceKeypoint.new(keypoint.Time, mapped)
+        end
+        if changed then
+            instance.Color = ColorSequence.new(newKeypoints)
+        end
+    end
+end
+
+local function applyThemeToHierarchy(root, oldTheme, newTheme)
+    if not root then
+        return
+    end
+    local colorMap = buildThemeColorMap(oldTheme, newTheme)
+    if #colorMap == 0 then
+        return
+    end
+    remapInstanceThemeColors(root, colorMap)
+    for _, instance in ipairs(root:GetDescendants()) do
+        remapInstanceThemeColors(instance, colorMap)
+    end
 end
 
 local function applyCorner(target, radius)
@@ -176,12 +550,314 @@ local function createCard(parent, theme, height)
     return frame
 end
 
-local function createValueText(minimum, maximum, value, suffix)
-    local hasFloat = (minimum % 1 ~= 0) or (maximum % 1 ~= 0) or (value % 1 ~= 0)
-    if hasFloat then
-        return string.format("%.2f%s", value, suffix or "")
+local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
+    local loadRoot = create("Frame", {
+        Parent = gui,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = theme.Background,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        ZIndex = 120
+    })
+    create("UIGradient", {
+        Parent = loadRoot,
+        Rotation = 90,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, theme.Background),
+            ColorSequenceKeypoint.new(1, theme.Window)
+        }),
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.02),
+            NumberSequenceKeypoint.new(1, 0.18)
+        })
+    })
+
+    local glow = create("Frame", {
+        Parent = loadRoot,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 460, 0, 460),
+        BackgroundColor3 = theme.Accent,
+        BackgroundTransparency = 0.9,
+        BorderSizePixel = 0,
+        ZIndex = 121
+    })
+    applyCorner(glow, 230)
+
+    local card = create("Frame", {
+        Parent = loadRoot,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 350, 0, 186),
+        BackgroundColor3 = theme.Window,
+        BackgroundTransparency = 0.06,
+        BorderSizePixel = 0,
+        ZIndex = 122
+    })
+    applyCorner(card, 14)
+    applyStroke(card, theme.Stroke, 0.38, 1.1)
+    local cardScale = create("UIScale", {
+        Parent = card,
+        Scale = 0.86
+    })
+
+    local logoWrap = create("Frame", {
+        Parent = card,
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 0, 0, 18),
+        Size = UDim2.new(0, 52, 0, 52),
+        BackgroundColor3 = theme.Control,
+        BorderSizePixel = 0,
+        ZIndex = 123
+    })
+    applyCorner(logoWrap, 12)
+    applyStroke(logoWrap, theme.Stroke, 0.44, 1)
+
+    create("ImageLabel", {
+        Parent = logoWrap,
+        Position = UDim2.new(0, 5, 0, 5),
+        Size = UDim2.new(1, -10, 1, -10),
+        BackgroundTransparency = 1,
+        Image = logoId,
+        ZIndex = 124
+    })
+
+    create("TextLabel", {
+        Parent = card,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 16, 0, 78),
+        Size = UDim2.new(1, -32, 0, 22),
+        Font = Enum.Font.GothamBold,
+        Text = tostring(titleText or "Isaeva Hub"),
+        TextColor3 = theme.Text,
+        TextSize = 18,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        ZIndex = 123
+    })
+
+    local statusLabel = create("TextLabel", {
+        Parent = card,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 16, 0, 102),
+        Size = UDim2.new(1, -32, 0, 18),
+        Font = Enum.Font.GothamSemibold,
+        Text = "Loading Script",
+        TextColor3 = theme.SubText,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        ZIndex = 123
+    })
+
+    local barBack = create("Frame", {
+        Parent = card,
+        AnchorPoint = Vector2.new(0.5, 1),
+        Position = UDim2.new(0.5, 0, 1, -24),
+        Size = UDim2.new(1, -36, 0, 12),
+        BackgroundColor3 = theme.Panel,
+        BorderSizePixel = 0,
+        ZIndex = 123
+    })
+    applyCorner(barBack, 7)
+    applyStroke(barBack, theme.Stroke, 0.52, 1)
+
+    local barClip = create("Frame", {
+        Parent = barBack,
+        Position = UDim2.new(0, 1, 0, 1),
+        Size = UDim2.new(1, -2, 1, -2),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ClipsDescendants = true,
+        ZIndex = 124
+    })
+    applyCorner(barClip, 6)
+
+    local barFill = create("Frame", {
+        Parent = barClip,
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = theme.AccentDark,
+        BorderSizePixel = 0,
+        ZIndex = 124
+    })
+    applyCorner(barFill, 6)
+    create("UIGradient", {
+        Parent = barFill,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, theme.AccentDark),
+            ColorSequenceKeypoint.new(1, theme.Accent)
+        }),
+        Rotation = 15
+    })
+
+    local shimmer = create("Frame", {
+        Parent = barClip,
+        Position = UDim2.new(0, -46, 0, 0),
+        Size = UDim2.new(0, 42, 1, 0),
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundTransparency = 0.76,
+        BorderSizePixel = 0,
+        ZIndex = 125
+    })
+    applyCorner(shimmer, 5)
+    create("UIGradient", {
+        Parent = shimmer,
+        Rotation = 20,
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.48, 0.12),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+    })
+
+    local blurEffect
+    if useBlur then
+        blurEffect = Instance.new("BlurEffect")
+        blurEffect.Size = 0
+        blurEffect.Enabled = true
+        blurEffect.Name = "VaclavLoadBlur"
+        local ok = pcall(function()
+            blurEffect.Parent = Lighting
+        end)
+        if not ok then
+            blurEffect = nil
+        end
     end
-    return string.format("%d%s", value, suffix or "")
+
+    local running = true
+    task.spawn(function()
+        local dotCycle = {"", ".", "..", "..."}
+        local index = 1
+        while running and statusLabel.Parent do
+            statusLabel.Text = "Loading Script" .. dotCycle[index]
+            index = index + 1
+            if index > #dotCycle then
+                index = 1
+            end
+            task.wait(0.18)
+        end
+    end)
+    task.spawn(function()
+        while running and shimmer.Parent do
+            shimmer.Position = UDim2.new(0, -46, 0, 0)
+            tween(shimmer, TweenInfo.new(0.58, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+                Position = UDim2.new(1, 46, 0, 0)
+            })
+            task.wait(0.24)
+        end
+    end)
+
+    tween(cardScale, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1})
+    tween(glow, TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.8})
+    if blurEffect then
+        tween(blurEffect, TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 18})
+    end
+
+    local function step(alpha, duration)
+        tween(barFill, TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+            Size = UDim2.new(alpha, 0, 1, 0)
+        })
+        task.wait(duration * 0.93)
+    end
+
+    step(0.22, 0.24)
+    step(0.47, 0.32)
+    step(0.73, 0.34)
+    step(0.91, 0.30)
+    step(1, 0.24)
+    task.wait(0.14)
+
+    running = false
+    if blurEffect then
+        tween(blurEffect, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 0})
+    end
+    tween(cardScale, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1.04})
+    tween(card, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
+    tween(glow, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
+    tween(loadRoot, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
+    task.wait(0.26)
+
+    if blurEffect then
+        pcall(function()
+            blurEffect:Destroy()
+        end)
+    end
+    if loadRoot and loadRoot.Parent then
+        loadRoot:Destroy()
+    end
+end
+
+local function normalizeOptionList(values)
+    local optionList = {}
+    local seen = {}
+    if type(values) == "table" then
+        for _, value in ipairs(values) do
+            local text = tostring(value)
+            if not seen[text] then
+                seen[text] = true
+                table.insert(optionList, text)
+            end
+        end
+    end
+    return optionList
+end
+
+local function resolveSliderPrecision(explicitDecimals, minimum, maximum, increment, value)
+    local decimals = tonumber(explicitDecimals)
+    if decimals ~= nil then
+        decimals = math.floor(decimals + 0.5)
+    else
+        decimals = math.max(
+            countDecimals(minimum),
+            countDecimals(maximum),
+            countDecimals(increment),
+            countDecimals(value)
+        )
+    end
+    return clamp(decimals, 0, 6)
+end
+
+local function createValueText(value, suffix, decimals)
+    if decimals and decimals > 0 then
+        return string.format("%." .. tostring(decimals) .. "f%s", value, suffix or "")
+    end
+    return string.format("%d%s", roundToDecimals(value, 0), suffix or "")
+end
+
+function WindowMethods:GetThemeNames()
+    return Library:GetThemeNames()
+end
+
+function WindowMethods:GetTheme()
+    return copyTheme(self.Theme)
+end
+
+function WindowMethods:GetThemeName()
+    return self.ThemeName or "Custom"
+end
+
+function WindowMethods:SetTheme(themeInput, silent, syncControl)
+    local oldTheme = self.Theme
+    local nextTheme = mergeTheme(themeInput)
+    self.Theme = nextTheme
+    self.ThemeName = resolveThemeName(themeInput)
+    applyThemeToHierarchy(self.Gui, oldTheme, nextTheme)
+
+    if syncControl ~= false and self._themeDropdownControl and self._themeDropdownControl.Get then
+        local themeName = self.ThemeName
+        local controlValue = self._themeDropdownControl.Get()
+        if themeName and themeName ~= "Custom" and controlValue ~= themeName then
+            self._themeDropdownControl.Set(themeName, true)
+        end
+    end
+
+    if not silent then
+        safeCall(self._themeChangedCallback, self.ThemeName, copyTheme(nextTheme))
+    end
+
+    return nextTheme
+end
+
+function WindowMethods:ApplyTheme(themeInput, silent, syncControl)
+    return self:SetTheme(themeInput, silent, syncControl)
 end
 
 function WindowMethods:SetToggleKey(keyCode, syncControl)
@@ -224,6 +900,7 @@ function WindowMethods:Toggle()
 end
 
 function WindowMethods:Destroy()
+    self._destroyed = true
     for _, connection in ipairs(self._connections) do
         if connection and connection.Disconnect then
             connection:Disconnect()
@@ -532,74 +1209,113 @@ function TabMethods:AddSection(options)
     section.Frame = frame
     section.TitleLabel = title
     section.GroupsHolder = holder
+    section.ElementsHolder = holder
     section.Groups = {}
 
     table.insert(self.Sections, section)
     return section
 end
 
-function SectionMethods:AddGroup(options)
+function TabMethods:ThemeCreate(options)
     options = options or {}
-    local group = setmetatable({
-        Section = self,
-        Window = self.Window,
-        Name = tostring(options.Name or ("Group " .. tostring(#self.Groups + 1)))
-    }, {__index = GroupMethods})
+    local window = self.Window
+    local styles = window:GetThemeNames()
+    if options.AllowCustom ~= false and not table.find(styles, "Custom") then
+        table.insert(styles, "Custom")
+    end
+    local selectedStyle = tostring(options.Default or window:GetThemeName())
+    if not table.find(styles, selectedStyle) then
+        selectedStyle = styles[1]
+    end
 
-    local frame = create("Frame", {
-        Parent = self.GroupsHolder,
-        Size = UDim2.new(1, 0, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
-        BackgroundColor3 = self.Window.Theme.Panel,
-        BorderSizePixel = 0
+    local section = self:AddSection({
+        Name = tostring(options.SectionName or "Themes"),
+        Side = tostring(options.Side or "Right")
     })
-    applyCorner(frame, 9)
-    applyStroke(frame, self.Window.Theme.Stroke, 0.52, 1)
+    local container = section
 
-    create("UIPadding", {
-        Parent = frame,
-        PaddingTop = UDim.new(0, 8),
-        PaddingBottom = UDim.new(0, 8),
-        PaddingLeft = UDim.new(0, 8),
-        PaddingRight = UDim.new(0, 8)
+    local function resolveCustomTheme()
+        local custom = options.CustomTheme
+        if typeof(custom) == "function" then
+            local ok, result = pcall(custom, window:GetTheme(), window:GetThemeName())
+            if ok and type(result) == "table" then
+                return result
+            end
+        elseif type(custom) == "table" then
+            return custom
+        end
+        return window:GetTheme()
+    end
+
+    local function applySelection(silent)
+        if selectedStyle == "Custom" then
+            local customTheme = resolveCustomTheme()
+            window:SetTheme(customTheme, silent == true)
+            safeCall(options.Callback, "Custom", window:GetTheme())
+            return
+        end
+        if selectedStyle then
+            window:SetTheme(selectedStyle, silent == true)
+            safeCall(options.Callback, selectedStyle, window:GetTheme())
+        end
+    end
+
+    local instantApply = options.InstantApply == true
+    local dropdown = container:AddDropdown({
+        Name = tostring(options.DropdownName or "Style"),
+        Options = styles,
+        Default = selectedStyle,
+        Callback = function(styleName)
+            selectedStyle = styleName
+            if instantApply then
+                applySelection(false)
+            end
+        end
     })
-    create("UIListLayout", {
-        Parent = frame,
-        FillDirection = Enum.FillDirection.Vertical,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 7)
+    window._themeDropdownControl = dropdown
+
+    local applyButton = container:AddButton({
+        Name = tostring(options.ButtonName or "Apply Theme"),
+        Callback = function()
+            applySelection(false)
+        end
     })
 
-    local title = create("TextLabel", {
-        Parent = frame,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 17),
-        Font = Enum.Font.GothamSemibold,
-        Text = group.Name,
-        TextColor3 = self.Window.Theme.Text,
-        TextSize = 13,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
+    local object = {
+        Section = section,
+        Group = nil,
+        Dropdown = dropdown,
+        Button = applyButton
+    }
 
-    local holder = create("Frame", {
-        Parent = frame,
-        Size = UDim2.new(1, 0, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
-        BackgroundTransparency = 1
-    })
-    create("UIListLayout", {
-        Parent = holder,
-        FillDirection = Enum.FillDirection.Vertical,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 6)
-    })
+    function object:Set(styleName, shouldApply)
+        if styleName == nil then
+            return
+        end
+        dropdown:Set(styleName, true)
+        selectedStyle = dropdown:Get()
+        if shouldApply then
+            object:Apply(nil, false)
+        end
+    end
 
-    group.Frame = frame
-    group.TitleLabel = title
-    group.ElementsHolder = holder
+    function object:Get()
+        return selectedStyle
+    end
 
-    table.insert(self.Groups, group)
-    return group
+    function object:Apply(styleName, silent)
+        if styleName ~= nil then
+            dropdown:Set(styleName, true)
+            selectedStyle = dropdown:Get()
+        end
+        applySelection(silent == true)
+    end
+
+    return object
+end
+
+function SectionMethods:AddGroup(options)
+    return self
 end
 
 function GroupMethods:AddButton(options)
@@ -636,6 +1352,112 @@ function GroupMethods:AddButton(options)
     function object:SetText(text)
         button.Text = tostring(text)
     end
+    return object
+end
+
+function GroupMethods:AddLabel(options)
+    options = options or {}
+    local window = self.Window
+    local text = tostring(options.Text or options.Name or "Label")
+    local updateCallback = options.Update
+    local autoUpdate = options.AutoUpdate
+    local autoInterval
+    if autoUpdate == true then
+        autoInterval = tonumber(options.UpdateInterval) or 0.5
+    elseif type(autoUpdate) == "number" then
+        autoInterval = autoUpdate
+    elseif options.UpdateInterval ~= nil then
+        autoInterval = tonumber(options.UpdateInterval)
+    end
+    if autoInterval and autoInterval <= 0 then
+        autoInterval = 0.1
+    end
+    local autoSilent = options.AutoUpdateSilent
+    if autoSilent == nil then
+        autoSilent = true
+    end
+    local autoToken = 0
+
+    local card = createCard(self.ElementsHolder, window.Theme, 30)
+    local label = create("TextLabel", {
+        Parent = card,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, -20, 1, 0),
+        Font = Enum.Font.GothamSemibold,
+        Text = text,
+        TextColor3 = window.Theme.SubText,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd
+    })
+
+    local object = {}
+
+    local function setText(nextText, silent)
+        nextText = tostring(nextText or "")
+        if text == nextText then
+            return
+        end
+        text = nextText
+        label.Text = text
+        if not silent then
+            safeCall(options.Callback, text)
+        end
+    end
+
+    function object:Set(nextText, silent)
+        setText(nextText, silent)
+    end
+
+    function object:Get()
+        return text
+    end
+
+    function object:Refresh(silent)
+        if typeof(updateCallback) ~= "function" then
+            return false
+        end
+        local ok, nextText = pcall(updateCallback, text)
+        if not ok then
+            return false
+        end
+        setText(nextText, silent)
+        return true
+    end
+
+    function object:StopAutoUpdate()
+        autoToken = autoToken + 1
+    end
+
+    function object:StartAutoUpdate(interval, silent)
+        if typeof(updateCallback) ~= "function" then
+            return
+        end
+        interval = tonumber(interval) or autoInterval or 0.5
+        if interval <= 0 then
+            interval = 0.1
+        end
+        autoToken = autoToken + 1
+        local token = autoToken
+        task.spawn(function()
+            while token == autoToken and not window._destroyed and card.Parent do
+                task.wait(interval)
+                if token ~= autoToken or window._destroyed or not card.Parent then
+                    break
+                end
+                object:Refresh(silent)
+            end
+        end)
+    end
+
+    if typeof(updateCallback) == "function" then
+        object:Refresh(true)
+        if autoInterval then
+            object:StartAutoUpdate(autoInterval, autoSilent)
+        end
+    end
+    safeCall(options.Callback, text)
     return object
 end
 
@@ -736,11 +1558,16 @@ function GroupMethods:AddSlider(options)
         increment = 1
     end
     local suffix = tostring(options.Suffix or "")
+    local explicitDecimals = options.Decimals
+    if explicitDecimals == nil then
+        explicitDecimals = options.Precision
+    end
     local value = tonumber(options.Default)
     if value == nil then
         value = minimum
     end
-    value = clamp(roundToStep(value, increment, minimum), minimum, maximum)
+    local decimals = resolveSliderPrecision(explicitDecimals, minimum, maximum, increment, value)
+    value = clamp(roundToStep(value, increment, minimum, decimals), minimum, maximum)
 
     local card = createCard(self.ElementsHolder, self.Window.Theme, 52)
     create("TextLabel", {
@@ -810,7 +1637,7 @@ function GroupMethods:AddSlider(options)
             alpha = (value - minimum) / (maximum - minimum)
         end
         alpha = clamp(alpha, 0, 1)
-        valueLabel.Text = createValueText(minimum, maximum, value, suffix)
+        valueLabel.Text = createValueText(value, suffix, decimals)
         local targetFill = UDim2.new(alpha, 0, 1, 0)
         local targetKnob = UDim2.new(alpha, 0, 0.5, 0)
         if animated then
@@ -828,7 +1655,7 @@ function GroupMethods:AddSlider(options)
         if not nextValue then
             return
         end
-        nextValue = clamp(roundToStep(nextValue, increment, minimum), minimum, maximum)
+        nextValue = clamp(roundToStep(nextValue, increment, minimum, decimals), minimum, maximum)
         if nextValue == value then
             return
         end
@@ -877,14 +1704,37 @@ end
 
 function GroupMethods:AddDropdown(options)
     options = options or {}
-    local optionList = {}
-    if type(options.Options) == "table" then
-        for _, value in ipairs(options.Options) do
-            table.insert(optionList, tostring(value))
-        end
+    local window = self.Window
+    local optionList = normalizeOptionList(type(options.Options) == "table" and options.Options or nil)
+    local updateProvider = options.Update
+    if typeof(updateProvider) ~= "function" and type(options.Options) == "function" then
+        updateProvider = options.Options
     end
     local selected = options.Default and tostring(options.Default) or optionList[1]
     local open = false
+    local autoToken = 0
+    local autoUpdate = options.AutoUpdate
+    local autoInterval
+    if autoUpdate == true then
+        autoInterval = tonumber(options.UpdateInterval) or 1
+    elseif type(autoUpdate) == "number" then
+        autoInterval = autoUpdate
+    elseif options.UpdateInterval ~= nil and autoUpdate ~= false then
+        autoInterval = tonumber(options.UpdateInterval)
+    end
+    if autoInterval and autoInterval <= 0 then
+        autoInterval = 0.2
+    end
+    local autoSilent = options.AutoUpdateSilent
+    if autoSilent == nil then
+        autoSilent = true
+    end
+    local keepCurrentOnUpdate = options.KeepCurrentOnUpdate
+    if keepCurrentOnUpdate == nil then
+        keepCurrentOnUpdate = true
+    end
+    local hasRefreshButton = typeof(updateProvider) == "function" and options.UpdateButton ~= false
+    local valueOffset = hasRefreshButton and -136 or -122
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -899,7 +1749,7 @@ function GroupMethods:AddDropdown(options)
         Padding = UDim.new(0, 4)
     })
 
-    local row = createCard(wrapper, self.Window.Theme, 34)
+    local row = createCard(wrapper, window.Theme, 34)
     create("TextLabel", {
         Parent = row,
         BackgroundTransparency = 1,
@@ -907,18 +1757,18 @@ function GroupMethods:AddDropdown(options)
         Size = UDim2.new(1, -130, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = tostring(options.Name or "Dropdown"),
-        TextColor3 = self.Window.Theme.Text,
+        TextColor3 = window.Theme.Text,
         TextSize = 13,
         TextXAlignment = Enum.TextXAlignment.Left
     })
     local valueLabel = create("TextLabel", {
         Parent = row,
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -122, 0, 0),
+        Position = UDim2.new(1, valueOffset, 0, 0),
         Size = UDim2.new(0, 100, 1, 0),
         Font = Enum.Font.Gotham,
         Text = "",
-        TextColor3 = self.Window.Theme.SubText,
+        TextColor3 = window.Theme.SubText,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Right,
         TextTruncate = Enum.TextTruncate.AtEnd
@@ -931,19 +1781,35 @@ function GroupMethods:AddDropdown(options)
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         Text = ">",
-        TextColor3 = self.Window.Theme.SubText,
+        TextColor3 = window.Theme.SubText,
         TextSize = 12
     })
+    local refreshButton
+    if hasRefreshButton then
+        refreshButton = create("TextButton", {
+            Parent = row,
+            AnchorPoint = Vector2.new(1, 0.5),
+            Position = UDim2.new(1, -22, 0.5, 0),
+            Size = UDim2.new(0, 12, 0, 12),
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamBold,
+            Text = tostring(options.UpdateButtonText or "R"),
+            TextColor3 = window.Theme.SubText,
+            TextSize = 11,
+            AutoButtonColor = false,
+            ZIndex = 5
+        })
+    end
 
     local panel = create("Frame", {
         Parent = wrapper,
         Size = UDim2.new(1, 0, 0, 0),
-        BackgroundColor3 = self.Window.Theme.Panel,
+        BackgroundColor3 = window.Theme.Panel,
         BorderSizePixel = 0,
         ClipsDescendants = true
     })
     applyCorner(panel, 8)
-    applyStroke(panel, self.Window.Theme.Stroke, 0.58, 1)
+    applyStroke(panel, window.Theme.Stroke, 0.58, 1)
 
     local scroll = create("ScrollingFrame", {
         Parent = panel,
@@ -954,7 +1820,7 @@ function GroupMethods:AddDropdown(options)
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         ScrollBarThickness = 2,
-        ScrollBarImageColor3 = self.Window.Theme.AccentDark
+        ScrollBarImageColor3 = window.Theme.AccentDark
     })
     create("UIListLayout", {
         Parent = scroll,
@@ -970,12 +1836,12 @@ function GroupMethods:AddDropdown(options)
         for optionValue, button in pairs(optionButtons) do
             local isSelected = optionValue == selected
             tween(button, fastTween, {
-                BackgroundColor3 = isSelected and self.Window.Theme.AccentDark or self.Window.Theme.Control
+                BackgroundColor3 = isSelected and window.Theme.AccentDark or window.Theme.Control
             })
             local textLabel = button:FindFirstChild("Label")
             if textLabel then
                 tween(textLabel, fastTween, {
-                    TextColor3 = isSelected and self.Window.Theme.Text or self.Window.Theme.SubText
+                    TextColor3 = isSelected and window.Theme.Text or window.Theme.SubText
                 })
             end
         end
@@ -1005,7 +1871,30 @@ function GroupMethods:AddDropdown(options)
         end
     end
 
-    local function rebuildOptions()
+    local rebuildOptions
+
+    local function applyOptionList(values, keepCurrent, silent)
+        local previous = selected
+        optionList = normalizeOptionList(values)
+        if keepCurrent then
+            if selected and not table.find(optionList, selected) then
+                selected = optionList[1]
+            end
+            if not selected then
+                selected = optionList[1]
+            end
+        else
+            selected = optionList[1]
+        end
+        rebuildOptions()
+        if selected ~= previous and not silent then
+            safeCall(options.Callback, selected)
+        end
+    end
+
+    local object = {}
+
+    rebuildOptions = function()
         for _, child in ipairs(scroll:GetChildren()) do
             if child:IsA("TextButton") then
                 child:Destroy()
@@ -1016,7 +1905,7 @@ function GroupMethods:AddDropdown(options)
             local optionButton = create("TextButton", {
                 Parent = scroll,
                 Size = UDim2.new(1, 0, 0, 26),
-                BackgroundColor3 = self.Window.Theme.Control,
+                BackgroundColor3 = window.Theme.Control,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false
@@ -1030,22 +1919,22 @@ function GroupMethods:AddDropdown(options)
                 Size = UDim2.new(1, -8, 1, 0),
                 Font = Enum.Font.GothamSemibold,
                 Text = optionValue,
-                TextColor3 = self.Window.Theme.SubText,
+                TextColor3 = window.Theme.SubText,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
             optionButtons[optionValue] = optionButton
-            connect(self.Window, optionButton.MouseEnter, function()
+            connect(window, optionButton.MouseEnter, function()
                 if selected ~= optionValue then
-                    tween(optionButton, fastTween, {BackgroundColor3 = self.Window.Theme.ControlHover})
+                    tween(optionButton, fastTween, {BackgroundColor3 = window.Theme.ControlHover})
                 end
             end)
-            connect(self.Window, optionButton.MouseLeave, function()
+            connect(window, optionButton.MouseLeave, function()
                 if selected ~= optionValue then
-                    tween(optionButton, fastTween, {BackgroundColor3 = self.Window.Theme.Control})
+                    tween(optionButton, fastTween, {BackgroundColor3 = window.Theme.Control})
                 end
             end)
-            connect(self.Window, optionButton.MouseButton1Click, function()
+            connect(window, optionButton.MouseButton1Click, function()
                 setSelected(optionValue, false)
                 setOpen(false)
             end)
@@ -1063,11 +1952,20 @@ function GroupMethods:AddDropdown(options)
         Text = "",
         AutoButtonColor = false
     })
-    connect(self.Window, rowButton.MouseButton1Click, function()
+    connect(window, rowButton.MouseButton1Click, function()
         setOpen(not open)
     end)
-
-    local object = {}
+    if refreshButton then
+        connect(window, refreshButton.MouseEnter, function()
+            tween(refreshButton, fastTween, {TextColor3 = window.Theme.Text})
+        end)
+        connect(window, refreshButton.MouseLeave, function()
+            tween(refreshButton, fastTween, {TextColor3 = window.Theme.SubText})
+        end)
+        connect(window, refreshButton.MouseButton1Click, function()
+            object:Refresh(keepCurrentOnUpdate, false)
+        end)
+    end
     function object:Set(value, silent)
         if value ~= nil and not optionButtons[tostring(value)] then
             return
@@ -1077,21 +1975,67 @@ function GroupMethods:AddDropdown(options)
     function object:Get()
         return selected
     end
-    function object:SetOptions(values, keepCurrent)
-        optionList = {}
-        if type(values) == "table" then
-            for _, value in ipairs(values) do
-                table.insert(optionList, tostring(value))
+    function object:SetOptions(values, keepCurrent, silent)
+        if silent == nil then
+            silent = true
+        end
+        applyOptionList(values, keepCurrent == true, silent)
+    end
+    function object:Refresh(keepCurrent, silent)
+        if typeof(updateProvider) ~= "function" then
+            return false
+        end
+        if keepCurrent == nil then
+            keepCurrent = true
+        end
+        if silent == nil then
+            silent = false
+        end
+        local ok, values = pcall(updateProvider, selected, optionList)
+        if not ok or type(values) ~= "table" then
+            return false
+        end
+        applyOptionList(values, keepCurrent, silent)
+        return true
+    end
+    function object:StopAutoUpdate()
+        autoToken = autoToken + 1
+    end
+    function object:StartAutoUpdate(interval, keepCurrent, silent)
+        if typeof(updateProvider) ~= "function" then
+            return
+        end
+        interval = tonumber(interval) or autoInterval or 1
+        if interval <= 0 then
+            interval = 0.2
+        end
+        if keepCurrent == nil then
+            keepCurrent = true
+        end
+        if silent == nil then
+            silent = true
+        end
+        autoToken = autoToken + 1
+        local token = autoToken
+        task.spawn(function()
+            while token == autoToken and not window._destroyed and wrapper.Parent do
+                task.wait(interval)
+                if token ~= autoToken or window._destroyed or not wrapper.Parent then
+                    break
+                end
+                object:Refresh(keepCurrent, silent)
             end
-        end
-        if not keepCurrent then
-            selected = optionList[1]
-        end
-        rebuildOptions()
+        end)
     end
 
     rebuildOptions()
     setOpen(false)
+    if typeof(updateProvider) == "function" then
+        object:Refresh(keepCurrentOnUpdate, true)
+        if autoInterval then
+            object:StartAutoUpdate(autoInterval, keepCurrentOnUpdate, autoSilent)
+        end
+    end
     safeCall(options.Callback, selected)
     return object
 end
@@ -1763,8 +2707,19 @@ function GroupMethods:AddColorPicker(options)
     return object
 end
 
+SectionMethods.AddButton = GroupMethods.AddButton
+SectionMethods.AddLabel = GroupMethods.AddLabel
+SectionMethods.AddToggle = GroupMethods.AddToggle
+SectionMethods.AddSlider = GroupMethods.AddSlider
+SectionMethods.AddDropdown = GroupMethods.AddDropdown
+SectionMethods.AddMultiDropdown = GroupMethods.AddMultiDropdown
+SectionMethods.AddTextbox = GroupMethods.AddTextbox
+SectionMethods.AddKeybind = GroupMethods.AddKeybind
+SectionMethods.AddColorPicker = GroupMethods.AddColorPicker
+
 function Library:CreateWindow(options)
     options = options or {}
+    local initialThemeName = resolveThemeName(options.Theme)
     local theme = mergeTheme(options.Theme)
     local parent = resolveGuiParent()
     if not parent then
@@ -1831,13 +2786,32 @@ function Library:CreateWindow(options)
         BackgroundColor3 = theme.Panel,
         BorderSizePixel = 0
     })
+
+    local logoId = tostring(options.Logo or options.HeaderLogo or options.BrandLogo or "108702816998934")
+    if not string.find(logoId, "rbxassetid://", 1, true) then
+        logoId = "rbxassetid://" .. logoId
+    end
+
+    local topLogo = create("ImageLabel", {
+        Parent = topBar,
+        AnchorPoint = Vector2.new(0, 0.5),
+        Position = UDim2.new(0, 12, 0.5, 0),
+        Size = UDim2.new(0, 22, 0, 22),
+        BackgroundColor3 = theme.Control,
+        BorderSizePixel = 0,
+        Image = logoId
+    })
+    applyCorner(topLogo, 5)
+    applyStroke(topLogo, theme.Stroke, 0.5, 1)
+
+    local topTitle = tostring(options.HeaderTitle or options.BrandName or "Isaeva Hub")
     create("TextLabel", {
         Parent = topBar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 12, 0, 0),
-        Size = UDim2.new(1, -12, 1, 0),
+        Position = UDim2.new(0, 42, 0, 0),
+        Size = UDim2.new(1, -230, 1, 0),
         Font = Enum.Font.GothamBold,
-        Text = tostring(options.Name or "Galaxy UI Library"),
+        Text = topTitle,
         TextColor3 = theme.Text,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left
@@ -1914,6 +2888,7 @@ function Library:CreateWindow(options)
     local window = setmetatable({
         Gui = gui,
         Theme = theme,
+        ThemeName = initialThemeName,
         Overlay = overlay,
         Main = main,
         MainScale = mainScale,
@@ -1929,10 +2904,27 @@ function Library:CreateWindow(options)
         _connections = {},
         _keybindEntries = {},
         _awaitingKeybind = nil,
-        _toggleBindControl = nil
+        _toggleBindControl = nil,
+        _themeDropdownControl = nil,
+        _themeChangedCallback = options.ThemeChangedCallback,
+        _destroyed = false
     }, {__index = WindowMethods})
 
     keyHint.Text = "Toggle Key: " .. keyCodeToText(window.ToggleKey)
+
+    local shouldPlayLoadAnimation = options.LoadAnimation
+    if shouldPlayLoadAnimation == nil then
+        shouldPlayLoadAnimation = true
+    end
+    local shouldUseLoadBlur = options.LoadBlur
+    if shouldUseLoadBlur == nil then
+        shouldUseLoadBlur = true
+    end
+    if shouldPlayLoadAnimation then
+        main.Visible = false
+        overlay.Visible = false
+        mainScale.Scale = 0.95
+    end
 
     local dragging = false
     local dragStart
@@ -2006,10 +2998,7 @@ function Library:CreateWindow(options)
         Name = tostring(options.SettingsSectionName or "Window"),
         Side = "Left"
     })
-    local settingsGroup = settingsSection:AddGroup({
-        Name = tostring(options.SettingsGroupName or "Interface")
-    })
-    local toggleBind = settingsGroup:AddKeybind({
+    local toggleBind = settingsSection:AddKeybind({
         Name = tostring(options.ToggleBindName or "Toggle UI"),
         Default = window.ToggleKey,
         ChangedCallback = function(newKey)
@@ -2018,21 +3007,46 @@ function Library:CreateWindow(options)
         end
     })
     window._toggleBindControl = toggleBind
-    settingsGroup:AddButton({
+    settingsSection:AddButton({
         Name = tostring(options.HideNowButtonName or "Hide Interface"),
         Callback = function()
             window:SetVisible(false)
         end
     })
-    settingsGroup:AddButton({
+    settingsSection:AddButton({
         Name = tostring(options.DestroyButtonName or "Destroy Interface"),
         Callback = function()
             window:Destroy()
         end
     })
 
+    local showThemeChooser = options.ShowThemeChooser
+    if showThemeChooser == nil then
+        showThemeChooser = true
+    end
+    if showThemeChooser then
+        window._settingsThemeControl = settingsTab:ThemeCreate({
+            SectionName = tostring(options.ThemeSectionName or "Themes"),
+            Side = tostring(options.ThemeSide or "Right"),
+            GroupName = tostring(options.ThemeGroupName or "Styles"),
+            DropdownName = tostring(options.ThemeDropdownName or "Style"),
+            ButtonName = tostring(options.ThemeButtonName or "Apply Style"),
+            Default = window.ThemeName,
+            InstantApply = options.InstantThemeApply == true,
+            Callback = options.ThemeCallback
+        })
+    end
+
     if not window.SelectedTab then
         window:SelectTab(settingsTab)
+    end
+
+    if shouldPlayLoadAnimation then
+        playLoadAnimation(gui, theme, logoId, topTitle, shouldUseLoadBlur)
+        overlay.Visible = true
+        main.Visible = true
+        tween(mainScale, midTween, {Scale = 1})
+        tween(overlay, midTween, {BackgroundTransparency = 0.65})
     end
 
     if options.ShowLoadNotification ~= false then
