@@ -648,7 +648,7 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
     if blurEffect then
         tween(blurEffect, ease(0.36), {Size = 18})
     end
-    task.wait(1)
+    task.wait(2)
     tween(titleClip, easeOut(0.34), {
         Size = UDim2.new(0, titleWidth, 0, titleHeight)
     })
