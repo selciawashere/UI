@@ -567,6 +567,7 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
     local textBounds = TextService:GetTextSize(introTitle, titleTextSize, titleFont, Vector2.new(360, 40))
     local titleWidth = clamp(textBounds.X + 8, 64, 320)
     local titleHeight = clamp(textBounds.Y + 2, 20, 34)
+    local splitTravel = math.max(math.floor((logoSize + titleWidth + 20) * 0.25), 36)
     local intro = create("Frame", {
         Parent = loadRoot,
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -584,7 +585,7 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
     local logo = create("ImageLabel", {
         Parent = intro,
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0, math.floor(logoSize * 0.5), 0.5, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, logoSize, 0, logoSize),
         BackgroundTransparency = 1,
         Image = logoId,
@@ -596,21 +597,12 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         Scale = 0.9
     })
 
-    local titleClip = create("Frame", {
-        Parent = intro,
-        Position = UDim2.new(0, logoSize + 10, 0.5, -math.floor(titleHeight * 0.5)),
-        Size = UDim2.new(0, 0, 0, titleHeight),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ClipsDescendants = true,
-        ZIndex = 123
-    })
-
     local titleLabel = create("TextLabel", {
-        Parent = titleClip,
+        Parent = intro,
+        AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, -16, 0, 0),
-        Size = UDim2.new(0, titleWidth, 1, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, titleWidth, 0, titleHeight),
         Font = titleFont,
         Text = introTitle,
         TextColor3 = theme.Text,
@@ -649,11 +641,11 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         tween(blurEffect, ease(0.36), {Size = 18})
     end
     task.wait(2)
-    tween(titleClip, easeOut(0.34), {
-        Size = UDim2.new(0, titleWidth, 0, titleHeight)
+    tween(logo, easeOut(0.34), {
+        Position = UDim2.new(0.5, -splitTravel, 0.5, 0)
     })
     tween(titleLabel, easeOut(0.34), {
-        Position = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, splitTravel, 0.5, 0),
         TextTransparency = 0
     })
 
@@ -672,10 +664,13 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         tween(blurEffect, ease(0.24), {Size = 0})
     end
     tween(introScale, ease(0.24), {Scale = 1.04})
-    tween(logo, ease(0.24), {ImageTransparency = 1})
-    tween(titleLabel, ease(0.2), {TextTransparency = 1})
-    tween(titleClip, ease(0.22), {
-        Size = UDim2.new(0, 0, 0, titleHeight)
+    tween(logo, ease(0.24), {
+        ImageTransparency = 1,
+        Position = UDim2.new(0.5, -splitTravel - 8, 0.5, 0)
+    })
+    tween(titleLabel, ease(0.2), {
+        TextTransparency = 1,
+        Position = UDim2.new(0.5, splitTravel + 10, 0.5, 0)
     })
     task.wait(0.26)
 
