@@ -621,6 +621,13 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         ZIndex = 124
     })
 
+    local function ease(duration)
+        return TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    end
+    local function easeOut(duration)
+        return TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    end
+
     local blurEffect
     if useBlur then
         blurEffect = Instance.new("BlurEffect")
@@ -635,17 +642,17 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         end
     end
 
-    tween(introScale, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1})
-    tween(logoScale, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1})
-    tween(logo, TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0})
+    tween(introScale, ease(0.28), {Scale = 1})
+    tween(logoScale, ease(0.28), {Scale = 1})
+    tween(logo, ease(0.22), {ImageTransparency = 0})
     if blurEffect then
-        tween(blurEffect, TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 18})
+        tween(blurEffect, ease(0.36), {Size = 18})
     end
-    task.wait(0.12)
-    tween(titleClip, TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    task.wait(1)
+    tween(titleClip, easeOut(0.34), {
         Size = UDim2.new(0, titleWidth, 0, titleHeight)
     })
-    tween(titleLabel, TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    tween(titleLabel, easeOut(0.34), {
         Position = UDim2.new(0, 0, 0, 0),
         TextTransparency = 0
     })
@@ -662,12 +669,12 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
     task.wait(0.14)
 
     if blurEffect then
-        tween(blurEffect, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 0})
+        tween(blurEffect, ease(0.24), {Size = 0})
     end
-    tween(introScale, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1.04})
-    tween(logo, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1})
-    tween(titleLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 1})
-    tween(titleClip, TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    tween(introScale, ease(0.24), {Scale = 1.04})
+    tween(logo, ease(0.24), {ImageTransparency = 1})
+    tween(titleLabel, ease(0.2), {TextTransparency = 1})
+    tween(titleClip, ease(0.22), {
         Size = UDim2.new(0, 0, 0, titleHeight)
     })
     task.wait(0.26)
