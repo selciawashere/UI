@@ -550,162 +550,40 @@ local function createCard(parent, theme, height)
     return frame
 end
 
-local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
+local function playLoadAnimation(gui, _theme, logoId, _titleText, useBlur)
     local loadRoot = create("Frame", {
         Parent = gui,
         Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = theme.Background,
-        BackgroundTransparency = 0.1,
+        BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ZIndex = 120
     })
-    create("UIGradient", {
-        Parent = loadRoot,
-        Rotation = 90,
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, theme.Background),
-            ColorSequenceKeypoint.new(1, theme.Window)
-        }),
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.02),
-            NumberSequenceKeypoint.new(1, 0.18)
-        })
-    })
-
-    local glow = create("Frame", {
-        Parent = loadRoot,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 460, 0, 460),
-        BackgroundColor3 = theme.Accent,
-        BackgroundTransparency = 0.9,
-        BorderSizePixel = 0,
-        ZIndex = 121
-    })
-    applyCorner(glow, 230)
-
     local card = create("Frame", {
         Parent = loadRoot,
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 350, 0, 186),
-        BackgroundColor3 = theme.Window,
-        BackgroundTransparency = 0.06,
+        BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ZIndex = 122
     })
-    applyCorner(card, 14)
-    applyStroke(card, theme.Stroke, 0.38, 1.1)
     local cardScale = create("UIScale", {
         Parent = card,
         Scale = 0.86
     })
 
-    local logoWrap = create("Frame", {
+    local logo = create("ImageLabel", {
         Parent = card,
-        AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.new(0.5, 0, 0, 18),
-        Size = UDim2.new(0, 52, 0, 52),
-        BackgroundColor3 = theme.Control,
-        BorderSizePixel = 0,
-        ZIndex = 123
-    })
-    applyCorner(logoWrap, 12)
-    applyStroke(logoWrap, theme.Stroke, 0.44, 1)
-
-    create("ImageLabel", {
-        Parent = logoWrap,
-        Position = UDim2.new(0, 5, 0, 5),
-        Size = UDim2.new(1, -10, 1, -10),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 62, 0, 62),
         BackgroundTransparency = 1,
         Image = logoId,
         ZIndex = 124
     })
-
-    create("TextLabel", {
-        Parent = card,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 16, 0, 78),
-        Size = UDim2.new(1, -32, 0, 22),
-        Font = Enum.Font.GothamBold,
-        Text = tostring(titleText or "Isaeva Hub"),
-        TextColor3 = theme.Text,
-        TextSize = 18,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        ZIndex = 123
-    })
-
-    local statusLabel = create("TextLabel", {
-        Parent = card,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 16, 0, 102),
-        Size = UDim2.new(1, -32, 0, 18),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Loading Script",
-        TextColor3 = theme.SubText,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        ZIndex = 123
-    })
-
-    local barBack = create("Frame", {
-        Parent = card,
-        AnchorPoint = Vector2.new(0.5, 1),
-        Position = UDim2.new(0.5, 0, 1, -24),
-        Size = UDim2.new(1, -36, 0, 12),
-        BackgroundColor3 = theme.Panel,
-        BorderSizePixel = 0,
-        ZIndex = 123
-    })
-    applyCorner(barBack, 7)
-    applyStroke(barBack, theme.Stroke, 0.52, 1)
-
-    local barClip = create("Frame", {
-        Parent = barBack,
-        Position = UDim2.new(0, 1, 0, 1),
-        Size = UDim2.new(1, -2, 1, -2),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ClipsDescendants = true,
-        ZIndex = 124
-    })
-    applyCorner(barClip, 6)
-
-    local barFill = create("Frame", {
-        Parent = barClip,
-        Size = UDim2.new(0, 0, 1, 0),
-        BackgroundColor3 = theme.AccentDark,
-        BorderSizePixel = 0,
-        ZIndex = 124
-    })
-    applyCorner(barFill, 6)
-    create("UIGradient", {
-        Parent = barFill,
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, theme.AccentDark),
-            ColorSequenceKeypoint.new(1, theme.Accent)
-        }),
-        Rotation = 15
-    })
-
-    local shimmer = create("Frame", {
-        Parent = barClip,
-        Position = UDim2.new(0, -46, 0, 0),
-        Size = UDim2.new(0, 42, 1, 0),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BackgroundTransparency = 0.76,
-        BorderSizePixel = 0,
-        ZIndex = 125
-    })
-    applyCorner(shimmer, 5)
-    create("UIGradient", {
-        Parent = shimmer,
-        Rotation = 20,
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 1),
-            NumberSequenceKeypoint.new(0.48, 0.12),
-            NumberSequenceKeypoint.new(1, 1)
-        })
+    local logoScale = create("UIScale", {
+        Parent = logo,
+        Scale = 0.94
     })
 
     local blurEffect
@@ -722,57 +600,28 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         end
     end
 
-    local running = true
-    task.spawn(function()
-        local dotCycle = {"", ".", "..", "..."}
-        local index = 1
-        while running and statusLabel.Parent do
-            statusLabel.Text = "Loading Script" .. dotCycle[index]
-            index = index + 1
-            if index > #dotCycle then
-                index = 1
-            end
-            task.wait(0.18)
-        end
-    end)
-    task.spawn(function()
-        while running and shimmer.Parent do
-            shimmer.Position = UDim2.new(0, -46, 0, 0)
-            tween(shimmer, TweenInfo.new(0.58, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
-                Position = UDim2.new(1, 46, 0, 0)
-            })
-            task.wait(0.24)
-        end
-    end)
-
     tween(cardScale, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1})
-    tween(glow, TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 0.8})
+    tween(logoScale, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1})
     if blurEffect then
         tween(blurEffect, TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 18})
     end
 
-    local function step(alpha, duration)
-        tween(barFill, TweenInfo.new(duration, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-            Size = UDim2.new(alpha, 0, 1, 0)
-        })
+    local function step(duration)
         task.wait(duration * 0.93)
     end
 
-    step(0.22, 0.24)
-    step(0.47, 0.32)
-    step(0.73, 0.34)
-    step(0.91, 0.30)
-    step(1, 0.24)
+    step(0.24)
+    step(0.32)
+    step(0.34)
+    step(0.30)
+    step(0.24)
     task.wait(0.14)
 
-    running = false
     if blurEffect then
         tween(blurEffect, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = 0})
     end
     tween(cardScale, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1.04})
-    tween(card, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
-    tween(glow, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
-    tween(loadRoot, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
+    tween(logo, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 1})
     task.wait(0.26)
 
     if blurEffect then
