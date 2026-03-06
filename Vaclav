@@ -2768,7 +2768,7 @@ function GroupMethods:AddColorPicker(options)
         Parent = panel,
         Position = UDim2.new(1, -26, 0, 10),
         Size = UDim2.new(0, 16, 0, 122),
-        BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BorderSizePixel = 0
     })
     applyCorner(hueBar, 8)
