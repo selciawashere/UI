@@ -2828,7 +2828,7 @@ function GroupMethods:AddColorPicker(options)
         local displayColor = Color3.fromHSV(hue, saturation, value)
         satVal.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
         satValCursor.Position = UDim2.new(saturation, 0, 1 - value, 0)
-        hueCursor.Position = UDim2.new(0.5, 0, 1 - hue, 0)
+        hueCursor.Position = UDim2.new(0.5, 0, hue, 0)
         preview.BackgroundColor3 = displayColor
         hexLabel.Text = toHex(displayColor)
         rgbLabel.Text = toRgbText(displayColor)
@@ -2855,7 +2855,7 @@ function GroupMethods:AddColorPicker(options)
 
     local function setFromHue(mousePosition)
         local relative = clamp((mousePosition.Y - hueBar.AbsolutePosition.Y) / hueBar.AbsoluteSize.Y, 0, 1)
-        hue = 1 - relative
+        hue = relative
         refreshVisual()
         emit()
     end
