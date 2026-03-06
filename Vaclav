@@ -2720,21 +2720,23 @@ function GroupMethods:AddColorPicker(options)
         Parent = panel,
         Position = UDim2.new(0, 10, 0, 10),
         Size = UDim2.new(1, -46, 0, 122),
-        BackgroundColor3 = Color3.fromHSV(hue, 1, 1),
+        BackgroundColor3 = Color3.new(1, 1, 1),
         BorderSizePixel = 0
     })
     applyCorner(satVal, 8)
     applyStroke(satVal, self.Window.Theme.Stroke, 0.82, 1)
 
-    create("UIGradient", {
+    local satOverlay = create("Frame", {
         Parent = satVal,
-        Rotation = 0, 
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),                      
-            ColorSequenceKeypoint.new(1, Color3.fromHSV(hue, 1, 1))                 
-        }),
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Color3.fromHSV(hue, 1, 1),
+        BorderSizePixel = 0
+    })
+    applyCorner(satOverlay, 8)
+    create("UIGradient", {
+        Parent = satOverlay,
         Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0),
+            NumberSequenceKeypoint.new(0, 1),
             NumberSequenceKeypoint.new(1, 0)
         })
     })
@@ -2831,7 +2833,8 @@ function GroupMethods:AddColorPicker(options)
 
     local function refreshVisual()
         local displayColor = Color3.fromHSV(hue, saturation, value)
-        satVal.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+        satVal.BackgroundColor3 = Color3.new(1, 1, 1)
+        satOverlay.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
         satValCursor.Position = UDim2.new(saturation, 0, 1 - value, 0)
         hueCursor.Position = UDim2.new(0.5, 0, hue, 0)
         preview.BackgroundColor3 = displayColor
