@@ -2825,6 +2825,7 @@ function GroupMethods:AddColorPicker(options)
 
     local satDragging = false
     local hueDragging = false
+    local grayscaleThreshold = 0.01
 
     local function emit()
         current = Color3.fromHSV(hue, saturation, value)
@@ -2864,6 +2865,12 @@ function GroupMethods:AddColorPicker(options)
     local function setFromHue(mousePosition)
         local relative = clamp((mousePosition.Y - hueBar.AbsolutePosition.Y) / hueBar.AbsoluteSize.Y, 0, 1)
         hue = relative
+        if saturation <= grayscaleThreshold then
+            saturation = 1
+        end
+        if value <= grayscaleThreshold then
+            value = 1
+        end
         refreshVisual()
         emit()
     end
