@@ -2633,12 +2633,20 @@ end
 
 function GroupMethods:AddColorPicker(options)
     options = options or {}
+    local window = self.Window
     local current = options.Default
     if typeof(current) ~= "Color3" then
         current = Color3.fromRGB(255, 255, 255)
     end
     local hue, saturation, value = Color3.toHSV(current)
     local open = false
+    local rainbowEnabled = options.Rainbow == true
+    local rainbowToken = 0
+    local satDragging = false
+    local hueDragging = false
+    local grayscaleThreshold = 0.01
+    local colorSurfaceImage = "rbxassetid://4155801252"
+    local selectorImage = "rbxassetid://4805639000"
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2653,7 +2661,7 @@ function GroupMethods:AddColorPicker(options)
         Padding = UDim.new(0, 4)
     })
 
-    local row = createCard(wrapper, self.Window.Theme, 40)
+    local row = createCard(wrapper, window.Theme, 40)
     create("TextLabel", {
         Parent = row,
         BackgroundTransparency = 1,
@@ -2661,7 +2669,7 @@ function GroupMethods:AddColorPicker(options)
         Size = UDim2.new(1, -148, 1, 0),
         Font = Enum.Font.GothamBold,
         Text = tostring(options.Name or "Color Picker"),
-        TextColor3 = self.Window.Theme.Text,
+        TextColor3 = window.Theme.Text,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left
     })
@@ -2680,7 +2688,7 @@ function GroupMethods:AddColorPicker(options)
         Size = UDim2.new(1, 0, 0, 12),
         Font = Enum.Font.GothamSemibold,
         Text = "",
-        TextColor3 = self.Window.Theme.SubText,
+        TextColor3 = window.Theme.SubText,
         TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Right
     })
@@ -2691,7 +2699,7 @@ function GroupMethods:AddColorPicker(options)
         Size = UDim2.new(1, 0, 0, 12),
         Font = Enum.Font.Gotham,
         Text = "",
-        TextColor3 = self.Window.Theme.SubText,
+        TextColor3 = window.Theme.SubText,
         TextSize = 9,
         TextXAlignment = Enum.TextXAlignment.Right
     })
@@ -2704,82 +2712,50 @@ function GroupMethods:AddColorPicker(options)
         BorderSizePixel = 0
     })
     applyCorner(preview, 4)
-    applyStroke(preview, self.Window.Theme.Stroke, 0.78, 1)
+    applyStroke(preview, window.Theme.Stroke, 0.78, 1)
 
     local panel = create("Frame", {
         Parent = wrapper,
         Size = UDim2.new(1, 0, 0, 0),
-        BackgroundColor3 = self.Window.Theme.Card,
+        BackgroundColor3 = window.Theme.Card,
         BorderSizePixel = 0,
         ClipsDescendants = true
     })
     applyCorner(panel, 10)
-    applyStroke(panel, self.Window.Theme.Stroke, 0.84, 1)
+    applyStroke(panel, window.Theme.Stroke, 0.84, 1)
 
-    local satVal = create("Frame", {
+    local colorSurface = create("ImageLabel", {
         Parent = panel,
         Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(1, -46, 0, 122),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BorderSizePixel = 0
-    })
-    applyCorner(satVal, 8)
-    applyStroke(satVal, self.Window.Theme.Stroke, 0.82, 1)
-
-    local satOverlay = create("Frame", {
-        Parent = satVal,
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, -76, 0, 110),
         BackgroundColor3 = Color3.fromHSV(hue, 1, 1),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        Image = colorSurfaceImage,
+        ScaleType = Enum.ScaleType.Stretch
     })
-    applyCorner(satOverlay, 8)
-    create("UIGradient", {
-        Parent = satOverlay,
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 1),
-            NumberSequenceKeypoint.new(1, 0)
-        })
-    })
+    applyCorner(colorSurface, 8)
+    applyStroke(colorSurface, window.Theme.Stroke, 0.82, 1)
 
-    local valOverlay = create("Frame", {
-        Parent = satVal,
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Color3.new(0, 0, 0),
-        BorderSizePixel = 0
-    })
-    applyCorner(valOverlay, 8)
-    create("UIGradient", {
-        Parent = valOverlay,
-        Rotation = 90, 
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(0,0,0)),
-            ColorSequenceKeypoint.new(1, Color3.new(0,0,0))
-        }),
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 1), 
-            NumberSequenceKeypoint.new(1, 0) 
-        })
-    })
-
-    local satValCursor = create("Frame", {
-        Parent = satVal,
+    local colorSelection = create("ImageLabel", {
+        Parent = colorSurface,
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 12, 0, 12),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BorderSizePixel = 0
+        Size = UDim2.new(0, 18, 0, 18),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Image = selectorImage,
+        ImageColor3 = window.Theme.Text,
+        ScaleType = Enum.ScaleType.Fit
     })
-    applyCorner(satValCursor, 99)
-    applyStroke(satValCursor, Color3.fromRGB(18, 18, 18), 0.2, 1)
 
     local hueBar = create("Frame", {
         Parent = panel,
         Position = UDim2.new(1, -26, 0, 10),
-        Size = UDim2.new(0, 16, 0, 122),
+        Size = UDim2.new(0, 16, 0, 110),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BorderSizePixel = 0
     })
     applyCorner(hueBar, 8)
-    applyStroke(hueBar, self.Window.Theme.Stroke, 0.76, 1)
+    applyStroke(hueBar, window.Theme.Stroke, 0.76, 1)
     create("UIGradient", {
         Parent = hueBar,
         Rotation = 90,
@@ -2793,27 +2769,74 @@ function GroupMethods:AddColorPicker(options)
             ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
         })
     })
-    local hueCursor = create("Frame", {
+    local hueSelection = create("ImageLabel", {
         Parent = hueBar,
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0, 0),
-        Size = UDim2.new(1, 4, 0, 3),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BorderSizePixel = 0
-    })
-    applyCorner(hueCursor, 99)
-
-    local pickerInfo = create("TextLabel", {
-        Parent = panel,
+        Size = UDim2.new(0, 18, 0, 18),
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 140),
-        Size = UDim2.new(1, -46, 0, 14),
-        Font = Enum.Font.Gotham,
+        BorderSizePixel = 0,
+        Image = selectorImage,
+        ImageColor3 = window.Theme.Text,
+        ScaleType = Enum.ScaleType.Fit
+    })
+
+    local confirmButton = create("TextButton", {
+        Parent = panel,
+        Position = UDim2.new(1, -104, 0, 130),
+        Size = UDim2.new(0, 94, 0, 24),
+        BackgroundColor3 = window.Theme.Control,
+        BorderSizePixel = 0,
+        Font = Enum.Font.GothamSemibold,
+        Text = tostring(options.ConfirmText or "Confirm"),
+        TextColor3 = window.Theme.Text,
+        TextSize = 11,
+        AutoButtonColor = false
+    })
+    applyCorner(confirmButton, 6)
+
+    local rainbowButton = create("TextButton", {
+        Parent = panel,
+        Position = UDim2.new(0, 10, 0, 130),
+        Size = UDim2.new(0, 110, 0, 24),
+        BackgroundColor3 = window.Theme.Control,
+        BorderSizePixel = 0,
+        Font = Enum.Font.GothamSemibold,
         Text = "",
-        TextColor3 = self.Window.Theme.SubText,
+        TextColor3 = window.Theme.Text,
+        TextSize = 11,
+        AutoButtonColor = false
+    })
+    applyCorner(rainbowButton, 6)
+    create("TextLabel", {
+        Parent = rainbowButton,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, -50, 1, 0),
+        Font = Enum.Font.GothamSemibold,
+        Text = tostring(options.RainbowText or "Rainbow"),
+        TextColor3 = window.Theme.Text,
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left
     })
+
+    local rainbowTrack = create("Frame", {
+        Parent = rainbowButton,
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -10, 0.5, 0),
+        Size = UDim2.new(0, 32, 0, 14),
+        BackgroundColor3 = window.Theme.Card,
+        BorderSizePixel = 0
+    })
+    applyCorner(rainbowTrack, 99)
+    local rainbowKnob = create("Frame", {
+        Parent = rainbowTrack,
+        AnchorPoint = Vector2.new(0, 0.5),
+        Position = UDim2.new(0, 2, 0.5, 0),
+        Size = UDim2.new(0, 10, 0, 10),
+        BackgroundColor3 = window.Theme.SubText,
+        BorderSizePixel = 0
+    })
+    applyCorner(rainbowKnob, 99)
 
     local rowButton = create("TextButton", {
         Parent = row,
@@ -2823,39 +2846,75 @@ function GroupMethods:AddColorPicker(options)
         AutoButtonColor = false
     })
 
-    local satDragging = false
-    local hueDragging = false
-    local grayscaleThreshold = 0.01
+    local function refreshSummary(color)
+        preview.BackgroundColor3 = color
+        hexLabel.Text = toHex(color)
+        rgbLabel.Text = toRgbText(color)
+    end
+
+    local function refreshRainbowVisual()
+        tween(rainbowTrack, fastTween, {
+            BackgroundColor3 = rainbowEnabled and window.Theme.Accent or window.Theme.Card
+        })
+        tween(rainbowKnob, fastTween, {
+            BackgroundColor3 = rainbowEnabled and window.Theme.Text or window.Theme.SubText,
+            Position = rainbowEnabled and UDim2.new(1, -12, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+        })
+    end
 
     local function emit()
         current = Color3.fromHSV(hue, saturation, value)
+        refreshSummary(current)
         safeCall(options.Callback, current)
     end
 
     local function refreshVisual()
         local displayColor = Color3.fromHSV(hue, saturation, value)
-        satVal.BackgroundColor3 = Color3.new(1, 1, 1)
-        satOverlay.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
-        satValCursor.Position = UDim2.new(saturation, 0, 1 - value, 0)
-        hueCursor.Position = UDim2.new(0.5, 0, hue, 0)
-        preview.BackgroundColor3 = displayColor
-        hexLabel.Text = toHex(displayColor)
-        rgbLabel.Text = toRgbText(displayColor)
-        pickerInfo.Text = string.format("RGB %s  |  %s", toRgbText(displayColor), toHex(displayColor))
+        colorSurface.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+        colorSelection.Position = UDim2.new(saturation, 0, 1 - value, 0)
+        hueSelection.Position = UDim2.new(0.5, 0, hue, 0)
+        refreshSummary(displayColor)
     end
 
     local function setOpen(state)
         open = state
         tween(row, fastTween, {
-            BackgroundColor3 = state and self.Window.Theme.ControlHover or self.Window.Theme.Control
+            BackgroundColor3 = state and window.Theme.ControlHover or window.Theme.Control
         })
         local target = state and 164 or 0
         tween(panel, midTween, {Size = UDim2.new(1, 0, 0, target)})
     end
 
+    local function stopRainbow()
+        if not rainbowEnabled then
+            return
+        end
+        rainbowEnabled = false
+        rainbowToken = rainbowToken + 1
+        refreshRainbowVisual()
+    end
+
+    local function startRainbow()
+        stopRainbow()
+        rainbowEnabled = true
+        rainbowToken = rainbowToken + 1
+        local token = rainbowToken
+        saturation = 1
+        value = 1
+        refreshRainbowVisual()
+        task.spawn(function()
+            while rainbowEnabled and token == rainbowToken and not window._destroyed and wrapper.Parent do
+                hue = (os.clock() * 0.15) % 1
+                refreshVisual()
+                emit()
+                task.wait()
+            end
+        end)
+    end
+
     local function setFromSatVal(mousePosition)
-        local relativeX = clamp((mousePosition.X - satVal.AbsolutePosition.X) / satVal.AbsoluteSize.X, 0, 1)
-        local relativeY = clamp((mousePosition.Y - satVal.AbsolutePosition.Y) / satVal.AbsoluteSize.Y, 0, 1)
+        local relativeX = clamp((mousePosition.X - colorSurface.AbsolutePosition.X) / colorSurface.AbsoluteSize.X, 0, 1)
+        local relativeY = clamp((mousePosition.Y - colorSurface.AbsolutePosition.Y) / colorSurface.AbsoluteSize.Y, 0, 1)
         saturation = relativeX
         value = 1 - relativeY
         refreshVisual()
@@ -2875,29 +2934,49 @@ function GroupMethods:AddColorPicker(options)
         emit()
     end
 
-    connect(self.Window, rowButton.MouseButton1Click, function()
+    local function beginSatDrag(position)
+        stopRainbow()
+        satDragging = true
+        setFromSatVal(position)
+    end
+
+    local function beginHueDrag(position)
+        stopRainbow()
+        hueDragging = true
+        setFromHue(position)
+    end
+
+    connect(window, rowButton.MouseButton1Click, function()
         setOpen(not open)
     end)
 
-    connect(self.Window, satVal.InputBegan, function(input)
+    connect(window, colorSurface.InputBegan, function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            satDragging = true
-            setFromSatVal(input.Position)
+            beginSatDrag(input.Position)
         end
     end)
-    connect(self.Window, hueBar.InputBegan, function(input)
+    connect(window, colorSelection.InputBegan, function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            hueDragging = true
-            setFromHue(input.Position)
+            beginSatDrag(input.Position)
         end
     end)
-    connect(self.Window, UserInputService.InputEnded, function(input)
+    connect(window, hueBar.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            beginHueDrag(input.Position)
+        end
+    end)
+    connect(window, hueSelection.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            beginHueDrag(input.Position)
+        end
+    end)
+    connect(window, UserInputService.InputEnded, function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             satDragging = false
             hueDragging = false
         end
     end)
-    connect(self.Window, UserInputService.InputChanged, function(input)
+    connect(window, UserInputService.InputChanged, function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             if satDragging then
                 setFromSatVal(input.Position)
@@ -2906,12 +2985,25 @@ function GroupMethods:AddColorPicker(options)
             end
         end
     end)
+    connect(window, confirmButton.MouseButton1Click, function()
+        setOpen(false)
+    end)
+    connect(window, rainbowButton.MouseButton1Click, function()
+        if rainbowEnabled then
+            stopRainbow()
+            refreshVisual()
+            emit()
+        else
+            startRainbow()
+        end
+    end)
 
     local object = {}
     function object:Set(color, silent)
         if typeof(color) ~= "Color3" then
             return
         end
+        stopRainbow()
         hue, saturation, value = Color3.toHSV(color)
         refreshVisual()
         current = color
@@ -2924,8 +3016,13 @@ function GroupMethods:AddColorPicker(options)
     end
 
     refreshVisual()
+    refreshRainbowVisual()
     setOpen(false)
-    safeCall(options.Callback, current)
+    if rainbowEnabled then
+        startRainbow()
+    else
+        safeCall(options.Callback, current)
+    end
     return object
 end
 
