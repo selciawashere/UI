@@ -2368,9 +2368,9 @@ function GroupMethods:AddDropdown(options)
         Size = UDim2.new(1, -20, 0, 0),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        ScrollBarThickness = 3,
+        ScrollBarThickness = 0,
         ScrollBarImageColor3 = window.Theme.ControlHover,
-        ScrollBarImageTransparency = 0.35
+        ScrollBarImageTransparency = 1
     })
     local itemLayout = create("UIListLayout", {
         Parent = itemHolder,
@@ -2659,9 +2659,9 @@ function GroupMethods:AddMultiDropdown(options)
         Size = UDim2.new(1, -20, 0, 0),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        ScrollBarThickness = 3,
+        ScrollBarThickness = 0,
         ScrollBarImageColor3 = self.Window.Theme.ControlHover,
-        ScrollBarImageTransparency = 0.35
+        ScrollBarImageTransparency = 1
     })
     local itemLayout = create("UIListLayout", {
         Parent = itemHolder,
@@ -3588,7 +3588,7 @@ function Library:CreateWindow(options)
     local topTabHost = create("Frame", {
         Parent = topBar,
         Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(1, -210, 1, 0),
+        Size = UDim2.new(1, -20, 1, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ClipsDescendants = true
@@ -3604,7 +3604,8 @@ function Library:CreateWindow(options)
         Text = "",
         TextColor3 = theme.SubText,
         TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Right
+        TextXAlignment = Enum.TextXAlignment.Right,
+        Visible = false
     })
 
     local contentPages = create("Frame", {
