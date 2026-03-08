@@ -2723,8 +2723,9 @@ function GroupMethods:AddMultiDropdown(options)
         end
     end
     local open = false
-    local rightClusterWidth = 108
-    local valueWidth = 76
+    local rightClusterWidth = 120
+    local valueWidth = 88
+    local arrowSpacing = 12
     local optionVisualToken = 0
 
     local wrapper = create("Frame", {
@@ -2764,7 +2765,7 @@ function GroupMethods:AddMultiDropdown(options)
         Parent = rightCluster,
         AnchorPoint = Vector2.new(1, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -26, 0, 0),
+        Position = UDim2.new(1, -(arrowSpacing + valueWidth), 0, 0),
         Size = UDim2.new(0, valueWidth, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = "",
@@ -2776,6 +2777,7 @@ function GroupMethods:AddMultiDropdown(options)
     local arrow, arrowUpper, arrowLower = createChevronIcon(rightCluster, self.Window.Theme.SubText)
     arrow.AnchorPoint = Vector2.new(1, 0.5)
     arrow.Position = UDim2.new(1, 0, 0.5, 0)
+    valueLabel.Position = UDim2.new(1, -(arrowSpacing + valueWidth), 0, 0)
 
     local panel = create("Frame", {
         Parent = wrapper,
@@ -3052,6 +3054,7 @@ function GroupMethods:AddMultiDropdown(options)
     safeCall(options.Callback, selectedList())
     return object
 end
+
 
 function GroupMethods:AddTextbox(options)
     options = options or {}
