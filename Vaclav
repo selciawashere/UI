@@ -2314,10 +2314,9 @@ function GroupMethods:AddDropdown(options)
         keepCurrentOnUpdate = true
     end
     local hasRefreshButton = typeof(updateProvider) == "function" and options.UpdateButton ~= false
-    local arrowInset = 12
-    local refreshInset = 30
-    local valueRightInset = hasRefreshButton and 52 or 32
-    local valueWidth = hasRefreshButton and 84 or 92
+    local rightClusterWidth = hasRefreshButton and 126 or 108
+    local valueWidth = hasRefreshButton and 78 or 76
+    local optionVisualToken = 0
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2337,18 +2336,26 @@ function GroupMethods:AddDropdown(options)
         Parent = row,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(1, -130, 1, 0),
+        Size = UDim2.new(1, -(rightClusterWidth + 26), 1, 0),
         Font = Enum.Font.GothamBold,
         Text = tostring(options.Name or "Dropdown"),
         TextColor3 = window.Theme.Text,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left
     })
-    local valueLabel = create("TextLabel", {
+    local rightCluster = create("Frame", {
         Parent = row,
         AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -10, 0, 0),
+        Size = UDim2.new(0, rightClusterWidth, 1, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -valueRightInset, 0, 0),
+        BorderSizePixel = 0
+    })
+    local valueLabel = create("TextLabel", {
+        Parent = rightCluster,
+        AnchorPoint = Vector2.new(1, 0),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -(hasRefreshButton and 46 or 26), 0, 0),
         Size = UDim2.new(0, valueWidth, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = "",
@@ -2357,15 +2364,15 @@ function GroupMethods:AddDropdown(options)
         TextXAlignment = Enum.TextXAlignment.Right,
         TextTruncate = Enum.TextTruncate.AtEnd
     })
-    local arrow, arrowUpper, arrowLower = createChevronIcon(row, window.Theme.SubText)
+    local arrow, arrowUpper, arrowLower = createChevronIcon(rightCluster, window.Theme.SubText)
     arrow.AnchorPoint = Vector2.new(1, 0.5)
-    arrow.Position = UDim2.new(1, -arrowInset, 0.5, 0)
+    arrow.Position = UDim2.new(1, 0, 0.5, 0)
     local refreshButton
     if hasRefreshButton then
         refreshButton = create("TextButton", {
-            Parent = row,
+            Parent = rightCluster,
             AnchorPoint = Vector2.new(1, 0.5),
-            Position = UDim2.new(1, -refreshInset, 0.5, 0),
+            Position = UDim2.new(1, -24, 0.5, 0),
             Size = UDim2.new(0, 14, 0, 14),
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamBold,
@@ -2411,24 +2418,55 @@ function GroupMethods:AddDropdown(options)
 
     local optionButtons = {}
 
-    local function refreshDisplay()
+    local function refreshDisplay(stagger)
+        optionVisualToken = optionVisualToken + 1
+        local token = optionVisualToken
         valueLabel.Text = selected or "None"
         local navActiveBackground = window._navActiveBackground or Color3.fromRGB(35, 29, 30)
         local navActiveText = window._navActiveText or Color3.fromRGB(184, 106, 115)
         local navInactiveText = window._navInactiveText or Color3.fromRGB(106, 106, 106)
-        for optionValue, button in pairs(optionButtons) do
-            local isSelected = optionValue == selected
-            tween(button, fastTween, {
-                BackgroundColor3 = isSelected and navActiveBackground or window.Theme.Card
-            })
-            local accent = button:FindFirstChild("Accent")
-            if accent then
-                tween(accent, fastTween, {
-                    BackgroundTransparency = isSelected and 0 or 1
-                })
+        for index, optionValue in ipairs(optionList) do
+            local button = optionButtons[optionValue]
+            if not button then
+                continue
             end
+            local isSelected = optionValue == selected
+            local accent = button:FindFirstChild("Accent")
             local textLabel = button:FindFirstChild("Label")
-            if textLabel then
+            local optionScale = button:FindFirstChild("OptionScale")
+            local function applyVisual()
+                tween(button, fastTween, {
+                    BackgroundColor3 = isSelected and navActiveBackground or window.Theme.Card,
+                    BackgroundTransparency = open and 0 or 1
+                })
+                if accent then
+                    tween(accent, fastTween, {
+                        BackgroundTransparency = open and (isSelected and 0 or 1) or 1
+                    })
+                end
+                if textLabel then
+                    tween(textLabel, fastTween, {
+                        TextColor3 = isSelected and navActiveText or navInactiveText,
+                        TextTransparency = open and 0 or 1
+                    })
+                end
+                if optionScale then
+                    tween(optionScale, fastTween, {
+                        Scale = open and 1 or 0.96
+                    })
+                end
+            end
+            if stagger and open then
+                task.delay((index - 1) * 0.025, function()
+                    if token ~= optionVisualToken or not button.Parent then
+                        return
+                    end
+                    applyVisual()
+                end)
+            else
+                applyVisual()
+            end
+            if textLabel and not stagger then
                 tween(textLabel, fastTween, {
                     TextColor3 = isSelected and navActiveText or navInactiveText
                 })
@@ -2458,6 +2496,7 @@ function GroupMethods:AddDropdown(options)
             targetHeight = math.min(#optionList * 30 + 12, 146)
         end
         tween(panel, midTween, {Size = UDim2.new(1, 0, 0, targetHeight)})
+        refreshDisplay(state == true)
     end
 
     local function setSelected(value, silent)
@@ -2509,6 +2548,7 @@ function GroupMethods:AddDropdown(options)
                 Parent = scroll,
                 Size = UDim2.new(1, 0, 0, 28),
                 BackgroundColor3 = window.Theme.Card,
+                BackgroundTransparency = open and 0 or 1,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false
@@ -2516,6 +2556,11 @@ function GroupMethods:AddDropdown(options)
             create("UICorner", {
                 Parent = optionButton,
                 CornerRadius = UDim.new(0, 6)
+            })
+            create("UIScale", {
+                Name = "OptionScale",
+                Parent = optionButton,
+                Scale = open and 1 or 0.96
             })
             local optionAccent = create("Frame", {
                 Name = "Accent",
@@ -2540,6 +2585,7 @@ function GroupMethods:AddDropdown(options)
                 Font = Enum.Font.GothamSemibold,
                 Text = optionValue,
                 TextColor3 = window._navInactiveText or Color3.fromRGB(106, 106, 106),
+                TextTransparency = open and 0 or 1,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
@@ -2564,7 +2610,7 @@ function GroupMethods:AddDropdown(options)
         if selected and not optionButtons[selected] then
             selected = optionList[1]
         end
-        refreshDisplay()
+        refreshDisplay(false)
     end
 
     local rowButton = create("TextButton", {
@@ -2677,9 +2723,9 @@ function GroupMethods:AddMultiDropdown(options)
         end
     end
     local open = false
-    local arrowInset = 12
-    local valueRightInset = 32
-    local valueWidth = 92
+    local rightClusterWidth = 108
+    local valueWidth = 76
+    local optionVisualToken = 0
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2699,18 +2745,26 @@ function GroupMethods:AddMultiDropdown(options)
         Parent = row,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(1, -130, 1, 0),
+        Size = UDim2.new(1, -(rightClusterWidth + 26), 1, 0),
         Font = Enum.Font.GothamBold,
         Text = tostring(options.Name or "Multi Dropdown"),
         TextColor3 = self.Window.Theme.Text,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left
     })
-    local valueLabel = create("TextLabel", {
+    local rightCluster = create("Frame", {
         Parent = row,
         AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -10, 0, 0),
+        Size = UDim2.new(0, rightClusterWidth, 1, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -valueRightInset, 0, 0),
+        BorderSizePixel = 0
+    })
+    local valueLabel = create("TextLabel", {
+        Parent = rightCluster,
+        AnchorPoint = Vector2.new(1, 0),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -26, 0, 0),
         Size = UDim2.new(0, valueWidth, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = "",
@@ -2719,9 +2773,9 @@ function GroupMethods:AddMultiDropdown(options)
         TextXAlignment = Enum.TextXAlignment.Right,
         TextTruncate = Enum.TextTruncate.AtEnd
     })
-    local arrow, arrowUpper, arrowLower = createChevronIcon(row, self.Window.Theme.SubText)
+    local arrow, arrowUpper, arrowLower = createChevronIcon(rightCluster, self.Window.Theme.SubText)
     arrow.AnchorPoint = Vector2.new(1, 0.5)
-    arrow.Position = UDim2.new(1, -arrowInset, 0.5, 0)
+    arrow.Position = UDim2.new(1, 0, 0.5, 0)
 
     local panel = create("Frame", {
         Parent = wrapper,
@@ -2780,20 +2834,51 @@ function GroupMethods:AddMultiDropdown(options)
         end
     end
 
-    local function refreshButtons()
-        for optionValue, button in pairs(optionButtons) do
+    local function refreshButtons(stagger)
+        optionVisualToken = optionVisualToken + 1
+        local token = optionVisualToken
+        for index, optionValue in ipairs(optionList) do
+            local button = optionButtons[optionValue]
+            if not button then
+                continue
+            end
             local active = selectedMap[optionValue] == true
             local mark = button:FindFirstChild("Mark")
-            tween(button, fastTween, {
-                BackgroundColor3 = active and (self.Window._navActiveBackground or Color3.fromRGB(35, 29, 30)) or self.Window.Theme.Card
-            })
-            if mark then
-                tween(mark, fastTween, {
-                    BackgroundTransparency = active and 0 or 0.72
-                })
-            end
             local label = button:FindFirstChild("Label")
-            if label then
+            local optionScale = button:FindFirstChild("OptionScale")
+            local function applyVisual()
+                tween(button, fastTween, {
+                    BackgroundColor3 = active and (self.Window._navActiveBackground or Color3.fromRGB(35, 29, 30)) or self.Window.Theme.Card,
+                    BackgroundTransparency = open and 0 or 1
+                })
+                if mark then
+                    tween(mark, fastTween, {
+                        BackgroundTransparency = open and (active and 0 or 0.72) or 1
+                    })
+                end
+                if label then
+                    tween(label, fastTween, {
+                        TextColor3 = active and (self.Window._navActiveText or Color3.fromRGB(184, 106, 115)) or (self.Window._navInactiveText or Color3.fromRGB(106, 106, 106)),
+                        TextTransparency = open and 0 or 1
+                    })
+                end
+                if optionScale then
+                    tween(optionScale, fastTween, {
+                        Scale = open and 1 or 0.96
+                    })
+                end
+            end
+            if stagger and open then
+                task.delay((index - 1) * 0.025, function()
+                    if token ~= optionVisualToken or not button.Parent then
+                        return
+                    end
+                    applyVisual()
+                end)
+            else
+                applyVisual()
+            end
+            if label and not stagger then
                 tween(label, fastTween, {
                     TextColor3 = active and (self.Window._navActiveText or Color3.fromRGB(184, 106, 115)) or (self.Window._navInactiveText or Color3.fromRGB(106, 106, 106))
                 })
@@ -2824,6 +2909,7 @@ function GroupMethods:AddMultiDropdown(options)
             targetHeight = math.min(#optionList * 30 + 12, 150)
         end
         tween(panel, midTween, {Size = UDim2.new(1, 0, 0, targetHeight)})
+        refreshButtons(state == true)
     end
 
     local function toggleOption(optionValue, silent)
@@ -2846,6 +2932,7 @@ function GroupMethods:AddMultiDropdown(options)
                 Parent = scroll,
                 Size = UDim2.new(1, 0, 0, 28),
                 BackgroundColor3 = self.Window.Theme.Card,
+                BackgroundTransparency = open and 0 or 1,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false
@@ -2853,6 +2940,11 @@ function GroupMethods:AddMultiDropdown(options)
             create("UICorner", {
                 Parent = optionButton,
                 CornerRadius = UDim.new(0, 6)
+            })
+            create("UIScale", {
+                Name = "OptionScale",
+                Parent = optionButton,
+                Scale = open and 1 or 0.96
             })
 
             local mark = create("Frame", {
@@ -2879,6 +2971,7 @@ function GroupMethods:AddMultiDropdown(options)
                 Font = Enum.Font.GothamSemibold,
                 Text = optionValue,
                 TextColor3 = self.Window._navInactiveText or Color3.fromRGB(106, 106, 106),
+                TextTransparency = open and 0 or 1,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
@@ -2908,7 +3001,7 @@ function GroupMethods:AddMultiDropdown(options)
             end
         end
         selectedMap = valid
-        refreshButtons()
+        refreshButtons(false)
     end
 
     local rowButton = create("TextButton", {
@@ -2933,7 +3026,7 @@ function GroupMethods:AddMultiDropdown(options)
                 end
             end
         end
-        refreshButtons()
+        refreshButtons(false)
         if not silent then
             safeCall(options.Callback, selectedList())
         end
