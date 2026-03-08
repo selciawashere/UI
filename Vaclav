@@ -2291,18 +2291,18 @@ function GroupMethods:AddDropdown(options)
     end
     local hasRefreshButton = typeof(updateProvider) == "function" and options.UpdateButton ~= false
     local itemHeight = 25
-    local itemPadding = 1
+    local itemSpacing = 1
     local maxVisibleItems = 3
-    local closedHeight = 42
-    local listTop = 46
+    local baseHeight = 42
     local backgroundColor = Color3.fromRGB(34, 34, 34)
     local hoverColor = Color3.fromRGB(37, 37, 37)
     local expandTween = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local arrowTween = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local baseText = tostring(options.Name or "Dropdown")
 
     local dropdown = create("Frame", {
         Parent = self.ElementsHolder,
-        Size = UDim2.new(1, 0, 0, closedHeight),
+        Size = UDim2.new(1, 0, 0, baseHeight),
         BackgroundColor3 = backgroundColor,
         BorderSizePixel = 0,
         ClipsDescendants = true
@@ -2311,36 +2311,23 @@ function GroupMethods:AddDropdown(options)
 
     local dropdownButton = create("TextButton", {
         Parent = dropdown,
-        Size = UDim2.new(1, 0, 0, closedHeight),
+        Size = UDim2.new(1, 0, 0, baseHeight),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Text = "",
         AutoButtonColor = false
     })
 
-    local titleLabel = create("TextLabel", {
+    local headerLabel = create("TextLabel", {
         Parent = dropdown,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 13, 0, 0),
-        Size = UDim2.new(1, -160, 0, closedHeight),
+        Size = UDim2.new(1, hasRefreshButton and -76 or -44, 0, baseHeight),
         Font = Enum.Font.Gotham,
-        Text = tostring(options.Name or "Dropdown"),
+        Text = baseText,
         TextColor3 = window.Theme.Text,
         TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-
-    local valueLabel = create("TextLabel", {
-        Parent = dropdown,
-        AnchorPoint = Vector2.new(1, 0),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -(hasRefreshButton and 58 or 34), 0, 0),
-        Size = UDim2.new(0, hasRefreshButton and 96 or 110, 0, closedHeight),
-        Font = Enum.Font.Gotham,
-        Text = "",
-        TextColor3 = window.Theme.SubText,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Right,
+        TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd
     })
 
@@ -2348,11 +2335,11 @@ function GroupMethods:AddDropdown(options)
         Parent = dropdown,
         AnchorPoint = Vector2.new(1, 0.5),
         Position = UDim2.new(1, -10, 0.5, 0),
-        Size = UDim2.new(0, 24, 0, 24),
+        Size = UDim2.new(0, 26, 0, 26),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Image = "rbxassetid://6034818375",
-        ImageColor3 = window.Theme.SubText
+        ImageColor3 = window.Theme.Text
     })
 
     local refreshButton
@@ -2360,7 +2347,7 @@ function GroupMethods:AddDropdown(options)
         refreshButton = create("TextButton", {
             Parent = dropdown,
             AnchorPoint = Vector2.new(1, 0.5),
-            Position = UDim2.new(1, -34, 0.5, 0),
+            Position = UDim2.new(1, -38, 0.5, 0),
             Size = UDim2.new(0, 16, 0, 16),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
@@ -2377,44 +2364,32 @@ function GroupMethods:AddDropdown(options)
         Active = true,
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, listTop),
+        Position = UDim2.new(0, 10, 0, 44),
         Size = UDim2.new(1, -20, 0, 0),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        ScrollBarThickness = 0,
-        ScrollBarImageTransparency = 1
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = window.Theme.ControlHover,
+        ScrollBarImageTransparency = 0.35
     })
     local itemLayout = create("UIListLayout", {
         Parent = itemHolder,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, itemPadding)
+        Padding = UDim.new(0, itemSpacing)
     })
 
     local optionButtons = {}
 
-    local function visibleItemHeight()
-        local count = math.min(#optionList, maxVisibleItems)
-        if count <= 0 then
+    local function frameSize()
+        local visibleCount = math.min(#optionList, maxVisibleItems)
+        if visibleCount <= 0 then
             return 0
         end
-        return count * (itemHeight + itemPadding)
-    end
-
-    local function targetDropdownHeight()
-        if not open then
-            return closedHeight
-        end
-        return 55 + visibleItemHeight()
+        return visibleCount * (itemHeight + itemSpacing)
     end
 
     local function refreshHeader()
-        valueLabel.Text = selected or "None"
-        tween(valueLabel, fastTween, {
-            TextColor3 = open and window.Theme.Text or window.Theme.SubText
-        })
-        tween(arrowImage, fastTween, {
-            ImageColor3 = open and window.Theme.Text or window.Theme.SubText
-        })
+        headerLabel.Text = selected and (baseText .. " - " .. selected) or baseText
     end
 
     local function refreshOptions()
@@ -2423,9 +2398,8 @@ function GroupMethods:AddDropdown(options)
             if not button then
                 continue
             end
-            local active = optionValue == selected
             tween(button, fastTween, {
-                BackgroundColor3 = active and hoverColor or backgroundColor
+                BackgroundColor3 = selected == optionValue and hoverColor or backgroundColor
             })
         end
     end
@@ -2433,13 +2407,11 @@ function GroupMethods:AddDropdown(options)
     local function setOpen(state)
         open = state == true
         tween(dropdown, expandTween, {
-            Size = UDim2.new(1, 0, 0, targetDropdownHeight())
+            Size = UDim2.new(1, 0, 0, open and (55 + frameSize()) or baseHeight)
         })
         tween(arrowImage, arrowTween, {
             Rotation = open and 270 or 0
         })
-        refreshHeader()
-        refreshOptions()
     end
 
     local function setSelected(value, silent)
@@ -2487,18 +2459,18 @@ function GroupMethods:AddDropdown(options)
             end
         end
         optionButtons = {}
-        itemHolder.Size = UDim2.new(1, -20, 0, visibleItemHeight())
+        itemHolder.Size = UDim2.new(1, -20, 0, frameSize())
         for _, optionValue in ipairs(optionList) do
             local item = create("TextButton", {
                 Parent = itemHolder,
                 Size = UDim2.new(1, 0, 0, itemHeight),
                 BackgroundColor3 = backgroundColor,
                 BorderSizePixel = 0,
-                Text = optionValue,
                 AutoButtonColor = false,
                 Font = Enum.Font.Gotham,
+                Text = optionValue,
                 TextColor3 = window.Theme.Text,
-                TextSize = 14
+                TextSize = 15
             })
             applyCorner(item, 4)
             optionButtons[optionValue] = item
@@ -2509,15 +2481,9 @@ function GroupMethods:AddDropdown(options)
                 })
             end)
             connect(window, item.MouseLeave, function()
-                if selected == optionValue then
-                    tween(item, fastTween, {
-                        BackgroundColor3 = hoverColor
-                    })
-                else
-                    tween(item, fastTween, {
-                        BackgroundColor3 = backgroundColor
-                    })
-                end
+                tween(item, fastTween, {
+                    BackgroundColor3 = selected == optionValue and hoverColor or backgroundColor
+                })
             end)
             connect(window, item.MouseButton1Click, function()
                 setSelected(optionValue, false)
@@ -2526,11 +2492,7 @@ function GroupMethods:AddDropdown(options)
         end
         refreshHeader()
         refreshOptions()
-        if not open then
-            dropdown.Size = UDim2.new(1, 0, 0, closedHeight)
-        else
-            dropdown.Size = UDim2.new(1, 0, 0, targetDropdownHeight())
-        end
+        dropdown.Size = UDim2.new(1, 0, 0, open and (55 + frameSize()) or baseHeight)
     end
 
     connect(window, dropdownButton.MouseButton1Click, function()
@@ -2637,14 +2599,14 @@ function GroupMethods:AddMultiDropdown(options)
     end
     local open = false
     local closedHeight = 42
-    local listTop = 46
     local itemHeight = 25
-    local itemPadding = 1
+    local itemSpacing = 1
     local maxVisibleItems = 3
     local backgroundColor = Color3.fromRGB(34, 34, 34)
     local hoverColor = Color3.fromRGB(37, 37, 37)
     local expandTween = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local arrowTween = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local baseText = tostring(options.Name or "Multi Dropdown")
 
     local dropdown = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2664,29 +2626,16 @@ function GroupMethods:AddMultiDropdown(options)
         AutoButtonColor = false
     })
 
-    local titleLabel = create("TextLabel", {
+    local headerLabel = create("TextLabel", {
         Parent = dropdown,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 13, 0, 0),
-        Size = UDim2.new(1, -150, 0, closedHeight),
+        Size = UDim2.new(1, -44, 0, closedHeight),
         Font = Enum.Font.Gotham,
-        Text = tostring(options.Name or "Multi Dropdown"),
+        Text = baseText,
         TextColor3 = self.Window.Theme.Text,
         TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-
-    local valueLabel = create("TextLabel", {
-        Parent = dropdown,
-        AnchorPoint = Vector2.new(1, 0),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -34, 0, 0),
-        Size = UDim2.new(0, 110, 0, closedHeight),
-        Font = Enum.Font.Gotham,
-        Text = "",
-        TextColor3 = self.Window.Theme.SubText,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Right,
+        TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd
     })
 
@@ -2694,11 +2643,11 @@ function GroupMethods:AddMultiDropdown(options)
         Parent = dropdown,
         AnchorPoint = Vector2.new(1, 0.5),
         Position = UDim2.new(1, -10, 0.5, 0),
-        Size = UDim2.new(0, 24, 0, 24),
+        Size = UDim2.new(0, 26, 0, 26),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Image = "rbxassetid://6034818375",
-        ImageColor3 = self.Window.Theme.SubText
+        ImageColor3 = self.Window.Theme.Text
     })
 
     local itemHolder = create("ScrollingFrame", {
@@ -2706,17 +2655,18 @@ function GroupMethods:AddMultiDropdown(options)
         Active = true,
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, listTop),
+        Position = UDim2.new(0, 10, 0, 44),
         Size = UDim2.new(1, -20, 0, 0),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        ScrollBarThickness = 0,
-        ScrollBarImageTransparency = 1
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = self.Window.Theme.ControlHover,
+        ScrollBarImageTransparency = 0.35
     })
     local itemLayout = create("UIListLayout", {
         Parent = itemHolder,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, itemPadding)
+        Padding = UDim.new(0, itemSpacing)
     })
 
     local optionButtons = {}
@@ -2733,15 +2683,17 @@ function GroupMethods:AddMultiDropdown(options)
 
     local function updateValueText()
         local list = selectedList()
+        local suffix
         if #list == 0 then
-            valueLabel.Text = "None"
+            suffix = nil
         elseif #list == 1 then
-            valueLabel.Text = list[1]
+            suffix = list[1]
         elseif #list == 2 then
-            valueLabel.Text = list[1] .. ", " .. list[2]
+            suffix = list[1] .. ", " .. list[2]
         else
-            valueLabel.Text = tostring(#list) .. " selected"
+            suffix = tostring(#list) .. " selected"
         end
+        headerLabel.Text = suffix and (baseText .. " - " .. suffix) or baseText
     end
 
     local function visibleItemHeight()
@@ -2749,7 +2701,7 @@ function GroupMethods:AddMultiDropdown(options)
         if count <= 0 then
             return 0
         end
-        return count * (itemHeight + itemPadding)
+        return count * (itemHeight + itemSpacing)
     end
 
     local function targetDropdownHeight()
@@ -2771,11 +2723,8 @@ function GroupMethods:AddMultiDropdown(options)
             })
         end
         updateValueText()
-        tween(valueLabel, fastTween, {
-            TextColor3 = open and self.Window.Theme.Text or self.Window.Theme.SubText
-        })
         tween(arrowImage, fastTween, {
-            ImageColor3 = open and self.Window.Theme.Text or self.Window.Theme.SubText
+            ImageColor3 = self.Window.Theme.Text
         })
     end
 
@@ -2822,14 +2771,12 @@ function GroupMethods:AddMultiDropdown(options)
             optionButtons[optionValue] = item
 
             connect(self.Window, item.MouseEnter, function()
-                if not selectedMap[optionValue] then
-                    tween(item, fastTween, {BackgroundColor3 = hoverColor})
-                end
+                tween(item, fastTween, {BackgroundColor3 = hoverColor})
             end)
             connect(self.Window, item.MouseLeave, function()
-                if not selectedMap[optionValue] then
-                    tween(item, fastTween, {BackgroundColor3 = backgroundColor})
-                end
+                tween(item, fastTween, {
+                    BackgroundColor3 = selectedMap[optionValue] and hoverColor or backgroundColor
+                })
             end)
             connect(self.Window, item.MouseButton1Click, function()
                 toggleOption(optionValue, false)
