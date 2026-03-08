@@ -2314,7 +2314,10 @@ function GroupMethods:AddDropdown(options)
         keepCurrentOnUpdate = true
     end
     local hasRefreshButton = typeof(updateProvider) == "function" and options.UpdateButton ~= false
-    local valueOffset = hasRefreshButton and -136 or -122
+    local arrowInset = 12
+    local refreshInset = 30
+    local valueRightInset = hasRefreshButton and 52 or 32
+    local valueWidth = hasRefreshButton and 84 or 92
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2343,9 +2346,10 @@ function GroupMethods:AddDropdown(options)
     })
     local valueLabel = create("TextLabel", {
         Parent = row,
+        AnchorPoint = Vector2.new(1, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, valueOffset, 0, 0),
-        Size = UDim2.new(0, 100, 1, 0),
+        Position = UDim2.new(1, -valueRightInset, 0, 0),
+        Size = UDim2.new(0, valueWidth, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = "",
         TextColor3 = window.Theme.SubText,
@@ -2355,13 +2359,13 @@ function GroupMethods:AddDropdown(options)
     })
     local arrow, arrowUpper, arrowLower = createChevronIcon(row, window.Theme.SubText)
     arrow.AnchorPoint = Vector2.new(1, 0.5)
-    arrow.Position = UDim2.new(1, -10, 0.5, 0)
+    arrow.Position = UDim2.new(1, -arrowInset, 0.5, 0)
     local refreshButton
     if hasRefreshButton then
         refreshButton = create("TextButton", {
             Parent = row,
             AnchorPoint = Vector2.new(1, 0.5),
-            Position = UDim2.new(1, -26, 0.5, 0),
+            Position = UDim2.new(1, -refreshInset, 0.5, 0),
             Size = UDim2.new(0, 14, 0, 14),
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamBold,
@@ -2673,6 +2677,9 @@ function GroupMethods:AddMultiDropdown(options)
         end
     end
     local open = false
+    local arrowInset = 12
+    local valueRightInset = 32
+    local valueWidth = 92
 
     local wrapper = create("Frame", {
         Parent = self.ElementsHolder,
@@ -2701,9 +2708,10 @@ function GroupMethods:AddMultiDropdown(options)
     })
     local valueLabel = create("TextLabel", {
         Parent = row,
+        AnchorPoint = Vector2.new(1, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -122, 0, 0),
-        Size = UDim2.new(0, 100, 1, 0),
+        Position = UDim2.new(1, -valueRightInset, 0, 0),
+        Size = UDim2.new(0, valueWidth, 1, 0),
         Font = Enum.Font.GothamSemibold,
         Text = "",
         TextColor3 = self.Window.Theme.SubText,
@@ -2713,7 +2721,7 @@ function GroupMethods:AddMultiDropdown(options)
     })
     local arrow, arrowUpper, arrowLower = createChevronIcon(row, self.Window.Theme.SubText)
     arrow.AnchorPoint = Vector2.new(1, 0.5)
-    arrow.Position = UDim2.new(1, -10, 0.5, 0)
+    arrow.Position = UDim2.new(1, -arrowInset, 0.5, 0)
 
     local panel = create("Frame", {
         Parent = wrapper,
