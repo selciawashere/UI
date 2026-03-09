@@ -16,58 +16,10 @@ local Library = {}
 local fastTween = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 local midTween = TweenInfo.new(0.34, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
-local hasFontFaceSupport = type(Font) == "table" and typeof(Font.new) == "function"
-local love2dFontAsset = "rbxassetid://12187370747"
-local fallbackTextFont = Enum.Font.Gotham
-local textClassNames = {
-    TextLabel = true,
-    TextButton = true,
-    TextBox = true
-}
-local love2dFontFace = hasFontFaceSupport
-    and Font.new(love2dFontAsset, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-    or nil
-
-local function resolveLove2DFontFace(_fontEnum)
-    return love2dFontFace
-end
-
-local function measureTextBounds(text, textSize, font, bounds)
-    text = tostring(text or "")
-    textSize = tonumber(textSize) or 12
-    font = font or fallbackTextFont
-    bounds = bounds or Vector2.new(1000, 24)
-
-    local fontFace = resolveLove2DFontFace(font)
-    if fontFace then
-        local ok, result = pcall(function()
-            local params = Instance.new("GetTextBoundsParams")
-            params.Text = text
-            params.Size = textSize
-            params.Font = fontFace
-            params.Width = math.max(tonumber(bounds.X) or 0, 1)
-            return TextService:GetTextBoundsAsync(params)
-        end)
-        if ok and typeof(result) == "Vector2" then
-            return result
-        end
-    end
-
-    return TextService:GetTextSize(text, textSize, fallbackTextFont, bounds)
-end
-
 local function create(className, properties)
     local instance = Instance.new(className)
     for key, value in pairs(properties) do
         instance[key] = value
-    end
-    if properties and properties.FontFace == nil and textClassNames[className] then
-        local fontFace = resolveLove2DFontFace(properties.Font)
-        if fontFace then
-            instance.FontFace = fontFace
-        else
-            instance.Font = fallbackTextFont
-        end
     end
     return instance
 end
@@ -663,7 +615,7 @@ local function playLoadAnimation(gui, theme, logoId, titleText, useBlur)
         end
         return value
     end
-    local textBounds = measureTextBounds(introTitle, titleTextSize, titleFont, Vector2.new(360, 40))
+    local textBounds = TextService:GetTextSize(introTitle, titleTextSize, titleFont, Vector2.new(360, 40))
     local titleWidth = toEven(clamp(textBounds.X + 8, 64, 320))
     local titleHeight = toEven(clamp(textBounds.Y + 2, 20, 34))
     local logoTextGap = 6
@@ -882,7 +834,7 @@ local function tweenIconColor(iconObject, color)
 end
 
 local function measureTextWidth(text, textSize, font, padding, minimum, maximum)
-    local bounds = measureTextBounds(
+    local bounds = TextService:GetTextSize(
         tostring(text or ""),
         tonumber(textSize) or 12,
         font or Enum.Font.GothamSemibold,
