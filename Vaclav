@@ -18,14 +18,14 @@ local midTween = TweenInfo.new(0.34, Enum.EasingStyle.Sine, Enum.EasingDirection
 
 local hasFontFaceSupport = type(Font) == "table" and typeof(Font.new) == "function"
 local outfitFontAsset = "rbxasset://fonts/families/Outfit.json"
-local fallbackTextFont = Enum.Font.GothamBold
+local fallbackTextFont = Enum.Font.GothamBlack
 local textClassNames = {
     TextLabel = true,
     TextButton = true,
     TextBox = true
 }
 local outfitFontFace = hasFontFaceSupport
-    and Font.new(outfitFontAsset, Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    and Font.new(outfitFontAsset, Enum.FontWeight.Heavy, Enum.FontStyle.Normal)
     or nil
 
 local function resolveOutfitFontFace(_fontEnum)
