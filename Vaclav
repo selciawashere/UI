@@ -17,19 +17,19 @@ local fastTween = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection
 local midTween = TweenInfo.new(0.34, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
 local hasFontFaceSupport = type(Font) == "table" and typeof(Font.new) == "function"
-local outfitFontAsset = "rbxasset://fonts/families/Outfit.json"
+local love2dFontAsset = "rbxassetid://12187370747"
 local fallbackTextFont = Enum.Font.Gotham
 local textClassNames = {
     TextLabel = true,
     TextButton = true,
     TextBox = true
 }
-local outfitFontFace = hasFontFaceSupport
-    and Font.new(outfitFontAsset, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+local love2dFontFace = hasFontFaceSupport
+    and Font.new(love2dFontAsset, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
     or nil
 
-local function resolveOutfitFontFace(_fontEnum)
-    return outfitFontFace
+local function resolveLove2DFontFace(_fontEnum)
+    return love2dFontFace
 end
 
 local function measureTextBounds(text, textSize, font, bounds)
@@ -38,7 +38,7 @@ local function measureTextBounds(text, textSize, font, bounds)
     font = font or fallbackTextFont
     bounds = bounds or Vector2.new(1000, 24)
 
-    local fontFace = resolveOutfitFontFace(font)
+    local fontFace = resolveLove2DFontFace(font)
     if fontFace then
         local ok, result = pcall(function()
             local params = Instance.new("GetTextBoundsParams")
@@ -62,7 +62,7 @@ local function create(className, properties)
         instance[key] = value
     end
     if properties and properties.FontFace == nil and textClassNames[className] then
-        local fontFace = resolveOutfitFontFace(properties.Font)
+        local fontFace = resolveLove2DFontFace(properties.Font)
         if fontFace then
             instance.FontFace = fontFace
         else
