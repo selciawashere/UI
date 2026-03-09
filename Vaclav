@@ -18,28 +18,24 @@ local midTween = TweenInfo.new(0.34, Enum.EasingStyle.Sine, Enum.EasingDirection
 
 local hasFontFaceSupport = type(Font) == "table" and typeof(Font.new) == "function"
 local outfitFontAsset = "rbxasset://fonts/families/Outfit.json"
+local fallbackTextFont = Enum.Font.GothamBold
 local textClassNames = {
     TextLabel = true,
     TextButton = true,
     TextBox = true
 }
-local outfitFontFaces = hasFontFaceSupport and {
-    [Enum.Font.Gotham] = Font.new(outfitFontAsset, Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-    [Enum.Font.GothamSemibold] = Font.new(outfitFontAsset, Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-    [Enum.Font.GothamBold] = Font.new(outfitFontAsset, Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-} or nil
+local outfitFontFace = hasFontFaceSupport
+    and Font.new(outfitFontAsset, Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    or nil
 
-local function resolveOutfitFontFace(fontEnum)
-    if not outfitFontFaces then
-        return nil
-    end
-    return outfitFontFaces[fontEnum] or outfitFontFaces[Enum.Font.Gotham]
+local function resolveOutfitFontFace(_fontEnum)
+    return outfitFontFace
 end
 
 local function measureTextBounds(text, textSize, font, bounds)
     text = tostring(text or "")
     textSize = tonumber(textSize) or 12
-    font = font or Enum.Font.GothamSemibold
+    font = font or fallbackTextFont
     bounds = bounds or Vector2.new(1000, 24)
 
     local fontFace = resolveOutfitFontFace(font)
@@ -57,7 +53,7 @@ local function measureTextBounds(text, textSize, font, bounds)
         end
     end
 
-    return TextService:GetTextSize(text, textSize, font, bounds)
+    return TextService:GetTextSize(text, textSize, fallbackTextFont, bounds)
 end
 
 local function create(className, properties)
@@ -69,6 +65,8 @@ local function create(className, properties)
         local fontFace = resolveOutfitFontFace(properties.Font)
         if fontFace then
             instance.FontFace = fontFace
+        else
+            instance.Font = fallbackTextFont
         end
     end
     return instance
